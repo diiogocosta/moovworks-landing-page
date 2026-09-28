@@ -1,0 +1,20 @@
+{
+  "name": "moovworks",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "moovworks.com — single-page institutional site, static, three languages.",
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "assets": "node scripts/generate-assets.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.3.5"
+  }
+}
