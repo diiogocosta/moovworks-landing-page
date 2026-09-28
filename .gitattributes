@@ -1,0 +1,18 @@
+# Normalise line endings; keep binaries untouched.
+* text=auto eol=lf
+
+*.woff2 -text diff
+*.woff  -text diff
+*.ttf   -text diff
+*.otf   -text diff
+*.png   -text diff
+*.jpg   -text diff
+*.jpeg  -text diff
+*.webp  -text diff
+*.ico   -text diff
+
+*.svg  text eol=lf
+*.json text eol=lf
+*.md   text eol=lf
+
+package-lock.json -diff linguist-generated=true
