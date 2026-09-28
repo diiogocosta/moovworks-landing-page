@@ -1,0 +1,68 @@
+---
+import { t } from '../lib/i18n';
+import { SITE } from '../lib/site';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+const mailto = `mailto:${SITE.email}`;
+---
+
+<section class="contact" id="contact">
+  <div class="shell contact__inner">
+    <h2 class="contact__headline">{dict.contact.headline}</h2>
+
+    <a class="contact__email" href={mailto}>{SITE.email}</a>
+
+    <a class="btn" href={mailto}>{dict.contact.button}</a>
+  </div>
+</section>
+
+<style>
+  .contact__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.25rem, 3vw, 2rem);
+    padding-block: var(--section-gap);
+  }
+
+  .contact__headline {
+    font-size: var(--step-block);
+    font-weight: 700;
+    font-stretch: 85%;
+  }
+
+  /* The address carries a title's weight, with the marker on its underline and
+     on hover, like every other link on the page. */
+  .contact__email {
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-size: var(--step-email);
+    font-weight: 700;
+    font-stretch: 85%;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-decoration-line: underline;
+    text-decoration-color: var(--marcador);
+    text-decoration-thickness: 0.09em;
+    text-underline-offset: 0.12em;
+    overflow-wrap: break-word;
+    transition: background-color var(--transition), color var(--transition);
+  }
+
+  .contact__email:hover {
+    background-color: var(--marcador);
+    text-decoration-color: transparent;
+  }
+
+  @media (max-width: 767px) {
+    .contact__inner {
+      align-items: stretch;
+    }
+  }
+</style>

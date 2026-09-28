@@ -1,0 +1,57 @@
+---
+import { t } from '../lib/i18n';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+{/* The one inverted band on the site. `on-ink` switches the focus ring to the
+    marker colour, because ink-on-ink is invisible. */}
+<section class="about on-ink" id="about">
+  <div class="shell about__inner">
+    <h2 class="about__headline">{dict.about.headline}</h2>
+    <p class="about__text">{dict.about.text}</p>
+  </div>
+</section>
+
+<style>
+  .about {
+    color: var(--papel);
+    background-color: var(--tinta);
+  }
+
+  .about__inner {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: clamp(2rem, 6vw, 4rem);
+    padding-block: var(--section-gap);
+  }
+
+  /* The number of the page, carried purely by type. */
+  .about__headline {
+    grid-column: 1 / -1;
+    font-size: var(--step-numeral);
+    font-weight: 800;
+    font-stretch: 80%;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+  }
+
+  /* `--aco` would be 2.2:1 here, so the body sits in `--papel` instead. */
+  .about__text {
+    grid-column: 7 / -1;
+    color: var(--papel);
+  }
+
+  @media (max-width: 767px) {
+    .about__text {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

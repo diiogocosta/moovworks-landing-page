@@ -1,0 +1,70 @@
+---
+import { t } from '../lib/i18n';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+{/*
+  No section heading of its own: the three service names are the headings. The
+  brief supplies no copy for a section title, and inventing "# What we do"
+  would be exactly the kind of filler the page is arguing against.
+*/}
+<section class="services" id="services">
+  <div class="shell">
+    <ul class="services__list">
+      {
+        dict.services.map((service) => (
+          <li class="services__item">
+            <h2 class="services__title">{service.title}</h2>
+            <p class="services__text">{service.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding-block-end: var(--section-gap);
+  }
+
+  .services__item {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: 0.75rem;
+    padding-block: clamp(1.5rem, 3vw, 2.5rem);
+    /* The only dividers on the site: hairlines between list items. */
+    border-block-start: var(--hairline);
+  }
+
+  .services__item:last-child {
+    border-block-end: var(--hairline);
+  }
+
+  .services__title {
+    grid-column: 1 / span 6;
+    font-size: var(--step-row);
+    font-weight: 700;
+    font-stretch: 85%;
+  }
+
+  .services__text {
+    grid-column: 8 / -1;
+    color: var(--aco);
+  }
+
+  @media (max-width: 767px) {
+    .services__title,
+    .services__text {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
