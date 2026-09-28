@@ -19,10 +19,10 @@ const year = new Date().getFullYear();
 
     <ul class="legal">
       <li>
-        <a class="link" href={legalPath(locale, 'privacy')}>{dict.footer.privacy}</a>
+        <a class="detail-link" href={legalPath(locale, 'privacy')}>{dict.footer.privacy}</a>
       </li>
       <li>
-        <a class="link" href={legalPath(locale, 'terms')}>{dict.footer.terms}</a>
+        <a class="detail-link" href={legalPath(locale, 'terms')}>{dict.footer.terms}</a>
       </li>
     </ul>
   </div>
@@ -50,12 +50,7 @@ const year = new Date().getFullYear();
   .legal {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem clamp(0.75rem, 2vw, 1.5rem);
-  }
-
-  .legal a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    gap: 0 clamp(0.25rem, 1vw, 0.75rem);
+    margin-inline-end: -0.4rem;
   }
 </style>

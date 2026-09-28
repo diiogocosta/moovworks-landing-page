@@ -128,19 +128,49 @@ p {
   transform: translateY(0.75rem);
 }
 
+/* The marker on an underline, and only on an underline. `--marcador` is never
+   used as a text colour: on --concreto it does not contrast. */
 .link {
   text-decoration-line: underline;
   text-decoration-color: var(--marcador);
   text-decoration-thickness: 0.12em;
   text-underline-offset: 0.18em;
-  transition: background-color var(--transition), color var(--transition);
+  transition: text-decoration-thickness var(--transition);
 }
 
 .link:hover,
 .link:focus-visible {
-  color: var(--tinta);
-  background-color: var(--marcador);
+  /* Thickening the stroke reads as pressing harder with the marker. */
+  text-decoration-thickness: 0.26em;
+}
+
+/*
+ * The small link used in the header, the language switcher and the footer:
+ * 14px Archivo, sentence case, and an underline that only shows the marker
+ * when the link is hovered, focused, or current.
+ */
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  /* Touch target: two-letter codes are narrower than a finger. */
+  min-width: 44px;
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: var(--step-detail);
+  font-weight: 500;
+  color: var(--aco);
+  text-decoration-line: underline;
   text-decoration-color: transparent;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.22em;
+  transition: color var(--transition), text-decoration-color var(--transition);
+}
+
+.detail-link:hover,
+.detail-link:focus-visible,
+.detail-link[aria-current='page'] {
+  color: var(--tinta);
+  text-decoration-color: var(--marcador);
 }
 
 .btn {

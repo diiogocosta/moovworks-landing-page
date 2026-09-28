@@ -31,6 +31,11 @@
   --step-numeral: clamp(4rem, 2rem + 14vw, 16rem);
   --step-body: clamp(1.0625rem, 0.98rem + 0.4vw, 1.25rem);
   --step-detail: 0.875rem;
+  /* Row titles in a list, one rung below a block title. */
+  --step-row: clamp(1.75rem, 1.15rem + 1.6vw, 2.75rem);
+  /* The address is set as a title, but sized so it never has to break mid-word
+     on a 320px screen. */
+  --step-email: clamp(1.4rem, 0.9rem + 3vw, 4rem);
 
   /* ---- Space ---------------------------------------------------------- */
   --gutter: clamp(1.25rem, 4vw, 4rem);

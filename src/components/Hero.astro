@@ -226,6 +226,13 @@ const timings = [
       font-size: var(--cs);
     }
 
+    /* The words are large relative to a phone, so the field gets more height
+       here than the clamp alone would give it. Stays clear of the headline,
+       which begins after --padding above. */
+    .hero__field {
+      height: 6.5rem;
+    }
+
     .hero__foot {
       grid-template-columns: minmax(0, 1fr);
     }

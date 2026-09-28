@@ -16,7 +16,7 @@ const { locale } = Astro.props;
       LOCALES.map((code) => (
         <li>
           <a
-            class:list={['lang__link', code === locale && 'lang__link--current']}
+            class="detail-link"
             href={homePath(code)}
             hreflang={code}
             lang={code}
@@ -35,34 +35,5 @@ const { locale } = Astro.props;
   .lang__list {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-  }
-
-  .lang__link {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    padding-inline: 0.4rem;
-    font-family: var(--font-display);
-    font-size: var(--step-detail);
-    font-weight: 500;
-    color: var(--aco);
-    text-decoration-line: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 0.12em;
-    text-underline-offset: 0.22em;
-    transition: background-color var(--transition), color var(--transition);
-  }
-
-  .lang__link:hover {
-    color: var(--tinta);
-    background-color: var(--marcador);
-  }
-
-  /* The current language reads as current without shouting: ink instead of
-     steel, plus the marker on the underline. */
-  .lang__link--current {
-    color: var(--tinta);
-    text-decoration-color: var(--marcador);
   }
 </style>

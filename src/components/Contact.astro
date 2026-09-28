@@ -52,12 +52,11 @@ const mailto = `mailto:${SITE.email}`;
     text-decoration-thickness: 0.09em;
     text-underline-offset: 0.12em;
     overflow-wrap: break-word;
-    transition: background-color var(--transition), color var(--transition);
+    transition: text-decoration-thickness var(--transition);
   }
 
   .contact__email:hover {
-    background-color: var(--marcador);
-    text-decoration-color: transparent;
+    text-decoration-thickness: 0.16em;
   }
 
   @media (max-width: 767px) {
