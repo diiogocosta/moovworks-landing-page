@@ -1,18 +1,70 @@
 ---
-import { Font } from 'astro:assets';
-import '../styles/global.css';
+/**
+ * The entry point at `/`.
+ *
+ * A static host cannot read Accept-Language, so this page resolves the locale
+ * in the browser: a previous explicit choice wins, then the visitor's language
+ * preferences, then pt-BR. `/` is also the hreflang x-default target, which is
+ * exactly why the resolution lives here rather than on a locale page.
+ *
+ * No design, no shared layout — it is a signpost, not a page.
+ */
+import { DEFAULT_LOCALE, LOCALES, absolute, homePath } from '../lib/site';
+import { homeAlternates } from '../lib/seo';
+
+const routes: Record<string, string> = Object.fromEntries(
+  LOCALES.map((locale) => [locale, homePath(locale)]),
+);
+const fallback = homePath(DEFAULT_LOCALE);
+
+const redirect = `
+(function () {
+  var routes = ${JSON.stringify(routes)};
+  var target = null;
+  try {
+    target = localStorage.getItem('moovworks:lang');
+  } catch (error) {
+    /* storage blocked — fall through to the language preferences */
+  }
+  if (target && !Object.prototype.hasOwnProperty.call(routes, target)) target = null;
+
+  if (!target) {
+    var prefs = navigator.languages && navigator.languages.length
+      ? navigator.languages
+      : [navigator.language];
+    for (var i = 0; i < prefs.length; i++) {
+      var tag = String(prefs[i]).toLowerCase();
+      if (tag === 'pt-br' || tag === 'pt') { target = 'pt-BR'; break; }
+      if (tag.indexOf('pt-') === 0) { target = 'pt-PT'; break; }
+      if (tag.indexOf('en') === 0) { target = 'en'; break; }
+    }
+  }
+
+  target = target || ${JSON.stringify(DEFAULT_LOCALE)};
+  if (location.pathname !== routes[target]) location.replace(routes[target]);
+})();
+`.trim();
 ---
 
 <!doctype html>
-<html lang="pt-BR">
+<html lang={DEFAULT_LOCALE}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <Font cssVariable="--font-archivo" preload />
-    <Font cssVariable="--font-source-serif" />
     <title>Moovworks</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="canonical" href={absolute(fallback)} />
+
+    {
+      homeAlternates().map((alternate) => (
+        <link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+      ))
+    }
+
+    <script is:inline set:html={redirect} />
+    <noscript>
+      <meta http-equiv="refresh" content={`0; url=${fallback}`} />
+    </noscript>
   </head>
-  <body>
-    <p class="shell">Scaffold.</p>
-  </body>
+  <body></body>
 </html>

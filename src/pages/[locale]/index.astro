@@ -1,0 +1,21 @@
+---
+import HomePage from '../../components/HomePage.astro';
+import { LOCALES, slugFor } from '../../lib/site';
+import type { Locale } from '../../lib/site';
+
+/** One static page per locale; the slug is the lowercase form of the tag. */
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({
+    params: { locale: slugFor(locale) },
+    props: { locale },
+  }));
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<HomePage locale={locale} />
