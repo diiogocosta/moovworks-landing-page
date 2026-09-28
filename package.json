@@ -12,6 +12,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "fonts": "node scripts/fetch-fonts.mjs",
     "assets": "node scripts/generate-assets.mjs"
   },
   "dependencies": {

@@ -1,0 +1,48 @@
+/*
+ * Moovworks — design tokens.
+ *
+ * The single source of truth for the visual identity. Subdomains are expected to
+ * import this file unchanged so they inherit the brand without re-deciding it.
+ * Nothing here is component-specific: components read these values, they never
+ * redeclare them.
+ */
+
+:root {
+  /* ---- Surfaces and ink ---------------------------------------------- */
+  --concreto: #e3e4df; /* main background */
+  --papel: #f1f1ed; /* text on dark, light-button hover */
+  --tinta: #14213d; /* primary text, dark section. Deep ink blue, not black */
+  --aco: #4f5968; /* secondary text (5.5:1 on --concreto) */
+  --nevoa: #c9cbc5; /* hairlines between list items */
+  --marcador: #f5d90a; /* the only accent: hero marker, button hover, focus, link underline */
+
+  /* ---- Type families --------------------------------------------------
+   * `--font-archivo` and `--font-source-serif` are injected by Astro's Fonts
+   * API (self-hosted woff2 + capsize-adjusted fallback). The tokens below wrap
+   * them in a fallback so the site still reads correctly if that step is
+   * skipped — e.g. when a subdomain only imports tokens.css.
+   */
+  --font-display: var(--font-archivo, 'Arial Narrow', Arial, sans-serif);
+  --font-text: var(--font-source-serif, Georgia, serif);
+
+  /* ---- Fluid scale ---------------------------------------------------- */
+  --step-hero: clamp(3.5rem, 2rem + 9vw, 11rem);
+  --step-block: clamp(2rem, 1.4rem + 3vw, 4.25rem);
+  --step-numeral: clamp(4rem, 2rem + 14vw, 16rem);
+  --step-body: clamp(1.0625rem, 0.98rem + 0.4vw, 1.25rem);
+  --step-detail: 0.875rem;
+
+  /* ---- Space ---------------------------------------------------------- */
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --section-gap: clamp(6rem, 14vw, 14rem);
+  --max-width: 1440px;
+  --measure: 62ch;
+
+  /* ---- Detail --------------------------------------------------------- */
+  --radius: 2px; /* the only border-radius in the site */
+  --hairline: 1px solid var(--nevoa);
+  --transition: 150ms linear;
+
+  /* ---- Layout primitives ---------------------------------------------- */
+  --header-block: clamp(1rem, 2.5vw, 1.75rem);
+}

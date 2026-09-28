@@ -1,5 +1,6 @@
 ---
-// Placeholder root. Replaced by the localised route graph in a later commit.
+import { Font } from 'astro:assets';
+import '../styles/global.css';
 ---
 
 <!doctype html>
@@ -7,9 +8,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Font cssVariable="--font-archivo" preload />
+    <Font cssVariable="--font-source-serif" />
     <title>Moovworks</title>
   </head>
   <body>
-    <p>Scaffold.</p>
+    <p class="shell">Scaffold.</p>
   </body>
 </html>

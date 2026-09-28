@@ -36,6 +36,19 @@ export const LEGAL_SLUG = {
 /** Only used for og:locale / og:locale:alternate. */
 export const OG_LOCALE = { 'pt-BR': 'pt_BR', 'pt-PT': 'pt_PT', en: 'en_US' };
 
+/**
+ * The Basic Latin range both self-hosted subsets are cut to. Declared on the
+ * @font-face rules so a browser never downloads a font it will not use.
+ * `scripts/fetch-fonts.mjs` verifies this still matches upstream.
+ */
+export const LATIN_UNICODE_RANGE =
+  'U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, ' +
+  'U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, ' +
+  'U+2212, U+2215, U+FEFF, U+FFFD';
+
+/** Astro wants the range as a list, not as a single comma-joined string. */
+export const LATIN_UNICODE_RANGES = LATIN_UNICODE_RANGE.split(', ');
+
 export const homePath = (locale) => `/${HOME_SLUG[locale]}/`;
 
 export const legalPath = (locale, kind) =>
