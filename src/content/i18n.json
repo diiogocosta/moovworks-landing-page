@@ -1,0 +1,112 @@
+{
+  "pt-BR": {
+    "meta": {
+      "title": "Moovworks — No more AI bullshit",
+      "description": "Soluções sob medida em IA, conversão e formação com resultados. Desde 2011."
+    },
+    "header": { "contact": "Contato" },
+    "hero": {
+      "headline": "No more AI bullshit",
+      "sub": "Soluções sob medida, conversão e formação com resultados.",
+      "cta": "Falar com a Moovworks"
+    },
+    "services": [
+      {
+        "title": "Soluções sob medida em IA",
+        "text": "Sistemas e automações desenhados em torno do seu processo. Sem demo bonita que nunca vai para produção."
+      },
+      {
+        "title": "Conversão",
+        "text": "Funis, páginas e mensuração ligados a resultado. O que não se mede não entra."
+      },
+      {
+        "title": "Formação",
+        "text": "Programas práticos que terminam com gente capaz de fazer o trabalho, não só de repetir."
+      }
+    ],
+    "about": {
+      "headline": "Desde 2011.",
+      "text": "Vimos modas chegarem e irem embora. Ficou o que funciona. Pegamos poucos projetos e levamos cada um até o fim."
+    },
+    "contact": {
+      "headline": "Tem algo para construir?",
+      "email": "contato@moovworks.com",
+      "button": "Enviar e-mail"
+    },
+    "footer": { "privacy": "Privacidade", "terms": "Termos" }
+  },
+
+  "pt-PT": {
+    "meta": {
+      "title": "Moovworks — No more AI bullshit",
+      "description": "Soluções à medida em IA, conversão e formação com resultados. Desde 2011."
+    },
+    "header": { "contact": "Contacto" },
+    "hero": {
+      "headline": "No more AI bullshit",
+      "sub": "Soluções à medida, conversão e formação com resultados.",
+      "cta": "Falar com a Moovworks"
+    },
+    "services": [
+      {
+        "title": "Soluções de IA à medida",
+        "text": "Sistemas e automatizações desenhados em torno do seu processo. Sem demos bonitas que nunca chegam a produção."
+      },
+      {
+        "title": "Conversão",
+        "text": "Funis, páginas e métricas ligados ao resultado. O que não se mede, não entra."
+      },
+      {
+        "title": "Formação",
+        "text": "Programas práticos que terminam com pessoas capazes de fazer o trabalho, e não só de o repetir."
+      }
+    ],
+    "about": {
+      "headline": "Desde 2011.",
+      "text": "Vimos modas chegar e passar. Ficou o que funciona. Aceitamos poucos projetos e levamo-los até ao fim."
+    },
+    "contact": {
+      "headline": "Tem algo para construir?",
+      "email": "contato@moovworks.com",
+      "button": "Enviar email"
+    },
+    "footer": { "privacy": "Privacidade", "terms": "Termos" }
+  },
+
+  "en": {
+    "meta": {
+      "title": "Moovworks — No more AI bullshit",
+      "description": "Custom AI solutions, conversion and training that deliver results. Since 2011."
+    },
+    "header": { "contact": "Contact" },
+    "hero": {
+      "headline": "No more AI bullshit",
+      "sub": "Custom solutions, conversion and training that deliver results.",
+      "cta": "Talk to Moovworks"
+    },
+    "services": [
+      {
+        "title": "Custom AI solutions",
+        "text": "Systems and automations built around your process. No polished demo that never ships."
+      },
+      {
+        "title": "Conversion",
+        "text": "Funnels, pages and measurement tied to outcomes. If it isn't measured, it doesn't ship."
+      },
+      {
+        "title": "Training",
+        "text": "Hands-on programs that leave people able to do the work, not just repeat it."
+      }
+    ],
+    "about": {
+      "headline": "Since 2011.",
+      "text": "We've watched trends arrive and leave. What stayed is what works. We take on few projects and see each one through."
+    },
+    "contact": {
+      "headline": "Got something to build?",
+      "email": "contato@moovworks.com",
+      "button": "Send an email"
+    },
+    "footer": { "privacy": "Privacy", "terms": "Terms" }
+  }
+}

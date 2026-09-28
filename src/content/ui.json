@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "Strings the brief does not cover: accessibility labels and the out-of-scope",
+    "legal stubs. Kept out of i18n.json on purpose so that file stays exactly the",
+    "content source the brief specifies, and nothing else."
+  ],
+
+  "pt-BR": {
+    "skip": "Pular para o conteúdo",
+    "languageNav": "Idioma",
+    "legalPlaceholder": "Em preparação",
+    "backHome": "Voltar ao início"
+  },
+
+  "pt-PT": {
+    "skip": "Saltar para o conteúdo",
+    "languageNav": "Idioma",
+    "legalPlaceholder": "Em preparação",
+    "backHome": "Voltar ao início"
+  },
+
+  "en": {
+    "skip": "Skip to content",
+    "languageNav": "Language",
+    "legalPlaceholder": "In preparation",
+    "backHome": "Back to home"
+  }
+}
