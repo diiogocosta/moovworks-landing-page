@@ -1,0 +1,102 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { t, ui } from '../lib/i18n';
+import { absolute, SITE } from '../lib/site';
+import type { Locale } from '../lib/site';
+import { homeAlternates, openGraphLocales, organizationJsonLd } from '../lib/seo';
+import type { Alternate } from '../lib/seo';
+
+interface Props {
+  locale: Locale;
+  /** Canonical path for this route, e.g. `/pt-br/`. */
+  path: string;
+  /** Defaults to the page's own. */
+  title?: string;
+  description?: string;
+  /** Defaults to the three home pages plus x-default. */
+  alternates?: Alternate[];
+}
+
+const { locale, path, alternates } = Astro.props;
+const dict = t(locale);
+
+const title = Astro.props.title ?? dict.meta.title;
+const description = Astro.props.description ?? dict.meta.description;
+const canonical = absolute(path);
+const ogImage = absolute('/og.png');
+const og = openGraphLocales(locale);
+const links = alternates ?? homeAlternates();
+const jsonLd = organizationJsonLd(locale, description);
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#e3e4df" />
+
+    <Font cssVariable="--font-archivo" preload />
+    <Font cssVariable="--font-source-serif" />
+
+    {
+      links.map((link) => (
+        <link rel="alternate" hreflang={link.hreflang} href={link.href} />
+      ))
+    }
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={og.primary} />
+    {
+      og.alternates.map((alternate) => (
+        <meta property="og:locale:alternate" content={alternate} />
+      ))
+    }
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <script is:inline>
+      (function () {
+        // The hero sequence is pure CSS, so it needs no loading logic. This
+        // flag only decides whether the buzzword markup is drawn at all: with
+        // no scripting the field is never rendered and the hero opens clean.
+        document.documentElement.classList.add('js');
+
+        document.addEventListener('click', function (event) {
+          var target = event.target;
+          if (!target || !target.closest) return;
+          var link = target.closest('a[data-lang]');
+          if (!link) return;
+          try {
+            localStorage.setItem('moovworks:lang', link.getAttribute('data-lang'));
+          } catch (error) {
+            /* storage blocked — the choice is simply not remembered */
+          }
+        });
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">{ui(locale).skip}</a>
+    <slot />
+  </body>
+</html>

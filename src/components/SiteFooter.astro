@@ -1,0 +1,61 @@
+---
+import { t } from '../lib/i18n';
+import { legalPath } from '../lib/site';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+// Generated at build time, never written by hand — it must not go stale.
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell site-footer__inner">
+    <p class="copyright">&copy; {year} Moovworks</p>
+
+    <ul class="legal">
+      <li>
+        <a class="link" href={legalPath(locale, 'privacy')}>{dict.footer.privacy}</a>
+      </li>
+      <li>
+        <a class="link" href={legalPath(locale, 'terms')}>{dict.footer.terms}</a>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 2rem;
+    padding-block: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .copyright,
+  .legal {
+    font-family: var(--font-display);
+    /* Sentence case throughout: no tracked ALL CAPS labels. */
+    font-size: var(--step-detail);
+    font-weight: 500;
+    color: var(--aco);
+  }
+
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  .legal a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+</style>

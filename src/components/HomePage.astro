@@ -1,0 +1,31 @@
+---
+import About from './About.astro';
+import Contact from './Contact.astro';
+import Hero from './Hero.astro';
+import Services from './Services.astro';
+import SiteFooter from './SiteFooter.astro';
+import SiteHeader from './SiteHeader.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { homePath } from '../lib/site';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<BaseLayout locale={locale} path={homePath(locale)}>
+  <SiteHeader locale={locale} />
+
+  <main id="main">
+    <Hero locale={locale} />
+    <Services locale={locale} />
+    {/* Future products slot in here, between Services and About. */}
+    <About locale={locale} />
+    <Contact locale={locale} />
+  </main>
+
+  <SiteFooter locale={locale} />
+</BaseLayout>

@@ -1,0 +1,76 @@
+---
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { t } from '../lib/i18n';
+import { homePath } from '../lib/site';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+<header class="site-header">
+  <div class="shell site-header__inner">
+    <a class="wordmark" href={homePath(locale)}>moovworks</a>
+
+    <div class="site-header__end">
+      <a class="contact-link" href="#contact">{dict.header.contact}</a>
+      <LanguageSwitcher locale={locale} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding-block: var(--header-block);
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    /* Archivo set wide and lowercase: the wordmark is a name, not a label. */
+    font-size: 1.25rem;
+    font-weight: 700;
+    font-stretch: 100%;
+    letter-spacing: -0.03em;
+    color: var(--tinta);
+    transition: background-color var(--transition);
+  }
+
+  .wordmark:hover {
+    background-color: var(--marcador);
+  }
+
+  .site-header__end {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
+  }
+
+  .contact-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-display);
+    font-size: var(--step-detail);
+    font-weight: 500;
+    color: var(--aco);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.22em;
+    transition: background-color var(--transition), color var(--transition);
+  }
+
+  .contact-link:hover {
+    color: var(--tinta);
+    background-color: var(--marcador);
+  }
+</style>
