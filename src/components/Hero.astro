@@ -1,0 +1,243 @@
+---
+import {
+  BUZZWORDS,
+  FIELD_CLEAR_DELAY_MS,
+  FIELD_CLEAR_DURATION_MS,
+  STROKE_CASCADE_START_MS,
+  STROKE_CASCADE_STEP_MS,
+  STROKE_DURATION_MS,
+} from '../content/buzzwords';
+import type { Buzzword } from '../content/buzzwords';
+import { t } from '../lib/i18n';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+
+/**
+ * The whole sequence is timed from data, not from hand-written CSS delays, so
+ * the cascade stays even if the word list changes length.
+ */
+const styleFor = (word: Buzzword, index: number) => {
+  const properties = [
+    `--x:${word.x}%`,
+    `--y:${word.y}%`,
+    `--s:${word.size}rem`,
+    `--d:${STROKE_CASCADE_START_MS + index * STROKE_CASCADE_STEP_MS}ms`,
+  ];
+
+  if (word.compact) {
+    properties.push(
+      `--cx:${word.compact.x}%`,
+      `--cy:${word.compact.y}%`,
+      `--cs:${word.compact.size}rem`,
+    );
+  }
+
+  return properties.join(';');
+};
+
+const timings = [
+  `--stroke-duration:${STROKE_DURATION_MS}ms`,
+  `--clear-delay:${FIELD_CLEAR_DELAY_MS}ms`,
+  `--clear-duration:${FIELD_CLEAR_DURATION_MS}ms`,
+].join(';');
+---
+
+<section class="hero" aria-labelledby="hero-headline" style={timings}>
+  <div class="shell hero__inner">
+    {/*
+      Decorative and timed: hidden from assistive tech, unable to receive
+      events, and removed entirely when there is no JS or motion is not wanted.
+      Absolutely positioned so it can never cause layout shift.
+    */}
+    <div class="hero__field" aria-hidden="true">
+      {
+        BUZZWORDS.map((word, index) => (
+          <span
+            class:list={['buzz', word.compact && 'buzz--compact']}
+            style={styleFor(word, index)}
+          >
+            <span class="buzz__text">{word.text}</span>
+          </span>
+        ))
+      }
+    </div>
+
+    <h1 class="hero__headline" id="hero-headline">
+      <span class="hero__line">No more</span>
+      {' '}
+      <span class="hero__line">AI&nbsp;bullshit</span>
+    </h1>
+
+    <div class="hero__foot">
+      <p class="hero__sub">{dict.hero.sub}</p>
+      <a class="btn hero__cta" href="#contact">{dict.hero.cta}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    /* The word field lives in the space above the headline. The clip keeps a
+       wide buzzword from ever producing a horizontal scrollbar. */
+    overflow: clip;
+  }
+
+  .hero__inner {
+    position: relative;
+    /* Must stay comfortably taller than the field box: the words hang below it.
+       The two clamps are picked so the gap never closes between 320px and 2560px. */
+    padding-block-start: clamp(8rem, 14vw, 12rem);
+    padding-block-end: var(--section-gap);
+  }
+
+  /* ---- Buzzword field ------------------------------------------------- */
+
+  .hero__field {
+    position: absolute;
+    /* `--gutter` because .shell's padding box includes its own gutters. */
+    inset-inline: var(--gutter);
+    inset-block-start: clamp(0.5rem, 2vw, 2rem);
+    height: clamp(5.5rem, 10vw, 9rem);
+    pointer-events: none;
+    animation: field-clear var(--clear-duration) ease-in var(--clear-delay) forwards;
+  }
+
+  .buzz {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    font-family: var(--font-display);
+    font-size: var(--s);
+    font-weight: 500;
+    font-stretch: 90%;
+    line-height: 1;
+    white-space: nowrap;
+    color: var(--aco);
+    /* Establishes the stacking context the marker tucks behind. */
+    isolation: isolate;
+  }
+
+  .buzz__text {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* The marker stroke. Drawn, not faded: scaleX from the left edge, with the
+     slight rotation of a hand pulling a chisel tip across paper. */
+  .buzz::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    inset-inline: -0.4em;
+    inset-block-start: 50%;
+    height: 0.9em;
+    margin-block-start: -0.45em;
+    background-color: var(--marcador);
+    transform: rotate(-1.5deg) scaleX(0);
+    transform-origin: 0% 50%;
+    animation: marker-stroke var(--stroke-duration) cubic-bezier(0.2, 0.7, 0.2, 1) var(--d) both;
+  }
+
+  @keyframes marker-stroke {
+    from {
+      transform: rotate(-1.5deg) scaleX(0);
+    }
+    to {
+      transform: rotate(-1.5deg) scaleX(1);
+    }
+  }
+
+  @keyframes field-clear {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* ---- Headline ------------------------------------------------------- */
+
+  .hero__headline {
+    font-size: var(--step-hero);
+    /* Always Archivo 800, always condensed, always ink. The headline is the
+       one thing on the page that is never animated, tinted or emphasised. */
+    font-weight: 800;
+    font-stretch: 85%;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    color: var(--tinta);
+  }
+
+  .hero__line {
+    display: block;
+  }
+
+  /* ---- Subtitle and call to action ------------------------------------ */
+
+  .hero__foot {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(1rem, 2vw, 2rem);
+    row-gap: clamp(1.5rem, 4vw, 2rem);
+    align-items: end;
+    margin-block-start: clamp(2rem, 5vw, 4rem);
+  }
+
+  .hero__sub {
+    grid-column: 1 / span 5;
+    color: var(--tinta);
+  }
+
+  .hero__cta {
+    grid-column: 8 / -1;
+    justify-self: end;
+  }
+
+  /* ---- No motion, or no JS: the hero opens clean ---------------------- */
+
+  html:not(.js) .hero__field {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__field {
+      display: none;
+    }
+  }
+
+  /* ---- Narrow --------------------------------------------------------- */
+
+  @media (max-width: 767px) {
+    /* Only the five words with a compact placement are drawn; the rest are
+       the long ones, which would not fit a single column. */
+    .buzz:not(.buzz--compact) {
+      display: none;
+    }
+
+    .buzz--compact {
+      left: var(--cx);
+      top: var(--cy);
+      font-size: var(--cs);
+    }
+
+    .hero__foot {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hero__sub,
+    .hero__cta {
+      grid-column: 1 / -1;
+      justify-self: stretch;
+    }
+
+    .hero__cta {
+      width: 100%;
+    }
+  }
+</style>
