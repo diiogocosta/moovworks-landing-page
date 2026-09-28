@@ -33,6 +33,14 @@ export const LEGAL_SLUG = {
   en: { privacy: 'privacy', terms: 'terms' },
 };
 
+export const LEGAL_KINDS = ['privacy', 'terms'];
+
+/**
+ * While these routes only say "em preparação" they are `noindex` and left out
+ * of the sitemap. Set this to true in the same change that adds the real text.
+ */
+export const LEGAL_PUBLISHED = false;
+
 /** Only used for og:locale / og:locale:alternate. */
 export const OG_LOCALE = { 'pt-BR': 'pt_BR', 'pt-PT': 'pt_PT', en: 'en_US' };
 

@@ -1,0 +1,86 @@
+---
+/**
+ * The privacy and terms stubs.
+ *
+ * Deliberately outside the design scope: plain type on the concrete surface,
+ * with a clear "in preparation" note rather than invented legal text. They are
+ * `noindex` and kept out of the sitemap while that is true — flip
+ * LEGAL_PUBLISHED in site.config.mjs in the same change that adds real copy.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import { t, ui } from '../../lib/i18n';
+import { legalAlternates } from '../../lib/seo';
+import {
+  LEGAL_KINDS,
+  LEGAL_PUBLISHED,
+  LOCALES,
+  homePath,
+  legalPath,
+  legalSlugFor,
+  slugFor,
+} from '../../lib/site';
+import type { LegalKind, Locale } from '../../lib/site';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    LEGAL_KINDS.map((kind) => ({
+      params: { locale: slugFor(locale), page: legalSlugFor(locale, kind) },
+      props: { locale, kind },
+    })),
+  );
+}
+
+interface Props {
+  locale: Locale;
+  kind: LegalKind;
+}
+
+const { locale, kind } = Astro.props;
+const dict = t(locale);
+const strings = ui(locale);
+const label = kind === 'privacy' ? dict.footer.privacy : dict.footer.terms;
+---
+
+<BaseLayout
+  locale={locale}
+  path={legalPath(locale, kind)}
+  title={`Moovworks — ${label}`}
+  description={strings.legalPlaceholder}
+  alternates={legalAlternates(kind)}
+  noindex={!LEGAL_PUBLISHED}
+>
+  <SiteHeader locale={locale} />
+
+  <main id="main" class="stub">
+    <div class="shell stub__inner">
+      <h1 class="stub__title">{label}</h1>
+      <p class="stub__note">{strings.legalPlaceholder}</p>
+      <p><a class="link" href={homePath(locale)}>{strings.backHome}</a></p>
+    </div>
+  </main>
+
+  <SiteFooter locale={locale} />
+</BaseLayout>
+
+<style>
+  .stub__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1rem, 2.5vw, 1.5rem);
+    /* Shorter than a real section: there is nothing here to give room to. */
+    padding-block: clamp(3rem, 8vw, 6rem) var(--section-gap);
+  }
+
+  .stub__title {
+    font-size: var(--step-block);
+    font-weight: 700;
+    font-stretch: 85%;
+  }
+
+  .stub__note {
+    color: var(--aco);
+  }
+</style>

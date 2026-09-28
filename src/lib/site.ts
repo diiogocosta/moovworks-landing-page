@@ -20,6 +20,8 @@ export const SITE = raw.SITE as {
 export const LOCALES = raw.LOCALES as readonly Locale[];
 export const DEFAULT_LOCALE = raw.DEFAULT_LOCALE as Locale;
 export const OG_LOCALE = raw.OG_LOCALE as Record<Locale, string>;
+export const LEGAL_KINDS = raw.LEGAL_KINDS as readonly LegalKind[];
+export const LEGAL_PUBLISHED = raw.LEGAL_PUBLISHED as boolean;
 export const LANG_LABEL: Record<Locale, string> = {
   'pt-BR': 'PT-BR',
   'pt-PT': 'PT-PT',

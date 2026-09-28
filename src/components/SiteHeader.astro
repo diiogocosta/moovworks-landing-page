@@ -6,10 +6,13 @@ import type { Locale } from '../lib/site';
 
 interface Props {
   locale: Locale;
+  /** On the home page the contact link is an in-page anchor, not a jump home. */
+  home?: boolean;
 }
 
-const { locale } = Astro.props;
+const { locale, home = false } = Astro.props;
 const dict = t(locale);
+const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
 ---
 
 <header class="site-header">
@@ -17,7 +20,7 @@ const dict = t(locale);
     <a class="wordmark" href={homePath(locale)}>moovworks</a>
 
     <div class="site-header__end">
-      <a class="contact-link" href="#contact">{dict.header.contact}</a>
+      <a class="contact-link" href={contactHref}>{dict.header.contact}</a>
       <LanguageSwitcher locale={locale} />
     </div>
   </div>
