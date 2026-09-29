@@ -1,5 +1,5 @@
 ---
-import { t } from '../lib/i18n';
+import { a, t } from '../lib/i18n';
 import type { Locale } from '../lib/site';
 
 interface Props {
@@ -8,20 +8,26 @@ interface Props {
 
 const { locale } = Astro.props;
 const dict = t(locale);
+const authored = a(locale);
 ---
 
-{/*
-  No section heading of its own: the three service names are the headings. The
-  brief supplies no copy for a section title, and inventing "# What we do"
-  would be exactly the kind of filler the page is arguing against.
-*/}
-<section class="services" id="services">
+<section class="services section" id="services">
   <div class="shell">
-    <ul class="services__list">
+    <header class="section__head reveal">
+      <h2 class="section__title">{authored.sections.services}</h2>
+      <span class="section__rule" aria-hidden="true"></span>
+    </header>
+
+    {/*
+      One raised panel holding three hairline-separated rows, rather than three
+      identical cards. Same depth, but it keeps the reading order vertical and
+      avoids the grid-of-rounded-boxes look the brief calls out as generated.
+    */}
+    <ul class="services__list reveal">
       {
         dict.services.map((service) => (
           <li class="services__item">
-            <h2 class="services__title">{service.title}</h2>
+            <h3 class="services__title">{service.title}</h3>
             <p class="services__text">{service.text}</p>
           </li>
         ))
@@ -31,22 +37,49 @@ const dict = t(locale);
 </section>
 
 <style>
-  .services {
-    padding-block-end: var(--section-gap);
+  .services__list {
+    padding-inline: var(--panel-pad);
+    background-color: var(--papel-alto);
+    border: var(--hairline);
+    border-radius: var(--radius);
   }
 
   .services__item {
+    position: relative;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(1rem, 2vw, 2rem);
     row-gap: 0.75rem;
-    padding-block: clamp(1.5rem, 3vw, 2.5rem);
-    /* The only dividers on the site: hairlines between list items. */
+    padding-block: clamp(2rem, 4.5vw, 3.5rem);
     border-block-start: var(--hairline);
   }
 
-  .services__item:last-child {
-    border-block-end: var(--hairline);
+  /* The panel's own edge replaces the first row's divider. */
+  .services__item:first-child {
+    border-block-start: 0;
+  }
+
+  /*
+   * The marker again, drawn from the left along the row's top edge — the same
+   * left-to-right gesture as the hero, at a fraction of the scale. Painted over
+   * the existing hairline, so nothing moves and nothing reflows.
+   */
+  .services__item::before {
+    content: '';
+    position: absolute;
+    inset-inline: calc(var(--panel-pad) * -1);
+    inset-block-start: -1px;
+    height: 3px;
+    background-color: var(--marcador);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--transition-slow);
+  }
+
+  @media (hover: hover) {
+    .services__item:hover::before {
+      transform: scaleX(1);
+    }
   }
 
   .services__title {

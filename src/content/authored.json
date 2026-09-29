@@ -1,0 +1,76 @@
+{
+  "_comment": [
+    "Copy authored for this build. None of this is in the brief's copy deck, so it",
+    "lives here rather than in i18n.json, which stays byte-for-byte the source the",
+    "brief specifies.",
+    "",
+    "The principles are deliberately opinion, not evidence: three things Moovworks",
+    "does not do, each a restatement of a promise already made in the deck (no demo",
+    "that never ships, nothing unmeasured, few projects seen through). No numbers,",
+    "no clients, no testimonials - the brief forbids inventing any of them, and a",
+    "page arguing against hype cannot open with fabricated proof."
+  ],
+
+  "pt-BR": {
+    "sections": {
+      "services": "O que fazemos",
+      "principles": "Três coisas que não fazemos"
+    },
+    "principles": [
+      {
+        "title": "Sem demo",
+        "text": "Nada que não vá para produção. O protótipo é o primeiro passo, não o entregável."
+      },
+      {
+        "title": "Sem vaidade",
+        "text": "Só entra o que dá para medir. O que não move o resultado fica fora do escopo."
+      },
+      {
+        "title": "Sem metade",
+        "text": "Poucos projetos ao mesmo tempo, e cada um vai até o fim."
+      }
+    ]
+  },
+
+  "pt-PT": {
+    "sections": {
+      "services": "O que fazemos",
+      "principles": "Três coisas que não fazemos"
+    },
+    "principles": [
+      {
+        "title": "Sem demo",
+        "text": "Nada que não chegue a produção. O protótipo é o primeiro passo, não o entregável."
+      },
+      {
+        "title": "Sem vaidade",
+        "text": "Só entra o que se pode medir. O que não move o resultado fica fora do âmbito."
+      },
+      {
+        "title": "Sem metade",
+        "text": "Poucos projetos ao mesmo tempo, e cada um vai até ao fim."
+      }
+    ]
+  },
+
+  "en": {
+    "sections": {
+      "services": "What we do",
+      "principles": "Three things we don't do"
+    },
+    "principles": [
+      {
+        "title": "No demo",
+        "text": "Nothing that won't ship. A prototype is the first step, not the deliverable."
+      },
+      {
+        "title": "No vanity",
+        "text": "Only what can be measured gets in. If it doesn't move the outcome, it's out of scope."
+      },
+      {
+        "title": "No half",
+        "text": "Few projects at a time, and each one runs to the end."
+      }
+    ]
+  }
+}

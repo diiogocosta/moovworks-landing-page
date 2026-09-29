@@ -1,0 +1,86 @@
+---
+import { a } from '../lib/i18n';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const authored = a(locale);
+---
+
+{/*
+  The page's argument, stated positively: three things Moovworks does not do.
+
+  Every line restates a promise already made in the copy deck — no demo that
+  never ships, nothing unmeasured, few projects seen through — so nothing here
+  is a new claim. It carries no numbers and no client names, because the brief
+  forbids inventing either, and a page arguing against hype cannot open its
+  proof section with fabricated proof.
+*/}
+<section class="principles section on-ink" id="principles">
+  <div class="shell">
+    <header class="section__head reveal">
+      <h2 class="section__title">{authored.sections.principles}</h2>
+      <span class="section__rule" aria-hidden="true"></span>
+    </header>
+
+    <ul class="principles__list reveal-group">
+      {
+        authored.principles.map((item) => (
+          <li class="principles__item reveal">
+            <h3 class="principles__title">{item.title}</h3>
+            <p class="principles__text">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  /*
+   * Runs straight into the About band below, which is also ink — together they
+   * read as one dark chapter rather than two, so this half hands its bottom
+   * spacing to the section that follows.
+   */
+  .principles {
+    padding-block: var(--section-gap) 0;
+  }
+
+  .principles__list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(1.75rem, 4vw, 3.5rem);
+  }
+
+  .principles__item {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    padding-block-start: clamp(1.5rem, 3vw, 2.25rem);
+    /* A lighter hairline than on concrete: `--nevoa` disappears against ink. */
+    border-block-start: 1px solid var(--tinta-borda);
+  }
+
+  .principles__title {
+    font-size: var(--step-principle);
+    font-weight: 800;
+    font-stretch: 80%;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+  }
+
+  /* `--aco` is 2.25:1 here, so the body sits in dimmed paper instead. */
+  .principles__text {
+    color: var(--papel-suave);
+  }
+
+  @media (max-width: 900px) {
+    .principles__list {
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(1.25rem, 4vw, 2rem);
+    }
+  }
+</style>
