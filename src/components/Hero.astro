@@ -48,7 +48,13 @@ const timings = [
 ].join(';');
 ---
 
-<section class="hero" aria-labelledby="hero-headline" style={timings}>
+<section class="hero" aria-labelledby="hero-headline" style={timings} data-hero>
+  {/*
+    The sculpture's canvas. Decorative and inert: the real headline is the <h1>
+    below, and this is only ever revealed after it has drawn a frame.
+  */}
+  <canvas class="hero__gl" data-hero-gl aria-hidden="true"></canvas>
+
   <div class="shell hero__inner">
     {/*
       Decorative and timed: hidden from assistive tech, unable to receive
@@ -81,15 +87,55 @@ const timings = [
   </div>
 </section>
 
+<script>
+  import { initHero3D } from '../scripts/hero-3d';
+
+  // Fired and forgotten: the page is complete whether or not this resolves, and
+  // the module itself bows out without WebGL or when motion is not wanted.
+  void initHero3D();
+</script>
+
 <style>
   .hero {
     /* The word field lives in the space above the headline. The clip keeps a
        wide buzzword from ever producing a horizontal scrollbar. */
+    position: relative;
     overflow: clip;
+  }
+
+  /* ---- The sculpture canvas -------------------------------------------
+   * Sits under the hero's content so the buzzwords read as the foreground, and
+   * is not interactive: the links below it stay clickable.
+   */
+  .hero__gl {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 700ms linear;
+  }
+
+  /*
+   * Set by the script only once it has drawn a frame. Until then the headline is
+   * ordinary text. `opacity: 0` rather than `visibility: hidden` or
+   * `display: none`, deliberately: the heading must stay in the accessibility
+   * tree and stay legible to crawlers even while the canvas is showing it.
+   */
+  .hero.is-gl .hero__gl {
+    opacity: 1;
+  }
+
+  .hero.is-gl .hero__headline {
+    opacity: 0;
   }
 
   .hero__inner {
     position: relative;
+    /* Above the canvas, so the struck-out buzzwords stay in front of the type. */
+    z-index: 1;
     /* Must stay comfortably taller than the field box: the words hang below it.
        The two clamps are picked so the gap never closes between 320px and 2560px. */
     padding-block-start: clamp(8rem, 14vw, 12rem);
