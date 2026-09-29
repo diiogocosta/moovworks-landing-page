@@ -32,7 +32,7 @@ Node **20.3+** (the scripts use `import.meta.dirname`; the project is developed 
 ```bash
 npm install
 npm run dev       # local server
-npm run build     # static output in dist/
+npm run build     # astro build, then verify-build  (static output in dist/)
 npm run preview   # serve dist/ exactly as a host would
 npm run check     # type check (astro check)
 
@@ -41,6 +41,9 @@ npm run mesh          # re-bake the hero type geometry       (needs network on f
 npm run mesh:preview  # render the baked mesh to a PNG      (no browser)
 npm run assets        # regenerate favicon.svg + og.png     (needs network on first run)
 ```
+
+`build` runs `scripts/verify-build.mjs` afterwards, because two things about this
+build fail *silently*. It is not optional — see "Guards" below.
 
 The four maintenance commands are not build steps. Their inputs are cached under
 `.cache/` and their outputs committed, so day-to-day work never needs any of them.
@@ -55,6 +58,7 @@ a mistake in the renderer in about two seconds.
 site.config.mjs          domain, contact address, founding year, route slugs, unicode range
 astro.config.mjs         Astro config, including the font pipeline
 src/content/i18n.json    the copy deck, exactly as the brief specifies it
+src/content/authored.json section headings and the principles band (written for this build)
 src/content/ui.json      strings the brief does not cover (skip link, legal placeholders)
 src/content/buzzwords.ts the hero's buzzword field: text, anchors, sizes, timings
 src/lib/site.ts          typed facade over site.config.mjs
@@ -67,7 +71,7 @@ src/scripts/hero-3d.ts   the WebGL sculpture
 src/assets/type/         the baked hero mesh (generated — do not edit)
 src/pages/index.astro    the Accept-Language signpost at /
 src/pages/[locale]/      /pt-br/, /pt-pt/, /en/ and the legal stubs
-scripts/                 font fetching, mesh baking, asset generation
+scripts/                 font fetching, mesh baking, asset generation, build verification
 ```
 
 ### Adding a fourth language
@@ -148,6 +152,25 @@ legible to crawlers while the canvas shows it.
 
 Places where the brief allowed a judgement call, and what was chosen:
 
+- **The page was restructured towards how market-leading pages read, not how they look.**
+  Hotmart's home is legible because it is *chaptered*: a clear hero, a mid-page band, real
+  section headings, a proper close. What makes it feel rich is mostly proof — "+250 mil
+  negócios", named creators, star ratings — and none of that can be copied here, because
+  the brief forbids invented numbers and testimonials and a page arguing against hype
+  cannot open with fabricated proof. So what was taken is the structure: section heads, a
+  sticky header, scroll reveals, depth, and a real footer.
+- **Section headings were added, and a "three things we don't do" band.** Both are copy
+  written for this build, which is why they live in `src/content/authored.json` rather than
+  in `i18n.json`. Every line of the band restates a promise already in the deck — no demo
+  that never ships, nothing unmeasured, few projects seen through — so it states a position
+  rather than making a new claim. It is the one section with no numbers and no names.
+- **Services is one raised panel of three rows, not three cards.** Same depth, but the
+  reading order stays vertical and it avoids the grid of identical rounded boxes the brief
+  calls out as a generated-page tell.
+- **The marker now also draws under section titles and along a service row's divider.**
+  The brief restricted it to the hero, the button, focus and link underlines; extending it
+  to a hairline rule is what ties the page's chapters back to the hero's gesture. It is
+  still never used as a text colour, because it does not contrast on `--concreto`.
 - **The hero is rendered by our own ~4 KB WebGL layer, not by a 3D library.** three.js
   bundles to ~180 KB gzipped for any scene that touches `WebGLRenderer`, which is more
   than the entire rest of the page. Baking the geometry at build time and shading it with
@@ -200,13 +223,45 @@ Set the real origin in `site.config.mjs` before the first deploy — canonical U
 `hreflang`, Open Graph and `sitemap.xml` are all derived from it. The contact address is
 a placeholder in the same file and is used by every `mailto:` and by the JSON-LD.
 
+## How the page reveals
+
+Sections fade and rise as they enter the viewport, and the header turns from transparent
+to a solid bar. Both are **CSS scroll-driven animations** — `animation-timeline: view()`
+and `scroll(root)` — so there is no IntersectionObserver, no scroll listener, and no
+JavaScript involved at all.
+
+That choice is not about saving bytes. A scripted reveal has to hide its content *first*,
+so a blocked bundle or a parse error leaves a blank page. Here, a browser without
+`animation-timeline` applies no animation and simply shows the content: the failure mode
+is "no animation", never "no page".
+
+Stagger inside a group is written as `nth-child` rules rather than `calc()` over a custom
+property, because `animation-range` does not accept `calc()` reliably and a dropped
+declaration would disable the stagger silently.
+
+### The catch
+
+**Do not write the `animation` shorthand and `animation-timeline` in the same rule.**
+Astro's style compiler folds them together, emitting
+
+```css
+animation: linear both reveal-in view();
+```
+
+which Chromium rejects — `CSS.supports('animation', '… view()')` is `false` — so the whole
+declaration is dropped and every scroll-driven rule dies. It is invisible in `astro dev`,
+which does not transform the CSS, and it takes the sticky header down with it.
+
+Writing the animation as longhands avoids it, and `scripts/verify-build.mjs` fails the
+build if the folded form ever reappears or the enhancements vanish.
+
 ## What was verified
 
 Measured against the built output, not assumed:
 
-- **Home page view is 131 KB gzipped** — 5.4 KB HTML with the stylesheet inlined, 108 KB
+- **Home page view is ~131 KB gzipped** — 5.4 KB HTML with the stylesheet inlined, 108 KB
   of fonts, 14 KB of baked mesh, 4 KB of renderer code. Under the original 150 KB budget,
-  and well under the revised 200 KB one. `og.png` is a further 29 KB but is crawler-only;
+  and well under the revised 200 KB one. `og.png` is a further 33 KB but is crawler-only;
   it is never fetched on a page view.
 - **The 3D never blocks the first paint.** No 3D library ships to the client at all, and
   the mesh is fetched only after the DOM headline has been painted, so the LCP element is
@@ -216,18 +271,41 @@ Measured against the built output, not assumed:
   the near face of a 17px extrusion projects slightly wider than the far one.
 - **Pointer parallax and damping work**: yaw reaches ±0.0526 of a ±0.055 limit, pitch
   ±0.025 of ±0.028, and both settle back to zero on pointer-leave.
-- **All four opt-outs hold**: reduced motion, no JavaScript, no WebGL, and a renderer
-  failure each leave the real headline visible with the canvas never revealed.
-- **No horizontal scroll and no collisions** between the buzzword field, the headline and
-  the call to action at 320, 360, 375, 414, 480, 600, 767, 768, 900, 1024, 1100, 1280,
-  1440, 1920 and 2560 px. Five buzzwords below 768 px, nine above.
-- **Contrast passes** on every text node in the page (AA, accounting for size and weight).
-- **No touch target below 44×44 px.**
-- **Focus rings**: 3px `--tinta` on the concrete surface, `--marcador` inside the ink
-  band.
+- **The reveals actually animate**, rather than merely sitting visible: a section measures
+  opacity 0 at the top of the page, 0 while approaching, and 1 as it arrives.
+- **The header goes from transparent to `--concreto` with its shadow** once scrolled, and
+  back to transparent at the top.
+- **No horizontal scroll and nothing overflowing**, verified at *true* CSS widths of 318,
+  358, 414, 478, 600, 768, 900, 1024, 1100, 1280, 1440 and 1920 px. Five buzzwords below
+  768 px, nine above; the principles go 1 → 3 columns at 900 px; the footer 1 → 2 → 3
+  columns at 560 and 900 px.
+- **Contrast passes on all 50 text nodes** (AA, compositing translucent colours over their
+  real backgrounds), and **no target is below 44×44 px**.
+- **Focus rings**: 3px `--tinta` on the concrete surface, `--marcador` inside the ink band.
+- **Reduced motion** shows every section immediately and leaves the header solid, with no
+  animations attached at all.
+- **No JavaScript** still reveals sections on scroll, because the animation is pure CSS.
 - **The language signpost** resolves correctly for a stored choice, `pt-PT`, `pt`, `en-GB`,
   `pt-BR`, and an unsupported language (falls back to pt-BR).
-- **`astro check` is clean**: 25 files, 0 errors, 0 warnings.
+- **`astro check` is clean**: 27 files, 0 errors, 0 warnings.
+
+> A note on the environment: the integrated browser applies a zoom factor, so
+> `setViewportSize(320)` was really laying out at ~381px. The width sweep above converges
+> on the requested CSS width before measuring, which is why those numbers are trustworthy
+> and the first pass at this was not.
+
+### Guards
+
+Two steps in this build fail silently, so both are asserted rather than trusted:
+
+| Guard | Catches | Where |
+| --- | --- | --- |
+| Coordinate-span and triangle-area checks | A bad font bake, which renders as plausible-looking slabs | `scripts/bake-hero-mesh.mjs` |
+| `npm run build` → `verify-build.mjs` | The folded `animation` shorthand, and any scroll-driven rule that has gone missing | `scripts/verify-build.mjs` |
+
+Both exist because they were written *after* the bug bit, not before: the bake produced
+plausible numbers that drew as slabs, and the minifier dropped every scroll-driven rule in
+production while dev looked perfect.
 
 ### Guards that keep the bake honest
 
