@@ -27,6 +27,51 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
 </header>
 
 <style>
+  /*
+   * Sticky, and transparent where it overlaps the hero so the sculpture reads
+   * edge to edge. It only becomes a solid bar once the page has scrolled past
+   * the headline, which is when it stops being part of the hero and starts
+   * being chrome.
+   *
+   * Driven by a scroll timeline rather than a scroll listener: no script, no
+   * event handler, and it stays in step with the compositor instead of the main
+   * thread. Where `animation-timeline` is unsupported the bar is simply always
+   * solid, which is a perfectly good header.
+   */
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 60;
+    background-color: var(--concreto);
+    border-block-end: 1px solid var(--nevoia);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .site-header {
+        background-color: transparent;
+        border-block-end-color: transparent;
+        /* Longhands, never the `animation` shorthand — the build folds the
+           timeline into the shorthand and Chromium then rejects the whole
+           declaration. See the note in src/styles/global.css. */
+        animation-name: header-solid;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root);
+        /* Settles well before the headline has left the viewport. */
+        animation-range: 40px 180px;
+      }
+    }
+  }
+
+  @keyframes header-solid {
+    to {
+      background-color: var(--concreto);
+      border-block-end-color: var(--nevoia);
+      box-shadow: var(--sombra);
+    }
+  }
+
   .site-header__inner {
     display: flex;
     flex-wrap: wrap;
