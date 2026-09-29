@@ -9,20 +9,23 @@
     "skip": "Pular para o conteúdo",
     "languageNav": "Idioma",
     "legalPlaceholder": "Em preparação",
-    "backHome": "Voltar ao início"
+    "backHome": "Voltar ao início",
+    "toTop": "Voltar ao topo"
   },
 
   "pt-PT": {
     "skip": "Saltar para o conteúdo",
     "languageNav": "Idioma",
     "legalPlaceholder": "Em preparação",
-    "backHome": "Voltar ao início"
+    "backHome": "Voltar ao início",
+    "toTop": "Voltar ao topo"
   },
 
   "en": {
     "skip": "Skip to content",
     "languageNav": "Language",
     "legalPlaceholder": "In preparation",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "toTop": "Back to top"
   }
 }

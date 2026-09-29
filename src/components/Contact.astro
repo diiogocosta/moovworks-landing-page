@@ -12,13 +12,18 @@ const dict = t(locale);
 const mailto = `mailto:${SITE.email}`;
 ---
 
-<section class="contact" id="contact">
-  <div class="shell contact__inner">
-    <h2 class="contact__headline">{dict.contact.headline}</h2>
+<section class="contact section" id="contact">
+  <div class="shell">
+    <header class="section__head reveal">
+      <h2 class="section__title">{dict.contact.headline}</h2>
+      <span class="section__rule" aria-hidden="true"></span>
+    </header>
 
-    <a class="contact__email" href={mailto}>{SITE.email}</a>
-
-    <a class="btn" href={mailto}>{dict.contact.button}</a>
+    <div class="contact__inner reveal">
+      {/* The address carries a title's weight, with the marker on its underline. */}
+      <a class="contact__email" href={mailto}>{SITE.email}</a>
+      <a class="btn contact__cta" href={mailto}>{dict.contact.button}</a>
+    </div>
   </div>
 </section>
 
@@ -27,18 +32,9 @@ const mailto = `mailto:${SITE.email}`;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(1.25rem, 3vw, 2rem);
-    padding-block: var(--section-gap);
+    gap: clamp(1.75rem, 4vw, 2.75rem);
   }
 
-  .contact__headline {
-    font-size: var(--step-block);
-    font-weight: 700;
-    font-stretch: 85%;
-  }
-
-  /* The address carries a title's weight, with the marker on its underline and
-     on hover, like every other link on the page. */
   .contact__email {
     max-width: 100%;
     font-family: var(--font-display);
@@ -57,6 +53,14 @@ const mailto = `mailto:${SITE.email}`;
 
   .contact__email:hover {
     text-decoration-thickness: 0.16em;
+  }
+
+  /* The one shadow in the page's content: the closing action sits above the
+     surface rather than in it. */
+  .contact__cta {
+    padding: 1.15rem 2.25rem;
+    font-size: 1.0625rem;
+    box-shadow: var(--sombra);
   }
 
   @media (max-width: 767px) {
