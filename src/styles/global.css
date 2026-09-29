@@ -66,6 +66,14 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   background-color: var(--concreto);
+  /* So a jump to #contact does not land under the sticky header. */
+  scroll-padding-block-start: 6rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -173,6 +181,23 @@ p {
   text-decoration-color: var(--marcador);
 }
 
+/* On the ink surface the steel secondary colour is only 2.25:1, so detail links
+   switch to paper there. */
+.on-ink .detail-link {
+  color: var(--papel-suave);
+}
+
+.on-ink .detail-link:hover,
+.on-ink .detail-link:focus-visible,
+.on-ink .detail-link[aria-current='page'] {
+  color: var(--papel);
+}
+
+/* Hairlines need a lighter tone against ink than against concrete. */
+.on-ink .section__rule {
+  background-color: var(--marcador);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -196,6 +221,110 @@ p {
 .btn:focus-visible {
   color: var(--tinta);
   background-color: var(--marcador);
+}
+
+/* =====================================================================
+   Sections
+   *
+   * Every chapter of the page shares a head: a heading, and a short marker
+   * rule under it. The rule is the only place the accent appears outside the
+   * hero, the button, focus and link underlines.
+   * ===================================================================== */
+
+.section {
+  padding-block: var(--section-gap);
+}
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  margin-block-end: clamp(2.5rem, 7vw, 6rem);
+}
+
+.section__title {
+  max-width: 22ch;
+  font-size: var(--step-section);
+  font-weight: 700;
+  font-stretch: 85%;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.section__rule {
+  width: clamp(2.5rem, 7vw, 5.5rem);
+  height: 3px;
+  background-color: var(--marcador);
+}
+
+/* The ink chapter: the principles and the founding date, continuous. */
+.on-ink {
+  color: var(--papel);
+  background-color: var(--tinta);
+}
+
+/* =====================================================================
+   Reveal on scroll
+   *
+   * Written with CSS scroll-driven animations rather than an
+   * IntersectionObserver, for a reason that matters more than the bytes: a
+   * scripted reveal has to hide its content first, so any failure — a blocked
+   * bundle, a parse error — leaves a blank page. Here, a browser without
+   * `animation-timeline` simply never applies the animation and shows the
+   * content. The failure mode is "no animation", never "no page".
+   * ===================================================================== */
+
+@keyframes reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      /*
+       * Longhands, never the `animation` shorthand. Declaring
+       * `animation: reveal-in linear both` alongside `animation-timeline`
+       * makes the build fold the timeline into the shorthand, emitting
+       * `animation: linear both reveal-in view()` — a form Chromium rejects
+       * outright, which drops the declaration and kills every scroll-driven
+       * rule with no error anywhere. Written this way, it survives.
+       * `scripts/verify-build.mjs` guards it.
+       */
+      animation-name: reveal-in;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* Runs as the element slides in, and is finished before it settles. */
+      animation-range: entry 0% entry 55%;
+    }
+
+    /*
+     * Items in a group start at stepped points, so a row reads as a cascade
+     * rather than switching on all at once. Written as nth-child rather than
+     * computed from a custom property: `animation-range` does not accept
+     * `calc()` reliably across engines, and a dropped declaration here would
+     * silently disable the stagger instead of failing loudly.
+     */
+    .reveal-group > .reveal:nth-child(2) {
+      animation-range: entry 8% entry 63%;
+    }
+
+    .reveal-group > .reveal:nth-child(3) {
+      animation-range: entry 16% entry 71%;
+    }
+
+    .reveal-group > .reveal:nth-child(4) {
+      animation-range: entry 24% entry 79%;
+    }
+  }
 }
 
 .visually-hidden:not(:focus):not(:active) {

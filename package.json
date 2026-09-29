@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/verify-build.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "fonts": "node scripts/fetch-fonts.mjs",
