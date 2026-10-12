@@ -12,63 +12,112 @@ const { services } = dict;
 ---
 
 <section class="services section" id="services">
+  <div class="glow glow--faint services__glow" aria-hidden="true"></div>
+
   <div class="shell">
-    <header class="section__head reveal">
-      {/* The page's only eyebrow. One tracked label on the whole site is a
-          choice; one above every heading is a template. */}
-      <p class="eyebrow">{services.eyebrow}</p>
+    <header class="section__head">
       <h2 class="section__title">{services.title}</h2>
+      <p class="section__lead">{services.lead}</p>
       <span class="rule" aria-hidden="true"></span>
     </header>
 
     {/*
-      Five cells, deliberately unequal: 5/7, then 7/5, then the umbrella service
-      across the full width. An even row of five, or of any number, is the layout
-      this page exists to avoid.
+      Five cells, four of them services and the fifth an invitation. The last one
+      is the accent, so the page's loudest element is the one pointing at the
+      contact form, which is the only thing here that asks for anything.
 
-      The spans are written as nth-child rules below, so the rhythm assumes five
-      services. A sixth would fall to a single column rather than break; if the
-      list is ever restructured, re-cut the rhythm on purpose.
+      The widths are deliberately unequal (7/5, 5/7, then full) and are set in a
+      min-width query below, with a single column as the default: declaring the
+      twelve-column template here and the spans above the collapse point is how
+      five cards end up printed on top of each other on a phone.
     */}
-    <ul class="services__list reveal-group">
+    <ul class="services__grid reveal-group">
       {
         services.items.map((service) => (
-          <li class="services__item reveal">
-            <h3 class="services__title">{service.title}</h3>
-            <p class="services__text">{service.text}</p>
-            <ul class="services__includes">
-              {service.includes.map((item) => (
-                <li class="tag">{item}</li>
-              ))}
-            </ul>
+          <li class="card services__card reveal">
+            <div class="card__core">
+              <div class="card__glow services__glow-in" aria-hidden="true" />
+              <div class="card__body">
+                <span class="chip services__kicker">{service.kicker}</span>
+                <h3 class="services__title">{service.title}</h3>
+                <p class="services__outcome">{service.outcome}</p>
+                <p class="services__text">{service.text}</p>
+                <ul class="services__includes">
+                  {service.includes.map((item) => (
+                    <li class="chip">{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </li>
         ))
       }
+
+      <li class="card card--accent services__invite reveal">
+        <div class="card__core">
+          <div class="card__body">
+            <h3 class="services__invite-title">{services.invite.title}</h3>
+            <p class="services__invite-text">{services.invite.text}</p>
+            <a class="btn btn--on-accent services__invite-cta" href="#contact">
+              <span>{services.invite.cta}</span>
+              <span class="btn__glyph" aria-hidden="true"></span>
+            </a>
+          </div>
+        </div>
+      </li>
     </ul>
   </div>
 </section>
 
 <style>
-  /*
-   * One column by default, and the twelve-column grid only above 901px. The
-   * order matters: declaring `repeat(12, ...)` here and relying on the items to
-   * span out of it leaves five cells each sitting in a single ~30px column on a
-   * phone, which renders as five paragraphs printed on top of each other.
-   */
-  .services__list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: clamp(2.5rem, 5vw, 4rem);
+  .services__glow {
+    inset-block-start: 10%;
+    inset-inline-start: -20%;
+    width: min(80vw, 760px);
+    aspect-ratio: 1;
   }
 
-  .services__item {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    padding-block-start: clamp(1.25rem, 2.5vw, 2rem);
-    /* The rule above each cell is the only thing separating them: no cards, no
-       fills, no shadows. */
-    border-block-start: 1px solid var(--line);
+  .services__grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(0.9rem, 2vw, 1.25rem);
+  }
+
+  .services__card .card__core,
+  .services__invite .card__core {
+    /* Cards share a row height, so the chip rows line up across neighbours of
+       different text length. */
+    justify-content: space-between;
+  }
+
+  .services__glow-in {
+    inset-block-start: -40%;
+    inset-inline-end: -30%;
+    width: 70%;
+    aspect-ratio: 1;
+  }
+
+  .services__kicker {
+    align-self: flex-start;
+    color: var(--accent-light);
+    border-color: rgb(0 217 146 / 0.28);
+  }
+
+  .services__title {
+    max-width: 20ch;
+  }
+
+  /* The reason to care, set in the accent so it cannot be skimmed past as more
+     body copy. This is the line the card exists to deliver. */
+  .services__outcome {
+    max-width: 30ch;
+    font-size: var(--step-lead);
+    font-weight: 500;
+    line-height: 1.35;
+    letter-spacing: -0.015em;
+    color: var(--accent-light);
   }
 
   .services__text {
@@ -79,76 +128,82 @@ const { services } = dict;
     display: flex;
     flex-wrap: wrap;
     gap: 0.375rem;
-    /* Pinned to the bottom so the tag rows line up across cells of unequal
-       text length. */
-    margin-block-start: auto;
+    padding-block-start: 0.35rem;
   }
 
-  /*
-   * The unequal rhythm, and it only exists above the collapse point. Written as
-   * a min-width query rather than an override, so the single-column rule below
-   * is the default and nothing needs `!important` to beat a nth-child selector.
-   */
+  /* ---- The invitation -------------------------------------------------- */
+
+  .services__invite-title {
+    max-width: 22ch;
+    font-weight: 700;
+  }
+
+  .services__invite-text {
+    max-width: 44ch;
+    color: var(--on-accent);
+    /* Dimmed ink, not a lighter grey: on a saturated green a grey paragraph
+       turns to mud. */
+    opacity: 0.78;
+  }
+
+  .services__invite-cta {
+    align-self: flex-start;
+    margin-block-start: 0.5rem;
+  }
+
+  /* ---- Desktop --------------------------------------------------------- */
+
   @media (min-width: 901px) {
-    .services__list {
+    .services__grid {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: clamp(1.5rem, 4vw, 4rem);
     }
 
-    .services__item:nth-child(1) {
-      grid-column: span 5;
-    }
-
-    .services__item:nth-child(2) {
+    .services__card:nth-child(1) {
       grid-column: span 7;
     }
 
-    .services__item:nth-child(3) {
-      grid-column: span 7;
-    }
-
-    .services__item:nth-child(4) {
+    .services__card:nth-child(2) {
       grid-column: span 5;
     }
 
-    /*
-     * The umbrella service, across the full width, and the one cell that is a
-     * panel rather than a ruled column. It earns the fill because it is a
-     * different kind of engagement from the four above it, so the elevation
-     * carries real meaning rather than decoration.
-     *
-     * It also has to fill the width it claims: a 12-column cell holding three
-     * short lines in its left third reads as an unfinished row, so the title sits
-     * in its own column and the paragraph and tags share the second.
-     */
-    .services__item:nth-child(5) {
+    .services__card:nth-child(3) {
+      grid-column: span 5;
+    }
+
+    .services__card:nth-child(4) {
+      grid-column: span 7;
+    }
+
+    /* The invitation spans the full width and lays its copy out beside the
+       heading, because a 12-column cell holding one short paragraph in its left
+       third reads as an unfinished row. */
+    .services__invite {
       grid-column: span 12;
+    }
+
+    .services__invite .card__body {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+      grid-template-rows: auto auto;
       column-gap: clamp(1.5rem, 4vw, 4rem);
-      row-gap: clamp(0.75rem, 1.5vw, 1.25rem);
-      align-content: start;
-      padding: clamp(1.75rem, 3vw, 2.5rem);
-      background-color: var(--canvas-soft);
-      border: 1px solid var(--line);
-      border-radius: var(--radius-panel);
+      align-content: center;
     }
 
-    .services__item:nth-child(5) .services__title {
+    .services__invite-title {
       grid-column: 1;
-      grid-row: 1;
+      grid-row: 1 / span 2;
+      align-self: center;
+      max-width: 18ch;
     }
 
-    .services__item:nth-child(5) .services__text {
+    .services__invite-text {
       grid-column: 2;
       grid-row: 1;
-      max-width: 58ch;
     }
 
-    .services__item:nth-child(5) .services__includes {
+    .services__invite-cta {
       grid-column: 2;
       grid-row: 2;
-      margin-block-start: 0;
     }
   }
 </style>

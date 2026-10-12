@@ -80,11 +80,9 @@ const jsonLd = organizationJsonLd(locale, description);
 
     <script is:inline>
       (function () {
-        // The hero's word field is pure CSS, so it needs no loading logic. This
-        // flag only decides whether it is drawn at all: with no scripting the
-        // field is never rendered and the hero opens clean.
-        document.documentElement.classList.add('js');
-
+        // The only thing on this page that needs script: remembering an explicit
+        // language choice, so the signpost at `/` does not re-guess next time.
+        // Everything else, including the hero's struck slogans, is CSS.
         document.addEventListener('click', function (event) {
           var target = event.target;
           if (!target || !target.closest) return;

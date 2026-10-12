@@ -4,9 +4,10 @@ The Moovworks institutional site: one page, three languages (pt-BR, pt-PT, en),
 static output, no runtime JavaScript beyond two inline scripts. An applied AI
 studio selling five lines of work: video, marketing, ads, apps and projects.
 
-The page is a dark near-black surface with a single electric-green accent, one
-typeface, a hairline grid, and one hero image that is a diagram rather than a
-photograph.
+The page is a near-black surface with a single electric-green accent, one
+typeface, nested card enclosures, a soft accent glow behind each band for colour
+mass, and a hero whose visual (a stack of vertical video frames) is drawn in CSS
+rather than photographed.
 
 ## Stack, and why
 
@@ -81,50 +82,83 @@ the services rhythm: five unequal cells is a shape for five things.
 
 ## The identity
 
-One dark surface, one accent, and a rule that keeps it from drifting.
+One dark surface, one accent, and a few rules that keep it from drifting.
 
-- **`#101010` is the only surface.** There is no light mode and no section
-  inverts. `--canvas-soft` and `--canvas-raised` are steps of the same darkness,
-  used to lift an inset well or a panel. There are no drop shadows anywhere: a
-  shadow on near-black is invisible, so elevation is a border and a lighter fill,
-  or nothing.
-- **`#00d992` is the only accent, and it is reserved.** It is a button fill, a
-  focus ring, an inline link, the short rule under a section head, the connector
-  in the flow diagram, and the hero's marker stroke. It is never body text and
-  never a background for a whole band. Both directions clear AAA: the accent on
-  the canvas is 10.2:1, and near-black on the accent is 10.2:1.
-- **One typeface.** Inter for every role, display included, plus JetBrains Mono
-  for figures and small labels. Display is set at weight 500, not 700: hierarchy
-  here comes from scale and colour, not from weight. Inter's optical size axis is
+- **`#08090a` is the only surface.** Deeper than a plain near-black on purpose:
+  on OLED and on a laptop at night it reads as a material, where `#101010` reads
+  as a dark grey document. There is no light mode and no section inverts.
+  `--canvas-soft` and `--canvas-raised` are steps of the same darkness.
+- **Depth comes from glow and nested edges, never from a shadow.** A drop shadow
+  on near-black is invisible, so elevation is a lit hairline (`.card`) or a
+  radial accent bleed (`.glow`). The glows are radial gradients rather than
+  blurred elements: the same soft bleed for a fraction of the compositing cost,
+  which is what lets the page carry several of them on a phone.
+- **`#00d992` is the only accent, and it is reserved.** A button fill, a focus
+  ring, an inline link, the chip label on a service card, the outcome line, the
+  connector in the flow diagram, the strike through the hero's slogans, and the
+  invitation card's whole surface. Never body text. Both directions clear AAA:
+  accent on canvas is 10.2:1, near-black on accent is 10.2:1.
+- **One typeface, and weight does the hierarchy.** Inter everywhere, display
+  included, plus JetBrains Mono for chips, figures and small labels. Display is
+  700, section heads 700, card titles 600, body 400. Inter's optical size axis is
   in the file, so the browser picks the text cut at body sizes and the display cut
   at heading sizes.
-- **Three radii.** 6px for anything interactive, 8px for a panel, and the pill
-  only for an inline tag.
-- **The eyebrow is rationed.** One tracked mono label on the whole page, above the
-  services grid. A tracked label above every heading is the fastest way for a page
-  like this to start looking generated.
+- **Four radii, and the difference between the first two is the point.** A card is
+  a shell and a core nested inside it (`.card` / `.card__core`), and the core's
+  radius is smaller by exactly the margin between them, because concentric curves
+  that keep the same radius look like a picture in a badly cut mount. Controls and
+  chips are fully rounded, which is what makes them read as controls.
+- **Fine grain over everything**, on one fixed layer. It is the cheapest texture
+  available because it never repaints.
+- **One badge on the whole page**, in the hero. A tracked pill above every heading
+  is the fastest way for a page like this to start looking generated.
 
-Every colour, radius and type step lives in `tokens.css` and nowhere else. Two
-exceptions are worth knowing: `theme-color` in `BaseLayout.astro` repeats
-`--canvas` as a literal because CSS cannot feed a meta tag, and `INK` in
+Every colour, radius, easing and type step lives in `tokens.css` and nowhere else.
+Two exceptions are worth knowing: `theme-color` in `BaseLayout.astro` repeats
+`--canvas` as a literal because CSS cannot feed a meta tag, and
 `scripts/generate-assets.mjs` reads the tokens by name out of that file.
+
+**No `linear` easing anywhere.** Motion uses two custom curves, `--ease-out` for
+anything that settles and `--ease-soft` for anything that arrives. A linear
+transition is what makes a control feel like a CSS demo instead of a mechanism.
 
 ## How the hero works
 
-The hero is a headline, a subtitle, one call to action, and a field of dim
-buzzwords that get struck through with green marker strokes.
+A badge, the headline, four slogans struck through, a subtitle, two actions, and
+a stack of vertical video frames lit from behind.
 
-The words are the joke of the headline made visible: "supercharge", "10x your
-workflow", "AI-powered everything" arrive, the marker crosses them out, the field
-clears, and the headline is what is left standing. They are always English in
-every locale, because they are the vocabulary of AI marketing as it is written
+**The struck slogans** are the joke of the headline made visible: the vocabulary
+of AI marketing arrives and a green strike crosses each one out. They are always
+English in every locale, because they are words as they are actually written
 rather than a sentence to be translated.
 
-The field is `aria-hidden` and cannot receive events. With no JavaScript it is
-never rendered, and under `prefers-reduced-motion: reduce` it is removed
-entirely, so the hero opens clean in both cases. The timings are derived from the
-word list length in `src/content/buzzwords.ts`, so the cascade stays even if the
-list changes.
+They used to be nine small grey words scattered across the hero by percentage
+coordinates. That read as texture, not as language: at 12px and that contrast
+nobody was reading them, so the headline had no visible answer to itself. They are
+now four chips on the baseline of the copy, struck by default, with the animation
+only ever playing *from* unstruck where motion is welcome. So with no CSS
+animation support or with `prefers-reduced-motion`, the chips are simply already
+struck through instead of silently losing the point.
+
+**The reel** is three 9:16 plates with different gradient compositions, the front
+one carrying a playhead, a timestamp and a progress line. It is the visual anchor
+and it is where the band's colour mass comes from. It is abstract, not a mockup:
+no window chrome, no fake interface, nothing that claims to be a screenshot of a
+product. It is `aria-hidden` because it carries no information.
+
+Two things about it are load-bearing and easy to break:
+
+- The plates' `flex-basis` plus the negative margins have to add up to exactly
+  100% of the column. They are 33/33/44 with two 5% pulls, which is 110 minus 10.
+  An earlier 42/42/52 without enough pull summed to 132%, so the reel overflowed
+  its column and was silently clipped by the band at the viewport edge.
+- The strike chips are 12px on a phone and 13px above it, which is a wrap decision
+  rather than a taste one: at 13px the two longest chips need 355px in a 350px
+  column and break one per line.
+
+On a phone the reel drops to two plates across the full width. A single
+left-aligned frame in a 350px column leaves a quarter of the row empty, which
+reads as a broken grid rather than as a composition.
 
 ## Decisions worth knowing
 
@@ -142,11 +176,19 @@ list changes.
 - **The founding date is never rephrased as "N years".** It is "Since 2011" in
   English and "Desde 2011" in Portuguese, in `copy.json`, and `founded` in the
   config feeds the same fact into the JSON-LD and the OG card.
-- **Two inline scripts, total:** one adds the `.js` class and remembers an
-  explicit language choice, and the other is the signpost at `/`.
-- **The five service cells are unequal on purpose:** 5/7, then 7/5, then the
-  umbrella service across the full width as a filled panel. An even row of five,
-  or of any number, is the layout this page exists to avoid.
+- **One inline script, total:** remembering an explicit language choice. The
+  signpost at `/` has its own, so two on the whole site. Nothing else on this page
+  needs JavaScript, including the hero's struck slogans.
+- **Each service card is four parts, and the shape is the sell.** A kicker chip,
+  the title, one line in the accent saying why to care, the honest paragraph, then
+  the deliverables as chips. The accent line is the reason the card exists; the
+  paragraph is the substantiation.
+- **The fifth cell is not a service.** It is the invitation ("Got an idea and no
+  idea how to move it?") on a filled accent card spanning the full width, so the
+  page's loudest element is the only one that asks for anything.
+- **The service cards are unequal on purpose:** 7/5, then 5/7, then the invitation
+  across the full width. An even row of four, or of any number, is the layout this
+  page exists to avoid.
 
 ## Deploying
 
@@ -204,26 +246,38 @@ locally and breaks in production.
 ## What was verified
 
 - `npm run build` clean: type check, build, and the surviving-CSS guard.
-- The page renders at 390, 820 and 1440 with no horizontal scrolling.
+- The page renders at 390, 820, 1440 and 1920 with **no horizontal overflow**:
+  the emulated viewport's `innerWidth` equals the requested width at every one.
 - Every visible string re-read in all three locales: no em-dashes, no invented
   numbers, no client names, one contact label reused everywhere it means the same
   thing.
-- One accent colour, used identically in every section, and exactly one eyebrow
-  on the page.
+- One accent colour, used identically in every section, and exactly one badge on
+  the page.
 
-Two things were found by looking rather than by building, which is the argument
+Four things were found by looking rather than by building, which is the argument
 for looking:
 
-- A screenshot at a 390px window is not a 390px page. Headless Chrome clamps the
-  layout viewport to about 504px whatever `--window-size` says, so the "mobile"
-  shot was a 504px layout cropped to 390 and looked like a horizontal-overflow
-  bug. `.cache/shot-cdp.mjs` drives Chrome over CDP instead, which also lets it
-  emulate `prefers-reduced-motion` so revealed sections are not captured blank.
-- The services grid collapsed to overlapping text on a phone. The twelve-column
-  template was declared in the base rule and the spans in a min-width query, so
-  below the collapse point each cell sat in a single 30px column. A multi-column
-  layout needs its single-column fallback declared in the same component, not
-  assumed.
+- **A screenshot at a 390px window is not a 390px page.** Headless Chrome clamps
+  the layout viewport to about 504px whatever `--window-size` says, so the
+  "mobile" shot was a 504px layout cropped to 390 and looked like a
+  horizontal-overflow bug that was not there. `.cache/shot-cdp.mjs` drives Chrome
+  over CDP instead, which is also what lets it emulate `prefers-reduced-motion`,
+  since the reveals start at `opacity: 0` and a whole-page capture otherwise
+  renders every revealed section blank.
+- **The page genuinely overflowed by 99px.** `innerWidth` came back as 489 on a
+  390px viewport while `clientWidth` was 390, which is the signature: the layout
+  viewport is right and the content is too wide. The cause was a decorative glow
+  positioned with `inset-inline-end` and no clipping ancestor. Bands now clip
+  their own overflow (`.section`), and `body` deliberately does **not**, because a
+  page-level `overflow-x: clip` would have hidden this instead of surfacing it.
+- **The services grid collapsed to overlapping text on a phone.** The
+  twelve-column template was declared in the base rule and the spans in a
+  min-width query, so below the collapse point each cell sat in a single 30px
+  column. A multi-column layout needs its single-column fallback declared in the
+  same component, not assumed.
+- **The reel was clipped at the viewport edge**, because its plates' flex bases
+  summed to 132% of their column. Fixed by arithmetic that adds to 100%, which is
+  now written down next to it.
 
 ## Guards
 

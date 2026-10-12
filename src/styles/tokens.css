@@ -6,70 +6,79 @@
  * Nothing here is component-specific: components read these values, they never
  * redeclare them.
  *
- * The system is one dark surface and one accent. There is deliberately no light
- * mode and no second accent: the page reads as a single continuous material, and
- * the green is the only thing on it that is allowed to be loud.
+ * Two rules hold the system together:
+ *   1. One surface family (near-black) and one accent. Depth comes from glow and
+ *      nested edges, never from a drop shadow, which is invisible on black.
+ *   2. Light travels. Text sits on the surface; surfaces catch a light source
+ *      from the upper left; the accent is what that light looks like.
  */
 
 :root {
   /* ---- Surface --------------------------------------------------------
-   * Three steps of near-black, not two: `--canvas` is the page, `--canvas-soft`
-   * lifts an inset well (the deliverable block, the pipeline's nodes), and
-   * `--canvas-raised` lifts a panel that has to sit above the page. Raising a
-   * surface by a few percent of luminance is how this system shows depth.
-   * There are no drop shadows anywhere in the identity: a shadow on near-black
-   * is invisible, so elevation is a border and a lighter fill or nothing.
+   * Deeper than a plain #101010 on purpose. On OLED and on a laptop at night,
+   * near-black reads as a real material where #101010 reads as "dark grey
+   * document". The three steps are close together: they are meant to be felt as
+   * a change of material, not seen as separate colours.
    */
-  --canvas: #101010;
-  --canvas-soft: #171717;
-  --canvas-raised: #1c1c1c;
+  --canvas: #08090a;
+  --canvas-soft: #0f1113;
+  --canvas-raised: #16181b;
 
   /* ---- Edges ----------------------------------------------------------
-   * One hairline colour for every border, divider and grid line. `--line` is
-   * the default; `--line-strong` only where an edge must survive sitting next
-   * to the accent. Both are cool neutrals: a warm grey next to #00d992 reads
-   * muddy, and the accent is the one colour the neutrals have to agree with.
+   * Two edge kinds, and they do different jobs:
+   *   `--line`     a structural divider between two flat things (grid rules)
+   *   `--edge`     the lit top edge of a physical panel, which is what makes the
+   *                nested cards read as machined rather than drawn
    */
-  --line: #2b2b2b;
-  --line-strong: #3d3d3d;
+  --line: #23262a;
+  --edge: rgb(255 255 255 / 0.1);
+  --edge-strong: rgb(255 255 255 / 0.16);
 
   /* ---- Text -----------------------------------------------------------
-   * Contrast against `--canvas`, all measured, not estimated:
-   *   --ink-strong  #ffffff  19.4:1
-   *   --ink         #f2f2f2  16.3:1
-   *   --body        #bdbdbd   9.6:1
-   *   --mute        #8b949e   5.9:1  (lowest it gets; still AA at any size)
-   * Nothing below `--mute` is ever used for text.
+   * Contrast against `--canvas`, measured rather than estimated:
+   *   --ink-strong  #ffffff  19.9:1
+   *   --ink         #f2f4f3  17.0:1
+   *   --body        #a9b2ae   9.1:1
+   *   --mute        #7d8783   5.3:1   (lowest it gets; still AA at any size)
    */
-  --ink: #f2f2f2;
+  --ink: #f2f4f3;
   --ink-strong: #ffffff;
-  --body: #bdbdbd;
-  --mute: #8b949e;
+  --body: #a9b2ae;
+  --mute: #7d8783;
 
   /* ---- Accent ---------------------------------------------------------
-   * 10.2:1 against the canvas, and 10.2:1 the other way for `--on-accent`, so
-   * both the green text on dark and the dark text on a green button clear AAA
-   * by a wide margin.
+   * A small ramp inside one hue, not a second colour. The base is the brand
+   * green; the light end is only ever used inside a gradient or a glow, and the
+   * deep end for inline links so they do not shout across a paragraph.
    *
-   * The accent is reserved. It is a button fill, a focus ring, an inline link,
-   * the one arrow in the pipeline, and the one rule under a section head. It is
-   * never body text, never a background for a whole band, and never used twice
-   * in the same viewport competing for the same job.
+   * `--on-accent` carries a green cast rather than being neutral black: type on
+   * a saturated fill looks dirty against a pure grey.
    */
   --accent: #00d992;
-  --accent-soft: #2fd6a1;
-  --accent-deep: #10b981;
-  --on-accent: #101010;
+  --accent-light: #4df0b4;
+  --accent-deep: #12b981;
+  --on-accent: #04120c;
+
+  /* ---- Glow -----------------------------------------------------------
+   * The system's only real ornament. A radial bleed of the accent behind a band,
+   * which is what gives the page its colour mass.
+   *
+   * The falloff matters more than the strength: a wide, gentle gradient at any
+   * alpha reads as a green fog laid over the page, while a tighter one with a
+   * brighter core reads as a light behind it. These are tuned for the second.
+   */
+  --glow-strong: rgb(0 217 146 / 0.22);
+  --glow-soft: rgb(0 217 146 / 0.09);
+  --glow-faint: rgb(0 217 146 / 0.04);
 
   /* ---- Type families --------------------------------------------------
-   * `--font-inter` and `--font-jetbrains-mono` are injected by Astro's Fonts
-   * API (self-hosted woff2 + a capsize-matched fallback). The tokens below wrap
-   * them so the site still reads correctly if that step is skipped, e.g. when a
-   * subdomain only imports tokens.css.
+   * `--font-inter` and `--font-jetbrains-mono` are injected by Astro's Fonts API
+   * (self-hosted woff2 + a capsize-matched fallback). The tokens below wrap them
+   * so the site still reads correctly if that step is skipped.
    *
-   * One sans for every role, including display. There is no second display
-   * face: the hierarchy comes from size, weight and space, which is what keeps
-   * a single-family page from looking like a default template.
+   * Inter carries an optical size axis, so the display sizes get the display cut
+   * automatically. The mono is not decoration: it carries the chips, the flow
+   * labels, the figures and the language codes.
    */
   --font-sans: var(--font-inter, "Inter", system-ui, -apple-system, sans-serif);
   --font-mono: var(
@@ -81,43 +90,48 @@
   );
 
   /* ---- Fluid scale ----------------------------------------------------
-   * Six steps, each a `clamp` so the page never needs a breakpoint for type.
-   * The display cap of 72px is deliberate: this is a page that speaks quietly
-   * and lets the space do the work, and Inter set calm at 400 needs to stay
-   * under the size where it starts to shout.
-   *
-   * The 400 weight is load-bearing. Do not bolden the display: hierarchy here
-   * comes from scale and colour, not from weight.
+   * Seven steps. The display step is the one that carries the page: at 700
+   * weight and up to 88px it is the thing that makes this read as a studio
+   * rather than as documentation. Every size is a `clamp`, so no breakpoint is
+   * ever needed for type.
    */
-  --step-display: clamp(2.75rem, 1.8rem + 4.6vw, 4.5rem);
-  --step-section: clamp(2rem, 1.4rem + 2.8vw, 3.5rem);
-  --step-cell: clamp(1.375rem, 1.1rem + 1.1vw, 1.75rem);
-  /* Larger than the display step, and capped by what actually has to fit inside
-     it: this one carries the founding date, which is eleven characters in every
-     locale. Both ends are chosen so that string stays on one line from 320px to
-     1440px, which is why the cap is 8rem and not the 10rem it could be. */
-  --step-numeral: clamp(2.5rem, 1rem + 7.5vw, 8rem);
+  --step-display: clamp(2.75rem, 1.5rem + 6.6vw, 5.5rem);
+  --step-h2: clamp(2rem, 1.3rem + 3.2vw, 3.75rem);
+  --step-h3: clamp(1.5rem, 1.25rem + 1.2vw, 2.125rem);
+  --step-lead: clamp(1.0625rem, 1rem + 0.5vw, 1.375rem);
+  --step-numeral: clamp(3.25rem, 1.2rem + 11vw, 11rem);
   --step-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
   --step-detail: 0.875rem;
+  --step-mono: 0.8125rem;
 
   /* ---- Space ---------------------------------------------------------- */
   --gutter: clamp(1.25rem, 4vw, 4rem);
-  /* Generous, but not to the point where the page reads as unfinished. At the
-     top of the range two adjacent sections left 320px of nothing between them,
-     which on a 900px-tall screen is a third of the viewport of empty. */
-  --section-gap: clamp(4rem, 7vw, 7rem);
+  --section-gap: clamp(4.5rem, 9vw, 9rem);
   --max-width: 1400px;
-  --measure: 60ch;
+  --measure: 62ch;
   --panel-pad: clamp(1.5rem, 3vw, 2.5rem);
 
-  /* ---- Detail ---------------------------------------------------------
-   * Three radii, one rule each: 6px for anything interactive, 8px for a panel
-   * or a well, and the pill only for an inline tag. Nothing else is rounded.
+  /* ---- Radii ----------------------------------------------------------
+   * Two families, and the difference is the point: a shell and the core nested
+   * inside it are deliberately not the same radius, because concentric curves
+   * need the inner one smaller to look concentric at all. Actions and chips are
+   * fully rounded, which is what makes them read as controls rather than boxes.
    */
-  --radius-action: 6px;
-  --radius-panel: 8px;
+  --radius-shell: 1.5rem;
+  --radius-core: 1.125rem;
+  --radius-chip: 0.75rem;
   --radius-pill: 9999px;
-  --transition: 160ms linear;
+
+  /* ---- Motion ---------------------------------------------------------
+   * No `linear`, and no `ease-in-out`. Everything that moves decelerates hard at
+   * the end, which is what makes a shift feel like it has mass instead of
+   * sliding. Two durations: one for colour, one for movement.
+   */
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-color: 200ms;
+  --dur-move: 520ms;
+  --dur-enter: 820ms;
 
   /* ---- Layout primitives ---------------------------------------------- */
   --header-block: clamp(0.7rem, 1.6vw, 1rem);

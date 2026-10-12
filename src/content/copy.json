@@ -4,62 +4,81 @@
     "here on purpose: it is English in every locale and lives in site.config.mjs",
     "so the page and the OG card are built from one string.",
     "",
-    "Rules for editing: sentence case, no exclamation marks, no em-dashes, no",
-    "invented numbers, no client names. pt-BR and pt-PT are written separately,",
-    "not converted: they differ on equipa/equipe, guiao/roteiro, gerund vs",
-    "infinitive, planeamento/planejamento and medicao/mensuracao."
+    "Rules for editing: no exclamation marks, no em-dashes, no invented numbers,",
+    "no client names. pt-BR and pt-PT are written separately, not converted: they",
+    "differ on equipa/equipe, guiao/roteiro, gerund vs infinitive, planeamento/",
+    "planejamento and medicao/mensuracao.",
+    "",
+    "Each service carries four parts, and the shape is the sell:",
+    "  kicker   the mono label on the card",
+    "  title    what it is",
+    "  outcome  the one line that makes someone want it",
+    "  text     the honest paragraph behind the claim",
+    "  includes the deliverables, as chips"
   ],
 
   "pt-BR": {
     "meta": {
       "title": "Moovworks | IA aplicada para mover o seu trabalho",
-      "description": "Estúdio de IA aplicada. Vídeos, marketing, anúncios, apps e projetos, do briefing à entrega. Desde 2011."
+      "description": "Estúdio de IA aplicada. Vídeo, apps, automações e marketing, do briefing à entrega. Desde 2011."
     },
     "header": {
       "contact": "Falar com a Moovworks"
     },
     "hero": {
-      "sub": "IA aplicada para mover o seu trabalho para a frente. Vídeos, marketing, anúncios, apps e projetos.",
-      "cta": "Falar com a Moovworks"
+      "badge": "Estúdio de IA aplicada",
+      "sub": "Vídeo, apps, automações e marketing. IA aplicada para mover o seu trabalho para a frente, sem queimar orçamento pelo caminho.",
+      "cta": "Falar com a Moovworks",
+      "ctaSecondary": "Ver o que fazemos"
     },
     "services": {
-      "eyebrow": "O que fazemos",
-      "title": "Cinco formas de mover o trabalho.",
+      "title": "Quatro frentes, um só caminho.",
+      "lead": "Não vendemos ferramentas. Pegamos no que você já tem e levamos até o fim.",
       "items": [
         {
-          "title": "Vídeos",
-          "text": "Roteiro, captação e edição para campanha, produto e redes. Vídeo feito para publicar, não para ficar na pasta.",
-          "includes": ["roteiro", "captação", "edição", "motion"]
+          "kicker": "Vídeo",
+          "title": "Vídeo com IA, acabamento de estúdio.",
+          "outcome": "Cara de produção grande, sem queimar orçamento nem créditos.",
+          "text": "Geramos e finalizamos vídeo com IA, com acabamento profissional. Antes de gerar um frame, fechamos a estratégia de produção: o que entra na tela, em que ordem e quanto cada peça custa em créditos. Sem tentativa e erro gastando o seu dinheiro.",
+          "includes": ["roteiro", "geração", "edição", "legenda"]
         },
         {
-          "title": "Marketing",
-          "text": "Posicionamento, funil e mensuração amarrados a resultado. O que não se mede fica fora.",
-          "includes": ["posicionamento", "funil", "mensuração"]
+          "kicker": "Apps",
+          "title": "Um app que embala a sua solução.",
+          "outcome": "Leads que viram receita, e não só contato.",
+          "text": "Transformamos o que você vende em um produto que o cliente usa, entende e paga por ele. Do primeiro desenho ao deploy, com a medição ligada desde o primeiro dia.",
+          "includes": ["descoberta", "design", "desenvolvimento", "analytics"]
         },
         {
-          "title": "Anúncios",
-          "text": "Criativo e mídia paga com a mesma pessoa lendo o resultado. Otimização toda semana, não relatório no fim do mês.",
-          "includes": ["criativos", "mídia paga", "testes"]
+          "kicker": "Automações",
+          "title": "Automações que devolvem horas.",
+          "outcome": "O trabalho repetitivo sai do dia de alguém.",
+          "text": "Mapeamos o que ainda é feito à mão toda semana e automatizamos o que dá retorno de verdade. O critério nunca muda: quantas horas isso poupa, e a partir de quando.",
+          "includes": ["levantamento", "integrações", "agentes", "alertas"]
         },
         {
-          "title": "Apps",
-          "text": "Produto digital do desenho ao deploy. O protótipo é o primeiro passo, nunca o entregável.",
-          "includes": ["descoberta", "design", "desenvolvimento"]
-        },
-        {
-          "title": "Projetos",
-          "text": "Engajamentos maiores, com várias frentes ao mesmo tempo. Um plano só, uma equipe só, prazo que se cumpre.",
-          "includes": ["planejamento", "gestão", "entrega"]
+          "kicker": "Marketing",
+          "title": "Marketing orientado por IA, feito para converter.",
+          "outcome": "Estratégia amarrada ao funil, não a impressão.",
+          "text": "Posicionamento, conteúdo e mídia paga puxando para o mesmo lado. A IA acelera a produção; a decisão continua sendo sobre o que faz uma pessoa avançar.",
+          "includes": ["posicionamento", "conteúdo", "mídia paga", "mensuração"]
         }
-      ]
+      ],
+      "invite": {
+        "title": "Tem uma ideia e não sabe como mover?",
+        "text": "Conte o que está na sua cabeça. Respondemos com um caminho: o que é possível, por onde começar e o que isso custa.",
+        "cta": "Falar com a Moovworks"
+      }
     },
-    "pipeline": {
+    "process": {
       "title": "Do briefing à entrega.",
+      "lead": "Um caminho só, uma equipe só, do começo ao fim.",
       "from": "Briefing",
       "to": "Entregue"
     },
     "principles": {
       "title": "Três coisas que não fazemos.",
+      "lead": "O resto do mercado faz.",
       "items": [
         {
           "title": "Sem demo",
@@ -77,10 +96,11 @@
     },
     "about": {
       "headline": "Desde 2011.",
-      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar poucos projetos e levar cada um até o fim."
+      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar poucos projetos e levar cada um até o fim. É por isso que ainda estamos aqui, e é por isso que a IA só entra quando muda alguma coisa."
     },
     "contact": {
-      "title": "Tem algo para construir?",
+      "title": "Vamos começar pelo briefing.",
+      "text": "Sem formulário longo. Uma mensagem basta, e respondemos com um caminho em vez de um orçamento solto.",
       "cta": "Falar com a Moovworks"
     },
     "footer": {
@@ -100,53 +120,65 @@
   "pt-PT": {
     "meta": {
       "title": "Moovworks | IA aplicada para mover o seu trabalho",
-      "description": "Estúdio de IA aplicada. Vídeos, marketing, anúncios, apps e projetos, do briefing à entrega. Desde 2011."
+      "description": "Estúdio de IA aplicada. Vídeo, apps, automações e marketing, do briefing à entrega. Desde 2011."
     },
     "header": {
       "contact": "Falar com a Moovworks"
     },
     "hero": {
-      "sub": "IA aplicada para mover o seu trabalho para a frente. Vídeos, marketing, anúncios, apps e projetos.",
-      "cta": "Falar com a Moovworks"
+      "badge": "Estúdio de IA aplicada",
+      "sub": "Vídeo, apps, automações e marketing. IA aplicada para mover o seu trabalho para a frente, sem queimar orçamento pelo caminho.",
+      "cta": "Falar com a Moovworks",
+      "ctaSecondary": "Ver o que fazemos"
     },
     "services": {
-      "eyebrow": "O que fazemos",
-      "title": "Cinco formas de mover o trabalho.",
+      "title": "Quatro frentes, um só caminho.",
+      "lead": "Não vendemos ferramentas. Pegamos no que já tem e levamos até ao fim.",
       "items": [
         {
-          "title": "Vídeos",
-          "text": "Guião, captação e edição para campanha, produto e redes. Vídeo feito para publicar, não para ficar na pasta.",
-          "includes": ["guião", "captação", "edição", "motion"]
+          "kicker": "Vídeo",
+          "title": "Vídeo com IA, acabamento de estúdio.",
+          "outcome": "Ar de produção grande, sem queimar orçamento nem créditos.",
+          "text": "Geramos e finalizamos vídeo com IA, com acabamento profissional. Antes de gerar um frame, fechamos a estratégia de produção: o que entra no ecrã, em que ordem e quanto custa cada peça em créditos. Sem tentativa e erro a gastar o seu dinheiro.",
+          "includes": ["guião", "geração", "edição", "legenda"]
         },
         {
-          "title": "Marketing",
-          "text": "Posicionamento, funil e medição amarrados a resultado. O que não se mede fica de fora.",
-          "includes": ["posicionamento", "funil", "medição"]
+          "kicker": "Apps",
+          "title": "Uma app que embala a sua solução.",
+          "outcome": "Leads que viram receita, e não apenas contacto.",
+          "text": "Transformamos o que vende num produto que o cliente usa, entende e paga por ele. Do primeiro desenho ao deploy, com a medição ligada desde o primeiro dia.",
+          "includes": ["descoberta", "design", "desenvolvimento", "analytics"]
         },
         {
-          "title": "Anúncios",
-          "text": "Criativo e mídia paga com a mesma pessoa a ler o resultado. Otimização todas as semanas, não relatório no fim do mês.",
-          "includes": ["criativos", "mídia paga", "testes"]
+          "kicker": "Automações",
+          "title": "Automações que devolvem horas.",
+          "outcome": "O trabalho repetitivo sai do dia de alguém.",
+          "text": "Mapeamos o que ainda é feito à mão todas as semanas e automatizamos o que dá retorno a sério. O critério nunca muda: quantas horas poupa isto, e a partir de quando.",
+          "includes": ["levantamento", "integrações", "agentes", "alertas"]
         },
         {
-          "title": "Apps",
-          "text": "Produto digital do desenho ao deploy. O protótipo é o primeiro passo, nunca o entregável.",
-          "includes": ["descoberta", "design", "desenvolvimento"]
-        },
-        {
-          "title": "Projetos",
-          "text": "Engajamentos maiores, com várias frentes ao mesmo tempo. Um plano só, uma equipa só, prazo que se cumpre.",
-          "includes": ["planeamento", "gestão", "entrega"]
+          "kicker": "Marketing",
+          "title": "Marketing orientado por IA, feito para converter.",
+          "outcome": "Estratégia amarrada ao funil, não à impressão.",
+          "text": "Posicionamento, conteúdo e mídia paga a puxar para o mesmo lado. A IA acelera a produção; a decisão continua a ser sobre o que faz uma pessoa avançar.",
+          "includes": ["posicionamento", "conteúdo", "mídia paga", "medição"]
         }
-      ]
+      ],
+      "invite": {
+        "title": "Tem uma ideia e não sabe como mover?",
+        "text": "Conte o que tem em mente. Respondemos com um caminho: o que é possível, por onde começar e quanto custa.",
+        "cta": "Falar com a Moovworks"
+      }
     },
-    "pipeline": {
+    "process": {
       "title": "Do briefing à entrega.",
+      "lead": "Um caminho só, uma equipa só, do princípio ao fim.",
       "from": "Briefing",
       "to": "Entregue"
     },
     "principles": {
       "title": "Três coisas que não fazemos.",
+      "lead": "O resto do mercado faz.",
       "items": [
         {
           "title": "Sem demo",
@@ -164,10 +196,11 @@
     },
     "about": {
       "headline": "Desde 2011.",
-      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar em poucos projetos e levar cada um até ao fim."
+      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar em poucos projetos e levar cada um até ao fim. É por isso que ainda aqui estamos, e é por isso que a IA só entra quando muda alguma coisa."
     },
     "contact": {
-      "title": "Tem algo para construir?",
+      "title": "Vamos começar pelo briefing.",
+      "text": "Sem formulário longo. Uma mensagem basta, e respondemos com um caminho em vez de um orçamento solto.",
       "cta": "Falar com a Moovworks"
     },
     "footer": {
@@ -187,53 +220,65 @@
   "en": {
     "meta": {
       "title": "Moovworks | Applied AI that moves your work forward",
-      "description": "An applied AI studio. Video, marketing, ads, apps and projects, from brief to delivery. Since 2011."
+      "description": "An applied AI studio. Video, apps, automations and marketing, from brief to delivery. Since 2011."
     },
     "header": {
       "contact": "Talk to Moovworks"
     },
     "hero": {
-      "sub": "Applied AI that moves your work forward. Video, marketing, ads, apps and projects.",
-      "cta": "Talk to Moovworks"
+      "badge": "Applied AI studio",
+      "sub": "Video, apps, automations and marketing. Applied AI that moves your work forward, without burning the budget on the way.",
+      "cta": "Talk to Moovworks",
+      "ctaSecondary": "See what we do"
     },
     "services": {
-      "eyebrow": "What we do",
-      "title": "Five ways to move the work.",
+      "title": "Four fronts, one path.",
+      "lead": "We do not sell tools. We take what you already have and see it through.",
       "items": [
         {
-          "title": "Video",
-          "text": "Script, shoot and edit for campaigns, product and social. Video made to be published, not to sit in a folder.",
-          "includes": ["script", "shoot", "edit", "motion"]
+          "kicker": "Video",
+          "title": "AI video, finished to studio standard.",
+          "outcome": "Expensive-looking production without burning the budget or the credits.",
+          "text": "We generate and finish video with AI, to a standard you would put your name on. Before a single frame is generated we fix the production strategy: what goes on screen, in what order, and what each piece costs in credits. No trial and error on your money.",
+          "includes": ["script", "generate", "edit", "captions"]
         },
         {
-          "title": "Marketing",
-          "text": "Positioning, funnel and measurement tied to an outcome. What we cannot measure stays out.",
-          "includes": ["positioning", "funnel", "measurement"]
+          "kicker": "Apps",
+          "title": "An app that wraps your solution.",
+          "outcome": "Leads that turn into revenue, not into a contact list.",
+          "text": "We turn what you sell into a product a customer can use, understand and pay for. From the first sketch to deploy, with measurement wired in from day one.",
+          "includes": ["discovery", "design", "build", "analytics"]
         },
         {
-          "title": "Ads",
-          "text": "Creative and paid media, with the same person reading the result. Weekly optimisation, not a report at month end.",
-          "includes": ["creative", "paid media", "testing"]
+          "kicker": "Automations",
+          "title": "Automations that give the hours back.",
+          "outcome": "The repetitive work leaves someone's day.",
+          "text": "We map what is still done by hand every week and automate what actually pays. The test never changes: how many hours does this save, and from when.",
+          "includes": ["audit", "integrations", "agents", "alerts"]
         },
         {
-          "title": "Apps",
-          "text": "Digital product from sketch to deploy. The prototype is the first step, never the deliverable.",
-          "includes": ["discovery", "design", "build"]
-        },
-        {
-          "title": "Projects",
-          "text": "Larger engagements with several fronts running at once. One plan, one team, deadlines that hold.",
-          "includes": ["planning", "management", "delivery"]
+          "kicker": "Marketing",
+          "title": "AI-led marketing, built to convert.",
+          "outcome": "Strategy tied to the funnel, not to impressions.",
+          "text": "Positioning, content and paid media pulling the same way. AI speeds up the production; the decision is still about what makes a person move.",
+          "includes": ["positioning", "content", "paid media", "measurement"]
         }
-      ]
+      ],
+      "invite": {
+        "title": "Got an idea and no idea how to move it?",
+        "text": "Tell us what is on your mind. We answer with a path: what is possible, where to start, and what it costs.",
+        "cta": "Talk to Moovworks"
+      }
     },
-    "pipeline": {
+    "process": {
       "title": "From brief to delivery.",
+      "lead": "One path, one team, start to finish.",
       "from": "Brief",
       "to": "Delivered"
     },
     "principles": {
       "title": "Three things we do not do.",
+      "lead": "The rest of the market does.",
       "items": [
         {
           "title": "No demo",
@@ -251,10 +296,11 @@
     },
     "about": {
       "headline": "Since 2011.",
-      "text": "We have watched AI fashions arrive and leave. What stayed is what works: take on few projects and see each one through."
+      "text": "We have watched AI fashions arrive and leave. What stayed is what works: take on few projects and see each one through. That is why we are still here, and why AI only goes in when it changes something."
     },
     "contact": {
-      "title": "Something to build?",
+      "title": "Let us start with the brief.",
+      "text": "No long form. One message is enough, and we answer with a path rather than a loose quote.",
       "cta": "Talk to Moovworks"
     },
     "footer": {

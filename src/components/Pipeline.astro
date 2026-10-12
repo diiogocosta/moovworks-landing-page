@@ -8,50 +8,46 @@ interface Props {
 
 const { locale } = Astro.props;
 const dict = t(locale);
+const { process } = dict;
 ---
 
 {/*
-  What the work actually looks like end to end: brief in, five lines running, one
-  delivered thing out. It sits directly under the hero because the hero states
-  the claim and this is the receipt.
+  What the work looks like end to end: a brief in, four lines running, one
+  delivered thing out. It follows the services because the services are the detail
+  and this is the shape of them.
 
-  It is the agency's answer to the code block a developer tool would put here. It
-  is deliberately built from real content rather than drawn: the endpoints are two
-  labels, the middle is the same five services the next section details, and a
-  hairline does the work an arrow would. Nothing here is a mockup of a product
-  that does not exist.
+  It is the agency's answer to the architecture diagram a developer tool puts in
+  this slot, and it is built from real content rather than drawn: two labels, the
+  four service names, and a hairline doing the work an arrow would.
 */}
-<section class="pipeline">
-  <div class="shell">
-    <h2 class="pipeline__title">{dict.pipeline.title}</h2>
+<section class="process section" id="process">
+  <div class="glow process__glow" aria-hidden="true"></div>
 
-    <div class="pipeline__flow">
-      <p class="pipeline__node">{dict.pipeline.from}</p>
-      <span class="pipeline__link" aria-hidden="true"></span>
-      <ul class="pipeline__lines">
-        {
-          dict.services.items.map((service) => (
-            <li class="pipeline__line">{service.title}</li>
-          ))
-        }
+  <div class="shell">
+    <header class="section__head">
+      <h2 class="section__title">{process.title}</h2>
+      <p class="section__lead">{process.lead}</p>
+      <span class="rule" aria-hidden="true"></span>
+    </header>
+
+    <div class="process__flow">
+      <p class="process__node">{process.from}</p>
+      <span class="process__link" aria-hidden="true"></span>
+      <ul class="process__lines">
+        {dict.services.items.map((service) => <li class="chip">{service.kicker}</li>)}
       </ul>
-      <span class="pipeline__link" aria-hidden="true"></span>
-      <p class="pipeline__node pipeline__node--end">{dict.pipeline.to}</p>
+      <span class="process__link" aria-hidden="true"></span>
+      <p class="process__node process__node--end">{process.to}</p>
     </div>
   </div>
 </section>
 
 <style>
-  .pipeline {
-    padding-block: clamp(3.5rem, 7vw, 6rem);
-    /* A hairline marks the fold between the hero and the body of the page. */
-    border-block-start: 1px solid var(--line);
-  }
-
-  .pipeline__title {
-    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
-    letter-spacing: -0.015em;
-    margin-block-end: clamp(2rem, 4vw, 3rem);
+  .process__glow {
+    inset-block-start: 20%;
+    inset-inline-end: -25%;
+    width: min(70vw, 640px);
+    aspect-ratio: 1;
   }
 
   /*
@@ -59,80 +55,101 @@ const dict = t(locale);
    * hairlines are items that grow to fill whatever space is left, so the flow
    * stays correct at any width without measuring anything.
    */
-  .pipeline__flow {
+  .process__flow {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
-    gap: clamp(0.75rem, 2vw, 1.5rem);
+    gap: clamp(0.6rem, 1.6vw, 1.15rem);
+    padding: clamp(1.15rem, 2.6vw, 1.75rem);
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.035),
+      rgb(255 255 255 / 0.01)
+    );
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-shell);
   }
 
-  .pipeline__node,
-  .pipeline__line {
+  /* The two ends of the flow are states, so they get a solid pill. The middle is
+     a list, so it does not: that difference is the whole diagram. */
+  .process__node {
+    flex: 0 0 auto;
+    padding: 0.6rem 1rem;
     font-family: var(--font-mono);
-    font-size: 0.8125rem;
+    font-size: var(--step-mono);
     line-height: 1.4;
     white-space: nowrap;
-  }
-
-  /* The two ends of the flow are states, so they get a box. The middle is a
-     list, so it does not: the difference is the whole diagram. */
-  .pipeline__node {
-    padding: 0.5rem 0.75rem;
     color: var(--ink);
-    border: 1px solid var(--line-strong);
-    border-radius: var(--radius-action);
+    background-color: var(--canvas-raised);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-pill);
   }
 
-  .pipeline__node--end {
+  .process__node--end {
     color: var(--on-accent);
     background-color: var(--accent);
-    border-color: var(--accent);
+    border-color: transparent;
+    box-shadow: 0 0 34px -8px var(--glow-strong);
   }
 
-  .pipeline__lines {
+  .process__lines {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 0.75rem;
-  }
-
-  .pipeline__line {
-    color: var(--mute);
+    gap: 0.5rem;
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
   /* The connector. The accent's job here is structural: it says which way the
-     work moves, which is the one thing the section has to communicate. */
-  .pipeline__link {
+     work moves, which is the one thing this band has to communicate. */
+  .process__link {
     flex: 1 1 2rem;
-    min-width: 1rem;
-    align-self: center;
-    border-block-start: 1px solid var(--accent);
+    min-width: 1.25rem;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--accent) 40%,
+      var(--accent)
+    );
+    border-radius: var(--radius-pill);
   }
 
   /*
-   * Narrow: the flow becomes a vertical stack, because a five-item row at 320px
-   * is either unreadable or a horizontal scrollbar. The connectors turn with it
-   * so the direction still reads.
+   * Narrow: the flow stacks, because a four-item row plus two pills at 350px is
+   * either unreadable or a horizontal scrollbar. The connectors turn with it so
+   * the direction still reads.
    */
   @media (max-width: 767px) {
-    .pipeline__flow {
+    .process__flow {
       flex-direction: column;
       align-items: flex-start;
       gap: 0;
     }
 
-    .pipeline__lines {
+    .process__lines {
       flex-direction: column;
-      gap: 0.4rem;
-      padding-block: 0.75rem;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding-block: 0.9rem;
     }
 
-    .pipeline__link {
+    .process__link {
       flex: 0 0 auto;
-      width: 0;
-      height: 1.5rem;
-      align-self: flex-start;
-      margin-inline-start: 0.85rem;
-      border-block-start: 0;
-      border-inline-start: 1px solid var(--accent);
+      /* `min-width` from the base rule has to be cleared as well as `flex`: at
+         1.25rem it wins over the 2px width and the connector renders as a green
+         blob instead of a line. */
+      min-width: 0;
+      width: 2px;
+      height: 1.6rem;
+      margin-inline-start: 1.1rem;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        var(--accent) 40%,
+        var(--accent)
+      );
     }
   }
 </style>

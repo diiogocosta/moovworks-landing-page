@@ -15,69 +15,90 @@ const dict = t(locale);
 const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
 ---
 
-<header class="site-header">
-  <div class="shell site-header__inner">
-    <a class="wordmark" href={homePath(locale)}>moovworks</a>
+{/*
+  A pill that floats over the page rather than a bar welded to the top edge. At
+  the top of the page it has no fill at all, so the hero's glow runs behind it
+  and the pill reads as part of the hero; once the page moves it fills in and
+  becomes chrome.
 
-    <div class="site-header__end">
-      <a class="detail-link" href={contactHref}>{dict.header.contact}</a>
-      <LanguageSwitcher locale={locale} />
-    </div>
+  The fill is a scroll-driven animation, the same technique as the reveals, so
+  there is no scroll listener anywhere in this file.
+*/}
+<div class="header-dock">
+  <div class="shell">
+    <header class="site-header">
+      <a class="wordmark" href={homePath(locale)}>moovworks</a>
+
+      <div class="site-header__end">
+        <LanguageSwitcher locale={locale} />
+
+        {/*
+          Outlined, not filled, and hidden on a phone. The fill belongs to the
+          hero: two identical green pills in the same viewport spend the accent
+          twice on one job. On a 350px screen the pill also has no room for a
+          wordmark, three language codes and a button, and the hero opens with the
+          same label wired to the same anchor one thumb-width below.
+        */}
+        <a class="btn btn--sm btn--outline site-header__cta" href={contactHref}>
+          <span>{dict.header.contact}</span>
+          <span class="btn__glyph" aria-hidden="true"></span>
+        </a>
+      </div>
+    </header>
   </div>
-</header>
+</div>
 
 <style>
-  /*
-   * Sticky, and transparent where it overlaps the hero so the dot grid runs edge
-   * to edge behind it. It becomes a solid bar once the page has scrolled past the
-   * headline, which is the moment it stops being part of the hero and starts
-   * being chrome.
-   *
-   * Driven by a scroll timeline rather than a scroll listener: no script, no
-   * event handler, and it stays in step with the compositor instead of the main
-   * thread. Where `animation-timeline` is unsupported the bar is simply always
-   * solid, which is a perfectly good header.
-   */
-  .site-header {
+  .header-dock {
     position: sticky;
     inset-block-start: 0;
     z-index: 60;
-    background-color: var(--canvas);
-    border-block-end: 1px solid var(--line);
+    padding-block: clamp(0.6rem, 1.5vw, 0.9rem);
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    @supports (animation-timeline: scroll()) {
-      .site-header {
-        background-color: transparent;
-        border-block-end-color: transparent;
-        /* Longhands, never the `animation` shorthand — the build folds the
-           timeline into the shorthand and Chromium then rejects the whole
-           declaration. See the note in src/styles/global.css. */
-        animation-name: header-solid;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: scroll(root);
-        /* Settles well before the headline has left the viewport. */
-        animation-range: 40px 180px;
-      }
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.3rem 0.3rem 0.3rem 1.1rem;
+    /* Always blurred, never animated: backdrop-filter is not interpolatable, so
+       animating it would drop the filter for the length of the transition. At
+       the top of the page the fill is transparent and the blur has nothing
+       visible to do. */
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .site-header {
+      /* Longhands, never the `animation` shorthand: the build folds the timeline
+         into the shorthand and Chromium then rejects the declaration. See the
+         note in src/styles/global.css. `scripts/verify-build.mjs` guards it. */
+      animation-name: header-solid;
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+      animation-timeline: scroll(root);
+      animation-range: 30px 150px;
+    }
+  }
+
+  /* Without scroll timelines the pill is simply always filled, which is a
+     perfectly good header. */
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      background-color: rgb(8 9 10 / 0.72);
+      border-color: var(--edge);
     }
   }
 
   @keyframes header-solid {
     to {
-      background-color: var(--canvas);
-      border-block-end-color: var(--line);
+      background-color: rgb(8 9 10 / 0.72);
+      border-color: var(--edge);
     }
-  }
-
-  .site-header__inner {
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem 1.5rem;
-    padding-block: var(--header-block);
   }
 
   .wordmark {
@@ -86,38 +107,41 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
     /* Touch target, not decoration: the wordmark is the way home. */
     min-height: 44px;
     font-family: var(--font-sans);
-    /* Lowercase and lightly tracked in: the wordmark is a name, not a label. */
     font-size: 1.0625rem;
-    font-weight: 600;
-    letter-spacing: -0.025em;
+    font-weight: 700;
+    letter-spacing: -0.045em;
     color: var(--ink-strong);
-    transition: color var(--transition);
+    transition: color var(--dur-color) var(--ease-out);
   }
 
   .wordmark:hover {
-    color: var(--accent-soft);
+    color: var(--accent-light);
   }
 
   .site-header__end {
     display: flex;
     align-items: center;
-    /* The links bring their own 44px boxes, so this gap is part of the target. */
-    gap: clamp(0.5rem, 1.5vw, 1.25rem);
+    gap: clamp(0.4rem, 1.4vw, 1rem);
   }
 
-  /*
-   * The contact link is a plain label here, not a filled button. The one filled
-   * accent button on the page belongs to the hero: two green blocks in the first
-   * viewport would spend the accent twice on the same job.
-   *
-   * On a narrow phone the three language codes and the contact label together
-   * are wider than the viewport, so the label is the one that goes. It is safe
-   * to drop because the hero opens with the same label wired to the same anchor,
-   * one scroll position below, and the language switcher is not reproducible
-   * anywhere else on the page.
-   */
-  @media (max-width: 480px) {
-    .site-header__end .detail-link {
+  .btn--sm {
+    min-height: 44px;
+    padding: 0.25rem 0.25rem 0.25rem 1.15rem;
+    font-size: var(--step-detail);
+  }
+
+  .btn--sm .btn__glyph {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+
+  /* A wordmark, three language codes and a button do not fit a phone. */
+  @media (max-width: 639px) {
+    .site-header {
+      padding-inline: 1rem 0.35rem;
+    }
+
+    .site-header__cta {
       display: none;
     }
   }

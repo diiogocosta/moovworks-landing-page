@@ -14,25 +14,21 @@ const { principles } = dict;
 {/*
   The page's argument, stated positively: three things Moovworks does not do.
 
-  Every line restates a promise already made in the copy deck (no demo that never
-  ships, nothing unmeasured, few projects seen through), so nothing here is a new
-  claim. It carries no numbers and no client names, because the brief forbids
-  inventing either, and a page arguing against hype cannot open its proof section
-  with fabricated proof.
+  Every line restates a promise already made in the copy deck, so nothing here is
+  a new claim. It carries no numbers and no client names, because a page arguing
+  against hype cannot open its proof section with fabricated proof.
+
+  It sits on a lifted band with hairlines top and bottom. That is the page's only
+  change of surface across a whole section, and it is what makes the argument read
+  as a chapter rather than as four more paragraphs between two other paragraphs.
 */}
-<section class="principles section" id="principles">
+<section class="principles" id="principles">
   <div class="shell">
     <header class="section__head reveal">
       <h2 class="section__title">{principles.title}</h2>
-      <span class="rule" aria-hidden="true"></span>
+      <p class="section__lead">{principles.lead}</p>
     </header>
 
-    {/*
-      Separated by vertical hairlines rather than by a rule above each item, which
-      is what the services grid does. Two sections built from three-ish columns
-      have to differ somehow, and the direction of the divider is the cheapest
-      honest way to do it.
-    */}
     <ul class="principles__list reveal-group">
       {
         principles.items.map((item) => (
@@ -47,49 +43,68 @@ const { principles } = dict;
 </section>
 
 <style>
+  .principles {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--section-gap);
+    background: linear-gradient(
+      180deg,
+      var(--canvas-soft) 0%,
+      var(--canvas) 100%
+    );
+    border-block: 1px solid var(--edge);
+  }
+
   .principles__list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    column-gap: clamp(1.5rem, 4vw, 3.5rem);
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: clamp(1.75rem, 4vw, 2.5rem);
   }
 
   .principles__item {
     display: flex;
     flex-direction: column;
-    gap: clamp(0.75rem, 1.5vw, 1.25rem);
-    padding-inline-start: clamp(1.25rem, 3vw, 2.5rem);
-    border-inline-start: 1px solid var(--line);
+    gap: clamp(0.6rem, 1.4vw, 0.9rem);
+    padding-block-start: clamp(1.25rem, 3vw, 1.75rem);
+    border-block-start: 1px solid var(--line);
   }
 
-  /* The first column has nothing to its left, so it has no divider and no
-     indent. */
   .principles__item:first-child {
-    padding-inline-start: 0;
-    border-inline-start: 0;
+    padding-block-start: 0;
+    border-block-start: 0;
+  }
+
+  .principles__title {
+    font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
   }
 
   .principles__text {
     color: var(--body);
   }
 
-  @media (max-width: 900px) {
+  @media (min-width: 901px) {
     .principles__list {
-      grid-template-columns: minmax(0, 1fr);
-      row-gap: clamp(1.75rem, 4vw, 2.5rem);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: clamp(1.5rem, 4vw, 3.5rem);
+      row-gap: 0;
     }
 
-    /* Stacked, the divider has to turn with the layout or it reads as a stray
-       vertical line beside the first item. */
+    /* Separated by vertical hairlines rather than by a rule above each item,
+       which is what the services grid does. Two sections built from three-ish
+       columns have to differ somehow, and the direction of the divider is the
+       cheapest honest way to do it. */
     .principles__item {
-      padding-inline-start: 0;
-      padding-block-start: clamp(1.25rem, 3vw, 1.75rem);
-      border-inline-start: 0;
-      border-block-start: 1px solid var(--line);
+      padding-block-start: 0;
+      padding-inline-start: clamp(1.25rem, 3vw, 2.5rem);
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--line);
     }
 
     .principles__item:first-child {
-      padding-block-start: 0;
-      border-block-start: 0;
+      padding-inline-start: 0;
+      border-inline-start: 0;
     }
   }
 </style>

@@ -1,13 +1,10 @@
 ---
 import {
   BUZZWORDS,
-  FIELD_CLEAR_DELAY_MS,
-  FIELD_CLEAR_DURATION_MS,
-  STROKE_CASCADE_START_MS,
-  STROKE_CASCADE_STEP_MS,
-  STROKE_DURATION_MS,
+  STRIKE_DURATION_MS,
+  STRIKE_START_MS,
+  STRIKE_STEP_MS,
 } from '../content/buzzwords';
-import type { Buzzword } from '../content/buzzwords';
 import { t } from '../lib/i18n';
 import { HEADLINE } from '../lib/site';
 import type { Locale } from '../lib/site';
@@ -19,232 +16,460 @@ interface Props {
 const { locale } = Astro.props;
 const dict = t(locale);
 
-/**
- * The whole sequence is timed from data, not from hand-written CSS delays, so
- * the cascade stays even if the word list changes length.
- */
-const styleFor = (word: Buzzword, index: number) => {
-  const properties = [
-    `--x:${word.x}%`,
-    `--y:${word.y}%`,
-    `--s:${word.size}rem`,
-    `--d:${STROKE_CASCADE_START_MS + index * STROKE_CASCADE_STEP_MS}ms`,
-  ];
-
-  if (word.compact) {
-    properties.push(
-      `--cx:${word.compact.x}%`,
-      `--cy:${word.compact.y}%`,
-      `--cs:${word.compact.size}rem`,
-    );
-  }
-
-  return properties.join(';');
-};
-
-const timings = [
-  `--stroke-duration:${STROKE_DURATION_MS}ms`,
-  `--clear-delay:${FIELD_CLEAR_DELAY_MS}ms`,
-  `--clear-duration:${FIELD_CLEAR_DURATION_MS}ms`,
-].join(';');
+const strike = (index: number) =>
+  `--d:${STRIKE_START_MS + index * STRIKE_STEP_MS}ms;--strike:${STRIKE_DURATION_MS}ms`;
 ---
 
-<section class="hero dots" aria-labelledby="hero-headline" style={timings}>
-  <div class="shell hero__inner">
-    {/*
-      The word field, timed and decorative: hidden from assistive tech, unable to
-      receive events, and removed entirely when there is no JS or motion is not
-      wanted. It is the joke of the headline made visible, which is why it stays
-      after the 3D was retired: the words arrive, the marker crosses them out, the
-      field clears. The headline is what is left standing.
+<section class="hero" aria-labelledby="hero-headline">
+  {/* Colour mass. Two soft radial bleeds, one behind the reel and one low and
+      left, which is what stops a black page from reading as an empty one. */}
+  <div class="glow hero__glow" aria-hidden="true"></div>
+  <div class="glow glow--faint hero__glow-b" aria-hidden="true"></div>
+  <div class="hero__grid" aria-hidden="true"></div>
 
-      It occupies its own band, so it never overlaps the type and never causes
-      layout shift.
-    */}
-    <div class="hero__field" aria-hidden="true">
-      {
-        BUZZWORDS.map((word, index) => (
-          <span
-            class:list={['buzz', word.compact && 'buzz--compact']}
-            style={styleFor(word, index)}
-          >
-            <span class="buzz__text">{word.text}</span>
-          </span>
-        ))
-      }
+  <div class="shell hero__inner">
+    <div class="hero__copy">
+      <p class="badge hero__badge">{dict.hero.badge}</p>
+
+      <h1 class="hero__display" id="hero-headline">
+        {HEADLINE.map((line) => <span class="hero__line">{line}</span>)}
+      </h1>
+
+      {/*
+        The answer to the headline, and the only place the accent is used as a
+        mark rather than as an edge. Decorative: the h1 already states the point,
+        so a screen reader gets the argument without the list of slogans.
+      */}
+      <ul class="hero__buzz" aria-hidden="true">
+        {
+          BUZZWORDS.map((word, index) => (
+            <li class="buzz" style={strike(index)}>
+              <span class="buzz__text">{word}</span>
+              <span class="buzz__mark"></span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="hero__sub">{dict.hero.sub}</p>
+
+      <div class="hero__actions">
+        <a class="btn btn--lg hero__cta" href="#contact">
+          <span>{dict.hero.cta}</span>
+          <span class="btn__glyph" aria-hidden="true"></span>
+        </a>
+        <a class="hero__secondary" href="#services">{dict.hero.ctaSecondary}</a>
+      </div>
     </div>
 
-    <h1 class="hero__display" id="hero-headline">
-      {HEADLINE.map((line) => <span class="hero__line">{line}</span>)}
-    </h1>
+    {/*
+      The visual anchor: three vertical frames, which is the shape of the work
+      this studio sells. Abstract gradient plates, not a mockup of a product, and
+      inert to assistive tech because they carry no information.
 
-    <div class="hero__foot">
-      <p class="hero__sub">{dict.hero.sub}</p>
-      <a class="btn hero__cta" href="#contact">{dict.hero.cta}</a>
+      The near frame gets a playhead and a running progress line, which is the
+      whole reason it reads as video rather than as three rounded rectangles.
+    */}
+    <div class="hero__reel" aria-hidden="true">
+      <div class="reel__frame reel__frame--far"></div>
+      <div class="reel__frame reel__frame--near"></div>
+      <div class="reel__frame reel__frame--hero">
+        <span class="reel__play"></span>
+        <span class="reel__meta">0:14</span>
+        <span class="reel__track"><span class="reel__progress"></span></span>
+      </div>
     </div>
   </div>
 </section>
 
 <style>
   .hero {
-    /* The field's words are absolutely positioned and may be wider than the
-       viewport on purpose; the clip keeps that from becoming a scrollbar. */
+    position: relative;
+    isolation: isolate;
+    /* Full height minus the pill that floats above it, so the fold lands at the
+       bottom of the hero rather than through the middle of it. `svh` and not
+       `vh`: on iOS the address bar makes `vh` taller than the screen. */
+    min-height: calc(100svh - 4.5rem);
+    display: grid;
+    align-content: center;
+    padding-block: clamp(1.5rem, 4vw, 3rem) clamp(3rem, 7vw, 5rem);
     overflow: clip;
   }
 
-  .hero__inner {
-    /* Short by design. The space above the headline is occupied by the word
-       field, not by padding: an empty hero that floats its own headline down the
-       viewport is a layout bug wearing a spacer's clothes. */
-    padding-block-start: clamp(2rem, 4vw, 3.5rem);
-    padding-block-end: var(--section-gap);
+  /* Sits behind the reel, where a light source would be, and is deliberately not
+     wide enough to reach the copy: a glow that covers the whole band is a colour
+     cast, not a light. */
+  .hero__glow {
+    inset-block-start: -14%;
+    inset-inline-end: -6%;
+    width: min(60vw, 700px);
+    aspect-ratio: 1;
   }
 
-  /* ---- Word field ------------------------------------------------------ */
-
-  .hero__field {
-    position: relative;
-    height: clamp(5rem, 9vw, 6.5rem);
-    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
-    pointer-events: none;
-    animation: field-clear var(--clear-duration) ease-in var(--clear-delay) forwards;
+  .hero__glow-b {
+    inset-block-end: -22%;
+    inset-inline-start: -18%;
+    width: min(52vw, 520px);
+    aspect-ratio: 1;
   }
 
-  .buzz {
+  /* A 1px grid, radial-masked so it is structure rather than wallpaper: it is
+     only really visible where the glow is, which is what ties the two together. */
+  .hero__grid {
     position: absolute;
-    left: var(--x);
-    top: var(--y);
-    font-family: var(--font-sans);
-    font-size: var(--s);
-    font-weight: 400;
-    line-height: 1;
-    white-space: nowrap;
-    color: var(--mute);
-    /* Establishes the stacking context the marker tucks behind. */
-    isolation: isolate;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(to right, var(--edge) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--edge) 1px, transparent 1px);
+    background-size: 62px 62px;
+    /* Masked to the corner the light comes from, so the grid is structure under
+       the reel and not a wireframe across the copy. */
+    mask-image: radial-gradient(62% 55% at 74% 8%, #000 4%, transparent 74%);
+    -webkit-mask-image: radial-gradient(
+      62% 55% at 74% 8%,
+      #000 4%,
+      transparent 74%
+    );
+    opacity: 0.55;
   }
 
-  .buzz__text {
+  .hero__inner {
     position: relative;
     z-index: 1;
+    display: grid;
+    gap: clamp(2.5rem, 6vw, 3.5rem);
+    align-items: center;
   }
 
-  /* The marker stroke. Drawn, not faded: scaleX from the left edge, with the
-     slight rotation of a hand pulling a chisel tip across paper. It is the one
-     place the accent is used as a mark rather than as an edge. */
-  .buzz::before {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    inset-inline: -0.35em;
-    inset-block-start: 50%;
-    height: 0.85em;
-    margin-block-start: -0.425em;
-    background-color: var(--accent);
-    transform: rotate(-1.5deg) scaleX(0);
-    transform-origin: 0% 50%;
-    animation: marker-stroke var(--stroke-duration) cubic-bezier(0.2, 0.7, 0.2, 1)
-      var(--d) both;
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(1.1rem, 2.4vw, 1.6rem);
   }
 
-  @keyframes marker-stroke {
-    from {
-      transform: rotate(-1.5deg) scaleX(0);
-    }
-    to {
-      transform: rotate(-1.5deg) scaleX(1);
-    }
-  }
-
-  @keyframes field-clear {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  /* ---- Headline -------------------------------------------------------
-   * 500, not 400. The reference sets display at regular weight, and this is one
-   * documented step above it: at 72px, Inter 400 makes the sharpest line on the
-   * page feel like a caption. 500 is still nowhere near the heavy display weight
-   * the brand rules out, and it is the only place on the page above 600.
-   */
   .hero__display {
     font-size: var(--step-display);
-    font-weight: 500;
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.042em;
     color: var(--ink-strong);
   }
 
   .hero__line {
     display: block;
-    /* The two lines are fixed strings, so they are never allowed to break
-       mid-phrase. */
+    /* Two fixed strings: never allowed to break mid-phrase. */
     white-space: nowrap;
   }
 
-  /* ---- Subtitle and call to action ------------------------------------ */
+  /* ---- The struck slogans --------------------------------------------- */
 
-  .hero__foot {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: clamp(1rem, 2vw, 2rem);
-    row-gap: clamp(1.5rem, 4vw, 2rem);
-    align-items: end;
-    margin-block-start: clamp(2rem, 4vw, 3rem);
+  .hero__buzz {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    max-width: 40rem;
   }
 
+  .buzz {
+    position: relative;
+    padding: 0.3rem 0.7rem;
+    font-family: var(--font-mono);
+    /*
+     * 12px on a phone and 13px above it, which is a wrap decision rather than a
+     * taste one. At 13px the two longest chips need 355px in a 350px column, so
+     * they break one per line and the group reads as a ragged column instead of
+     * as a row of slogans.
+     */
+    font-size: 0.75rem;
+    line-height: 1.4;
+    white-space: nowrap;
+    color: var(--mute);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+  }
+
+  @media (min-width: 640px) {
+    .buzz {
+      font-size: 0.8125rem;
+    }
+  }
+
+  /*
+   * The strike. Drawn from the left edge, and struck by default: the animation
+   * only ever plays where motion is welcome, so with `prefers-reduced-motion` or
+   * with no CSS animation support the chips are simply already struck through
+   * instead of silently losing the joke.
+   */
+  .buzz__mark {
+    position: absolute;
+    inset-inline: -0.05rem;
+    inset-block-start: 50%;
+    height: 2px;
+    margin-block-start: -1px;
+    background-color: var(--accent);
+    border-radius: var(--radius-pill);
+    transform: scaleX(1);
+    transform-origin: 0 50%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .buzz__mark {
+      animation-name: strike;
+      animation-timing-function: var(--ease-out);
+      animation-fill-mode: both;
+      animation-duration: var(--strike);
+      animation-delay: var(--d);
+    }
+  }
+
+  @keyframes strike {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ---- Copy and actions ----------------------------------------------- */
+
   .hero__sub {
-    grid-column: 1 / span 6;
-    font-size: var(--step-body);
+    max-width: 44ch;
+    font-size: var(--step-lead);
+    line-height: 1.5;
     color: var(--body);
   }
 
-  .hero__cta {
-    grid-column: 9 / -1;
-    justify-self: end;
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    margin-block-start: 0.35rem;
   }
 
-  /* ---- No motion, or no JS: the hero opens clean ---------------------- */
-
-  html:not(.js) .hero__field {
-    display: none;
+  .hero__secondary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: var(--step-detail);
+    font-weight: 600;
+    color: var(--body);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+    transition:
+      color var(--dur-color) var(--ease-out),
+      text-decoration-color var(--dur-color) var(--ease-out);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .hero__field {
+  .hero__secondary:hover,
+  .hero__secondary:focus-visible {
+    color: var(--ink-strong);
+    text-decoration-color: var(--accent);
+  }
+
+  /* ---- The reel --------------------------------------------------------
+   * Three plates. The outer two sit lower and turn a degree outward, so the row
+   * reads as a stack of physical cards caught mid-shuffle rather than as a
+   * three-column grid.
+   */
+  .hero__reel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.5vw, 0.9rem);
+    perspective: 1000px;
+  }
+
+  .reel__frame {
+    position: relative;
+    flex: 1 1 0;
+    max-width: 11rem;
+    aspect-ratio: 9 / 16;
+    overflow: hidden;
+    border: 1px solid var(--edge);
+    border-radius: 1.1rem;
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.9);
+  }
+
+  /* Abstract plates, not screenshots: layered gradients in the brand's own hue,
+     so the reel reads as "things that move" without pretending to be work.
+
+     Each plate gets its own composition and its own light direction. Three copies
+     of the same gradient, overlapped, smear into one green shape; three different
+     ones read as three frames of the same reel. */
+  .reel__frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  /* A hairline inside the curve, so each plate has an edge where it crosses
+     another one. */
+  .reel__frame::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07);
+    pointer-events: none;
+  }
+
+  .reel__frame--far::before {
+    background:
+      radial-gradient(110% 60% at 25% 8%, rgb(0 217 146 / 0.15), transparent 62%),
+      linear-gradient(170deg, #0d2b26, #0a1717 60%, #080a0a);
+  }
+
+  .reel__frame--far {
+    opacity: 0.5;
+    transform: translateY(1.4rem) rotate(-5deg) scale(0.88);
+  }
+
+  .reel__frame--near::before {
+    background:
+      radial-gradient(115% 65% at 75% 85%, rgb(0 217 146 / 0.2), transparent 66%),
+      linear-gradient(200deg, #14453a, #0c1d1c 55%, #090c0c);
+  }
+
+  .reel__frame--near {
+    opacity: 0.8;
+    transform: translateY(0.7rem) rotate(4deg) scale(0.94);
+  }
+
+  /* The front plate: the brightest of the three, lit from the upper left the way
+     the rest of the page is. */
+  .reel__frame--hero::before {
+    background:
+      radial-gradient(120% 70% at 22% 12%, var(--glow-strong), transparent 62%),
+      radial-gradient(90% 60% at 82% 88%, rgb(0 217 146 / 0.24), transparent 66%),
+      linear-gradient(170deg, #17463a, #0c211e 55%, #0a0d0d);
+  }
+
+  .reel__frame--hero {
+    max-width: 13rem;
+    border-color: var(--edge-strong);
+    box-shadow:
+      0 40px 80px -35px rgb(0 0 0 / 0.95),
+      0 0 60px -20px var(--glow-strong);
+  }
+
+  /* The playhead. A small, solid triangle, which is the one iconography the
+     whole page allows itself: it is what makes these read as video. */
+  .reel__play {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    width: 0;
+    height: 0;
+    margin: -0.5rem 0 0 -0.35rem;
+    border-block: 0.5rem solid transparent;
+    border-inline-start: 0.8rem solid rgb(255 255 255 / 0.92);
+    filter: drop-shadow(0 2px 8px rgb(0 0 0 / 0.6));
+  }
+
+  .reel__meta {
+    position: absolute;
+    inset-block-start: 0.7rem;
+    inset-inline-start: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .reel__track {
+    position: absolute;
+    inset-inline: 0.7rem;
+    inset-block-end: 0.9rem;
+    height: 2px;
+    background-color: rgb(255 255 255 / 0.2);
+    border-radius: var(--radius-pill);
+  }
+
+  .reel__progress {
+    display: block;
+    width: 38%;
+    height: 100%;
+    background-color: var(--accent);
+    border-radius: var(--radius-pill);
+  }
+
+  /* ---- Desktop --------------------------------------------------------- */
+
+  @media (min-width: 900px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: clamp(2rem, 5vw, 4rem);
+    }
+
+    .hero__reel {
+      gap: 0;
+      padding-block: 1rem;
+    }
+
+    /*
+     * The plates overlap now that there is room, so the front one sits over the
+     * other two. The bases and the negative margins have to add up to exactly
+     * 100% of the column: at 42/42/52 minus two 4% pulls they summed to 132%, and
+     * the reel silently overflowed its column and got clipped by the band.
+     */
+    .reel__frame {
+      max-width: none;
+      flex: 0 0 33%;
+    }
+
+    /* A 5% overlap: enough for the plates to read as one stack, little enough
+       that each keeps a visible edge. */
+    .reel__frame--far {
+      transform: translateY(1.5rem) rotate(-6deg) scale(0.88);
+      margin-inline-end: -5%;
+    }
+
+    .reel__frame--near {
+      transform: translateY(0.9rem) rotate(5deg) scale(0.94);
+      margin-inline-start: -5%;
+    }
+
+    .reel__frame--hero {
+      max-width: none;
+      flex-basis: 44%;
+      z-index: 2;
+    }
+  }
+
+  /*
+   * Narrow: two plates across the full width rather than one plate and a hole.
+   * A single left-aligned frame in a 350px column leaves a quarter of the row
+   * empty, which reads as a broken grid rather than as a composition.
+   */
+  @media (max-width: 639px) {
+    .reel__frame--far {
       display: none;
     }
-  }
 
-  /* ---- Narrow --------------------------------------------------------- */
-
-  @media (max-width: 767px) {
-    /* Only the words with a compact placement are drawn; the rest are the long
-       ones, which would not fit a single column. */
-    .buzz:not(.buzz--compact) {
-      display: none;
+    .hero__reel {
+      gap: 0.6rem;
     }
 
-    .buzz--compact {
-      left: var(--cx);
-      top: var(--cy);
-      font-size: var(--cs);
+    .reel__frame {
+      flex: 1 1 0;
+      max-width: none;
     }
 
-    .hero__foot {
-      grid-template-columns: minmax(0, 1fr);
+    /* Flatter than on desktop: at 165px wide, a 5 degree turn reads as a
+       mistake rather than as depth. */
+    .reel__frame--near {
+      transform: translateY(0.6rem) rotate(2.5deg) scale(0.95);
     }
 
-    .hero__sub,
-    .hero__cta {
-      grid-column: 1 / -1;
-      justify-self: stretch;
-    }
-
-    .hero__cta {
-      width: 100%;
+    .reel__frame--hero {
+      z-index: 2;
     }
   }
 </style>

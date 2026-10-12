@@ -10,11 +10,21 @@
 import copy from "../content/copy.json";
 import type { Locale } from "./site";
 
-/** A service line: the heading, the paragraph, and what it actually includes. */
+/**
+ * A service card. The four parts are the shape of the sell, and they are
+ * deliberately separate rather than one paragraph: `outcome` is the line that
+ * makes someone want the thing, and it is set in the accent so it cannot be
+ * mistaken for body copy.
+ */
 export interface Service {
+  /** The mono label on the card. */
+  kicker: string;
   title: string;
+  /** One line, the reason to care. */
+  outcome: string;
+  /** The honest paragraph behind the claim. */
   text: string;
-  /** Short deliverable names, rendered as inline tags. */
+  /** Short deliverable names, rendered as chips. */
   includes: string[];
 }
 
@@ -26,13 +36,20 @@ export interface Principle {
 export interface Copy {
   meta: { title: string; description: string };
   header: { contact: string };
-  /** `hero.sub` only. The headline is in `site.config.mjs`, not per locale. */
-  hero: { sub: string; cta: string };
-  services: { eyebrow: string; title: string; items: Service[] };
-  pipeline: { title: string; from: string; to: string };
-  principles: { title: string; items: Principle[] };
+  /** No headline here. That is English in every locale and lives in
+   * `site.config.mjs`, because the page and the OG card are both built from it. */
+  hero: { badge: string; sub: string; cta: string; ctaSecondary: string };
+  services: {
+    title: string;
+    lead: string;
+    items: Service[];
+    /** The fifth cell: the invitation, not a service. */
+    invite: { title: string; text: string; cta: string };
+  };
+  process: { title: string; lead: string; from: string; to: string };
+  principles: { title: string; lead: string; items: Principle[] };
   about: { headline: string; text: string };
-  contact: { title: string; cta: string };
+  contact: { title: string; text: string; cta: string };
   footer: { contact: string; privacy: string; terms: string };
   ui: {
     skip: string;

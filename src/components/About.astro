@@ -11,14 +11,16 @@ const dict = t(locale);
 ---
 
 {/*
-  The founding date, carried entirely by type.
+  The founding date, carried entirely by type and lit from behind.
 
-  It is the largest thing on the page, larger than the headline, and that is
-  deliberate: the loudest statement Moovworks makes is a fact rather than a claim.
-  It is also never rephrased as "15 years", because that ages badly and this does
+  It is the largest thing on the page, larger than the headline, and that is the
+  point: the loudest statement Moovworks makes is a fact rather than a claim. It
+  is also never rephrased as "15 years", because that ages badly and this does
   not.
 */}
-<section class="about section" id="about">
+<section class="about" id="about">
+  <div class="glow about__glow" aria-hidden="true"></div>
+
   <div class="shell about__inner">
     <h2 class="about__headline reveal">{dict.about.headline}</h2>
     <p class="about__text reveal">{dict.about.text}</p>
@@ -26,7 +28,23 @@ const dict = t(locale);
 </section>
 
 <style>
+  .about {
+    position: relative;
+    isolation: isolate;
+    padding-block: var(--section-gap);
+    overflow: clip;
+  }
+
+  .about__glow {
+    inset-block-start: 8%;
+    inset-inline-start: -10%;
+    width: min(70vw, 620px);
+    aspect-ratio: 1;
+  }
+
   .about__inner {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: clamp(1rem, 2vw, 2rem);
@@ -36,22 +54,22 @@ const dict = t(locale);
   .about__headline {
     grid-column: 1 / -1;
     font-size: var(--step-numeral);
-    font-weight: 400;
-    line-height: 1;
-    letter-spacing: -0.045em;
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.055em;
     color: var(--ink-strong);
   }
 
-  /* Offset into the right half: the empty left column under the headline is part
-     of the composition, not an accident. */
+  /* Offset into the right half: the empty left column under the date is part of
+     the composition, not an accident. */
   .about__text {
-    grid-column: 7 / -1;
+    grid-column: 1 / -1;
     color: var(--body);
   }
 
-  @media (max-width: 767px) {
+  @media (min-width: 768px) {
     .about__text {
-      grid-column: 1 / -1;
+      grid-column: 7 / -1;
     }
   }
 </style>

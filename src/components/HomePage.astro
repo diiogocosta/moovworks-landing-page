@@ -23,15 +23,15 @@ const { locale } = Astro.props;
 
   <main id="main">
     <Hero locale={locale} />
+    <Services locale={locale} />
     {/*
-      The flow sits before the detail on purpose: the overview first, then the
-      five services explained one at a time. It is also the only place the
-      services appear as a single row, which is what keeps the grid below from
-      reading as a second copy of the same list.
+      The flow follows the cards on purpose: the services are the detail, and this
+      is the shape of them. It is also the only place the four names appear as a
+      single row, which is what keeps it from reading as a second copy of the grid
+      above.
     */}
     <Pipeline locale={locale} />
-    <Services locale={locale} />
-    {/* Future products slot in here, between Services and Principles. */}
+    {/* Future products slot in here, between Process and Principles. */}
     <Principles locale={locale} />
     <About locale={locale} />
     <Contact locale={locale} />

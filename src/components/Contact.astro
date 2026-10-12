@@ -12,59 +12,126 @@ const dict = t(locale);
 const mailto = `mailto:${SITE.email}`;
 ---
 
-<section class="contact section" id="contact">
-  <div class="shell">
-    {/* No reveal here. This is the page's closing action, and the one thing on
-        it that should be present the moment it is on screen rather than arriving
-        after it. It is also what keeps the motion to three sections. */}
-    <header class="section__head">
-      <h2 class="section__title">{dict.contact.title}</h2>
-      <span class="rule" aria-hidden="true"></span>
-    </header>
+{/*
+  The close. It is deliberately the only band on the page with the accent in the
+  background rather than on a control, so the page ends on a lit surface instead
+  of trailing off into the footer.
 
-    <div class="contact__inner">
+  No reveal animation here: this is the action the whole page was building to, and
+  it should be present the moment it is on screen rather than arriving after it.
+*/}
+<section class="contact" id="contact">
+  <div class="contact__wash" aria-hidden="true"></div>
+
+  <div class="shell contact__inner">
+    <h2 class="contact__title">{dict.contact.title}</h2>
+    <p class="contact__text">{dict.contact.text}</p>
+
+    <div class="contact__actions">
+      <a class="btn btn--lg contact__cta" href={mailto}>
+        <span>{dict.contact.cta}</span>
+        <span class="btn__glyph" aria-hidden="true"></span>
+      </a>
       {/* The address carries a title's weight, so the shortest path to the studio
           is legible from across the room. The link text is the address itself,
           which is also what a person copies. */}
       <a class="contact__email" href={mailto}>{SITE.email}</a>
-      <a class="btn contact__cta" href={mailto}>{dict.contact.cta}</a>
     </div>
   </div>
 </section>
 
 <style>
+  .contact {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(4rem, 9vw, 8rem);
+    /* No top border: the band above already ends on a hairline. */
+  }
+
+  /* A wash rather than a glow: it fills the band from the top edge, so the
+     section reads as lit rather than as having a lamp in it. */
+  .contact__wash {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        90% 120% at 15% 0%,
+        var(--glow-soft) 0%,
+        transparent 62%
+      ),
+      radial-gradient(60% 80% at 95% 100%, var(--glow-faint) 0%, transparent 60%);
+    border-block-start: 1px solid var(--edge);
+  }
+
   .contact__inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(1.5rem, 4vw, 2.25rem);
+    gap: clamp(1rem, 2.4vw, 1.5rem);
+  }
+
+  .contact__title {
+    max-width: 20ch;
+  }
+
+  .contact__text {
+    max-width: 46ch;
+    font-size: var(--step-lead);
+    line-height: 1.5;
+    color: var(--body);
+  }
+
+  .contact__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.25rem);
+    margin-block-start: clamp(0.75rem, 2vw, 1.25rem);
   }
 
   .contact__email {
     max-width: 100%;
-    font-size: var(--step-section);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.03em;
-    color: var(--ink-strong);
+    font-size: clamp(1.0625rem, 0.9rem + 0.9vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ink);
     text-decoration-line: underline;
-    text-decoration-color: var(--accent);
-    text-decoration-thickness: 3px;
-    text-underline-offset: 0.1em;
+    text-decoration-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.24em;
     /* One long unbroken token has to be allowed to wrap, or a 320px screen gets
        a horizontal scrollbar from the address alone. */
     overflow-wrap: anywhere;
-    transition: text-decoration-thickness var(--transition);
+    transition:
+      color var(--dur-color) var(--ease-out),
+      text-decoration-color var(--dur-color) var(--ease-out);
   }
 
   .contact__email:hover,
   .contact__email:focus-visible {
-    text-decoration-thickness: 6px;
+    color: var(--ink-strong);
+    text-decoration-color: var(--accent);
   }
 
-  @media (max-width: 767px) {
-    .contact__inner {
+  @media (max-width: 639px) {
+    .contact__actions {
+      align-self: stretch;
+      flex-direction: column;
       align-items: stretch;
+      gap: 1.25rem;
+    }
+
+    .contact__cta {
+      width: 100%;
+    }
+
+    .contact__email {
+      text-align: center;
     }
   }
 </style>
