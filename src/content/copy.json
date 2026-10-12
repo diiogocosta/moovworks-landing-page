@@ -4,104 +4,117 @@
     "here on purpose: it is English in every locale and lives in site.config.mjs",
     "so the page and the OG card are built from one string.",
     "",
-    "Rules for editing: no exclamation marks, no em-dashes, no invented numbers,",
-    "no client names. pt-BR and pt-PT are written separately, not converted: they",
-    "differ on equipa/equipe, guiao/roteiro, gerund vs infinitive, planeamento/",
-    "planejamento and medicao/mensuracao.",
+    "Positioning: Moovworks is a platform that teaches applied AI and sells its own",
+    "tools. It is not a service studio. We do not build products for others.",
+    "The product is not live yet, so every CTA is the waitlist.",
     "",
-    "Each service carries four parts, and the shape is the sell:",
+    "Rules for editing: no exclamation marks, no em-dashes, no invented numbers,",
+    "no client names, no income promises. pt-BR and pt-PT are written separately,",
+    "not converted: they differ on equipa/equipe, guiao/roteiro, ecra/tela, gerund",
+    "vs infinitive, contacto/contato and medicao/mensuracao.",
+    "",
+    "Voice: plain and specific. Short sentences mixed with longer ones. Avoid the",
+    "'not X, Y' slogan pattern, stacked abstractions (system, path, strategy) and",
+    "jargon, since one of the promises is 'no jargon'.",
+    "",
+    "Each service carries five parts, and the shape is the sell:",
     "  kicker   the mono label on the card",
-    "  title    what it is",
+    "  title    what you learn to do",
     "  outcome  the one line that makes someone want it",
     "  text     the honest paragraph behind the claim",
-    "  includes the deliverables, as chips"
+    "  includes what the module covers, as chips"
   ],
 
   "pt-BR": {
     "meta": {
-      "title": "Moovworks | IA aplicada para mover o seu trabalho",
-      "description": "Estúdio de IA aplicada. Vídeo, apps, automações e marketing, do briefing à entrega. Desde 2011."
+      "title": "Moovworks | Aprenda IA construindo coisas que vendem",
+      "description": "Aprenda a fazer vídeo com IA que vende, transformar o que você sabe em produto e automatizar a parte chata. Para quem sente que chegou tarde na IA e quer lucrar com ela."
     },
     "header": {
-      "contact": "Falar com a Moovworks"
+      "contact": "Entrar na lista de espera"
     },
     "hero": {
-      "badge": "Estúdio de IA aplicada",
-      "sub": "Vídeo, apps, automações e marketing. IA aplicada para mover o seu trabalho para a frente, sem queimar orçamento pelo caminho.",
-      "cta": "Falar com a Moovworks",
-      "ctaSecondary": "Ver o que fazemos"
+      "badge": "IA aplicada, sem enrolação",
+      "sub": "Todo mundo tem uma opinião sobre IA e quase tudo é ruído. A Moovworks ensina você a fazer vídeo que vende, a transformar suas ideias em produto e a automatizar o resto, para lucrar sem correr atrás de cada ferramenta nova.",
+      "cta": "Entrar na lista de espera",
+      "ctaSecondary": "Ver o que você vai aprender"
     },
     "services": {
-      "title": "Quatro frentes, um só caminho.",
-      "lead": "Não vendemos ferramentas. Pegamos no que você já tem e levamos até o fim.",
+      "title": "O que você vai aprender.",
+      "lead": "Quatro coisas, na ordem em que a maioria das pessoas precisa. Cada uma vem com uma ferramenta nossa, que estamos construindo.",
       "items": [
         {
           "kicker": "Vídeo",
-          "title": "Vídeo com IA, acabamento de estúdio.",
-          "outcome": "Cara de produção grande, sem queimar orçamento nem créditos.",
-          "text": "Geramos e finalizamos vídeo com IA, com acabamento profissional. Antes de gerar um frame, fechamos a estratégia de produção: o que entra na tela, em que ordem e quanto cada peça custa em créditos. Sem tentativa e erro gastando o seu dinheiro.",
-          "includes": ["roteiro", "geração", "edição", "legenda"]
+          "title": "Faça vídeo com IA que vende sem queimar crédito.",
+          "outcome": "Planeje o vídeo antes de pagar para gerar.",
+          "text": "A maioria das pessoas escreve o prompt, espera, gera de novo e paga a cada tentativa. Ensinamos a decidir as cenas, o gancho e o ângulo antes, para você gerar menos e aproveitar mais do que gera. Os ângulos são de nicho, escolhidos porque convertem, e não porque impressionam.",
+          "includes": [
+            "plano de cenas",
+            "orçamento de tokens",
+            "ângulos de nicho",
+            "ganchos"
+          ]
         },
         {
-          "kicker": "Apps",
-          "title": "Um app que embala a sua solução.",
-          "outcome": "Leads que viram receita, e não só contato.",
-          "text": "Transformamos o que você vende em um produto que o cliente usa, entende e paga por ele. Do primeiro desenho ao deploy, com a medição ligada desde o primeiro dia.",
-          "includes": ["descoberta", "design", "desenvolvimento", "analytics"]
+          "kicker": "Envelope",
+          "title": "Transforme o que você sabe em algo que as pessoas compram.",
+          "outcome": "Não é um PDF. É um produto com motivo para custar dinheiro.",
+          "text": "Uma boa ideia vendida como e-book vale pouco. A mesma ideia como ferramenta, experiência guiada ou peça interativa pode valer muito mais. Você aprende a escolher o formato certo para a sua ideia e a construir tudo com IA.",
+          "includes": ["teste da ideia", "formato", "construção", "preço"]
+        },
+        {
+          "kicker": "Audiência",
+          "title": "Chegue nas pessoas certas e faça elas voltarem.",
+          "outcome": "Uma renda que se repete todo mês.",
+          "text": "Viralizar não é sorte, mas também não é garantia. Você aprende a escolher quem atingir, a colocar vídeo e produto na frente dessas pessoas e a trazê-las de volta, para que um bom mês puxe o seguinte.",
+          "includes": ["quem atingir", "alcance", "oferta", "retenção"]
         },
         {
           "kicker": "Automações",
-          "title": "Automações que devolvem horas.",
-          "outcome": "O trabalho repetitivo sai do dia de alguém.",
-          "text": "Mapeamos o que ainda é feito à mão toda semana e automatizamos o que dá retorno de verdade. O critério nunca muda: quantas horas isso poupa, e a partir de quando.",
-          "includes": ["levantamento", "integrações", "agentes", "alertas"]
-        },
-        {
-          "kicker": "Marketing",
-          "title": "Marketing orientado por IA, feito para converter.",
-          "outcome": "Estratégia amarrada ao funil, não a impressão.",
-          "text": "Posicionamento, conteúdo e mídia paga puxando para o mesmo lado. A IA acelera a produção; a decisão continua sendo sobre o que faz uma pessoa avançar.",
-          "includes": ["posicionamento", "conteúdo", "mídia paga", "mensuração"]
+          "title": "Automatize a parte chata, em palavras simples.",
+          "outcome": "Um esquema simples o bastante para explicar a uma criança.",
+          "text": "Sai uma ferramenta nova de IA por dia e não há motivo para acompanhar todas. Mostramos um conjunto pequeno de automações que liga o seu vídeo, o seu produto e a sua audiência, explicado passo a passo, para você parar de se sentir atrasado.",
+          "includes": ["fluxos simples", "conexões", "agentes", "alertas"]
         }
       ],
       "invite": {
-        "title": "Tem uma ideia e não sabe como mover?",
-        "text": "Conte o que está na sua cabeça. Respondemos com um caminho: o que é possível, por onde começar e o que isso custa.",
-        "cta": "Falar com a Moovworks"
+        "title": "Sentindo que chegou tarde na IA?",
+        "text": "A maioria das pessoas ainda está tateando. Entre na lista de espera e enviamos uma primeira lição, e liberamos o seu acesso quando abrirmos.",
+        "cta": "Entrar na lista de espera"
       }
     },
     "process": {
-      "title": "Do briefing à entrega.",
-      "lead": "Um caminho só, uma equipe só, do começo ao fim.",
-      "from": "Briefing",
-      "to": "Entregue"
+      "title": "De perdido a lucrando.",
+      "lead": "Aprender, construir, alcançar gente, automatizar.",
+      "from": "Perdido",
+      "to": "Lucrando"
     },
     "principles": {
       "title": "Três coisas que não fazemos.",
       "lead": "O resto do mercado faz.",
       "items": [
         {
-          "title": "Sem demo",
-          "text": "Nada que não vá para produção. O protótipo é o primeiro passo, não o entregável."
+          "title": "Sem hype",
+          "text": "Não prometemos dinheiro fácil. Você recebe coisas que dá para testar e números que dá para conferir."
         },
         {
-          "title": "Sem vaidade",
-          "text": "Só entra o que dá para medir. O que não move o resultado fica fora do escopo."
+          "title": "Sem prompt solto",
+          "text": "Prompt sem plano é o jeito mais rápido de o crédito sumir. A gente planeja primeiro."
         },
         {
-          "title": "Sem metade",
-          "text": "Poucos projetos ao mesmo tempo, e cada um vai até o fim."
+          "title": "Sem jargão",
+          "text": "Se precisa de glossário, a gente reescreve."
         }
       ]
     },
     "about": {
-      "headline": "Desde 2011.",
-      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar poucos projetos e levar cada um até o fim. É por isso que ainda estamos aqui, e é por isso que a IA só entra quando muda alguma coisa."
+      "headline": "Nós ensinamos. Não fazemos projeto para cliente.",
+      "text": "A Moovworks não é agência e não constrói produto para os outros. Construímos os nossos, aprendemos o que funciona e ensinamos isso a você, junto com as ferramentas."
     },
     "contact": {
-      "title": "Vamos começar pelo briefing.",
-      "text": "Sem formulário longo. Uma mensagem basta, e respondemos com um caminho em vez de um orçamento solto.",
-      "cta": "Falar com a Moovworks"
+      "title": "Entre cedo.",
+      "text": "Ainda estamos construindo. Deixe o seu e-mail e enviamos uma primeira lição agora, e liberamos o seu acesso quando a plataforma abrir.",
+      "cta": "Entrar na lista de espera"
     },
     "footer": {
       "contact": "Contato",
@@ -119,89 +132,94 @@
 
   "pt-PT": {
     "meta": {
-      "title": "Moovworks | IA aplicada para mover o seu trabalho",
-      "description": "Estúdio de IA aplicada. Vídeo, apps, automações e marketing, do briefing à entrega. Desde 2011."
+      "title": "Moovworks | Aprenda IA a construir coisas que vendem",
+      "description": "Aprenda a fazer vídeo com IA que vende, a transformar o que sabe em produto e a automatizar a parte chata. Para quem sente que chegou tarde à IA e quer lucrar com ela."
     },
     "header": {
-      "contact": "Falar com a Moovworks"
+      "contact": "Entrar na lista de espera"
     },
     "hero": {
-      "badge": "Estúdio de IA aplicada",
-      "sub": "Vídeo, apps, automações e marketing. IA aplicada para mover o seu trabalho para a frente, sem queimar orçamento pelo caminho.",
-      "cta": "Falar com a Moovworks",
-      "ctaSecondary": "Ver o que fazemos"
+      "badge": "IA aplicada, sem rodeios",
+      "sub": "Toda a gente tem uma opinião sobre IA e quase tudo é ruído. A Moovworks ensina a fazer vídeo que vende, a transformar as suas ideias em produto e a automatizar o resto, para lucrar sem andar atrás de cada ferramenta nova.",
+      "cta": "Entrar na lista de espera",
+      "ctaSecondary": "Ver o que vai aprender"
     },
     "services": {
-      "title": "Quatro frentes, um só caminho.",
-      "lead": "Não vendemos ferramentas. Pegamos no que já tem e levamos até ao fim.",
+      "title": "O que vai aprender.",
+      "lead": "Quatro coisas, pela ordem de que a maioria das pessoas precisa. Cada uma traz uma ferramenta nossa, que estamos a construir.",
       "items": [
         {
           "kicker": "Vídeo",
-          "title": "Vídeo com IA, acabamento de estúdio.",
-          "outcome": "Ar de produção grande, sem queimar orçamento nem créditos.",
-          "text": "Geramos e finalizamos vídeo com IA, com acabamento profissional. Antes de gerar um frame, fechamos a estratégia de produção: o que entra no ecrã, em que ordem e quanto custa cada peça em créditos. Sem tentativa e erro a gastar o seu dinheiro.",
-          "includes": ["guião", "geração", "edição", "legenda"]
+          "title": "Faça vídeo com IA que vende sem queimar créditos.",
+          "outcome": "Planeie o vídeo antes de pagar para o gerar.",
+          "text": "A maioria das pessoas escreve o prompt, espera, gera outra vez e paga a cada tentativa. Ensinamos a decidir as cenas, o gancho e o ângulo antes, para gerar menos e aproveitar mais do que gera. Os ângulos são de nicho, escolhidos porque convertem, e não porque impressionam.",
+          "includes": [
+            "plano de cenas",
+            "orçamento de tokens",
+            "ângulos de nicho",
+            "ganchos"
+          ]
         },
         {
-          "kicker": "Apps",
-          "title": "Uma app que embala a sua solução.",
-          "outcome": "Leads que viram receita, e não apenas contacto.",
-          "text": "Transformamos o que vende num produto que o cliente usa, entende e paga por ele. Do primeiro desenho ao deploy, com a medição ligada desde o primeiro dia.",
-          "includes": ["descoberta", "design", "desenvolvimento", "analytics"]
+          "kicker": "Envelope",
+          "title": "Transforme o que sabe em algo que as pessoas compram.",
+          "outcome": "Não é um PDF. É um produto com razão para custar dinheiro.",
+          "text": "Uma boa ideia vendida como e-book vale pouco. A mesma ideia como ferramenta, experiência guiada ou peça interativa pode valer muito mais. Aprende a escolher o formato certo para a sua ideia e a construir tudo com IA.",
+          "includes": ["teste da ideia", "formato", "construção", "preço"]
+        },
+        {
+          "kicker": "Audiência",
+          "title": "Chegue às pessoas certas e faça-as voltar.",
+          "outcome": "Um rendimento que se repete todos os meses.",
+          "text": "Tornar-se viral não é sorte, mas também não é garantia. Aprende a escolher quem atingir, a pôr vídeo e produto à frente dessas pessoas e a trazê-las de volta, para que um bom mês puxe o seguinte.",
+          "includes": ["quem atingir", "alcance", "oferta", "retenção"]
         },
         {
           "kicker": "Automações",
-          "title": "Automações que devolvem horas.",
-          "outcome": "O trabalho repetitivo sai do dia de alguém.",
-          "text": "Mapeamos o que ainda é feito à mão todas as semanas e automatizamos o que dá retorno a sério. O critério nunca muda: quantas horas poupa isto, e a partir de quando.",
-          "includes": ["levantamento", "integrações", "agentes", "alertas"]
-        },
-        {
-          "kicker": "Marketing",
-          "title": "Marketing orientado por IA, feito para converter.",
-          "outcome": "Estratégia amarrada ao funil, não à impressão.",
-          "text": "Posicionamento, conteúdo e mídia paga a puxar para o mesmo lado. A IA acelera a produção; a decisão continua a ser sobre o que faz uma pessoa avançar.",
-          "includes": ["posicionamento", "conteúdo", "mídia paga", "medição"]
+          "title": "Automatize a parte chata, em palavras simples.",
+          "outcome": "Um esquema simples o bastante para explicar a uma criança.",
+          "text": "Sai uma ferramenta nova de IA por dia e não há razão para acompanhar todas. Mostramos um conjunto pequeno de automações que liga o seu vídeo, o seu produto e a sua audiência, explicado passo a passo, para deixar de se sentir atrasado.",
+          "includes": ["fluxos simples", "ligações", "agentes", "alertas"]
         }
       ],
       "invite": {
-        "title": "Tem uma ideia e não sabe como mover?",
-        "text": "Conte o que tem em mente. Respondemos com um caminho: o que é possível, por onde começar e quanto custa.",
-        "cta": "Falar com a Moovworks"
+        "title": "Sente que chegou tarde à IA?",
+        "text": "A maioria das pessoas ainda anda às apalpadelas. Entre na lista de espera e enviamos uma primeira lição, e damos-lhe acesso quando abrirmos.",
+        "cta": "Entrar na lista de espera"
       }
     },
     "process": {
-      "title": "Do briefing à entrega.",
-      "lead": "Um caminho só, uma equipa só, do princípio ao fim.",
-      "from": "Briefing",
-      "to": "Entregue"
+      "title": "De perdido a lucrar.",
+      "lead": "Aprender, construir, chegar às pessoas, automatizar.",
+      "from": "Perdido",
+      "to": "A lucrar"
     },
     "principles": {
       "title": "Três coisas que não fazemos.",
       "lead": "O resto do mercado faz.",
       "items": [
         {
-          "title": "Sem demo",
-          "text": "Nada que não vá para produção. O protótipo é o primeiro passo, não o entregável."
+          "title": "Sem hype",
+          "text": "Não prometemos dinheiro fácil. Recebe coisas que pode testar e números que pode confirmar."
         },
         {
-          "title": "Sem vaidade",
-          "text": "Só entra o que dá para medir. O que não move o resultado fica fora do âmbito."
+          "title": "Sem prompt solto",
+          "text": "Um prompt sem plano é a forma mais rápida de os créditos desaparecerem. Planeamos primeiro."
         },
         {
-          "title": "Sem metade",
-          "text": "Poucos projetos ao mesmo tempo, e cada um vai até ao fim."
+          "title": "Sem jargão",
+          "text": "Se precisa de glossário, reescrevemos."
         }
       ]
     },
     "about": {
-      "headline": "Desde 2011.",
-      "text": "Vimos modas de IA chegarem e irem embora. Ficou o que funciona: pegar em poucos projetos e levar cada um até ao fim. É por isso que ainda aqui estamos, e é por isso que a IA só entra quando muda alguma coisa."
+      "headline": "Nós ensinamos. Não fazemos projetos para clientes.",
+      "text": "A Moovworks não é uma agência e não constrói produtos para os outros. Construímos os nossos, aprendemos o que resulta e ensinamos isso, com as ferramentas incluídas."
     },
     "contact": {
-      "title": "Vamos começar pelo briefing.",
-      "text": "Sem formulário longo. Uma mensagem basta, e respondemos com um caminho em vez de um orçamento solto.",
-      "cta": "Falar com a Moovworks"
+      "title": "Entre cedo.",
+      "text": "Ainda estamos a construir. Deixe o seu email e enviamos uma primeira lição agora, e damos-lhe acesso quando a plataforma abrir.",
+      "cta": "Entrar na lista de espera"
     },
     "footer": {
       "contact": "Contacto",
@@ -219,89 +237,89 @@
 
   "en": {
     "meta": {
-      "title": "Moovworks | Applied AI that moves your work forward",
-      "description": "An applied AI studio. Video, apps, automations and marketing, from brief to delivery. Since 2011."
+      "title": "Moovworks | Learn AI by building things that sell",
+      "description": "Learn to make AI video that sells, turn what you know into a product, and automate the boring parts. Made for people who feel late to AI and want to earn from it."
     },
     "header": {
-      "contact": "Talk to Moovworks"
+      "contact": "Join the waitlist"
     },
     "hero": {
-      "badge": "Applied AI studio",
-      "sub": "Video, apps, automations and marketing. Applied AI that moves your work forward, without burning the budget on the way.",
-      "cta": "Talk to Moovworks",
-      "ctaSecondary": "See what we do"
+      "badge": "Applied AI, no fluff",
+      "sub": "Everyone has an opinion about AI and most of it is noise. Moovworks teaches you to make video that sells, turn your ideas into products, and automate the rest, so you can earn from it without chasing every new tool.",
+      "cta": "Join the waitlist",
+      "ctaSecondary": "See what you will learn"
     },
     "services": {
-      "title": "Four fronts, one path.",
-      "lead": "We do not sell tools. We take what you already have and see it through.",
+      "title": "What you will learn.",
+      "lead": "Four things, in the order most people need them. Each one comes with a tool of ours that we are building.",
       "items": [
         {
           "kicker": "Video",
-          "title": "AI video, finished to studio standard.",
-          "outcome": "Expensive-looking production without burning the budget or the credits.",
-          "text": "We generate and finish video with AI, to a standard you would put your name on. Before a single frame is generated we fix the production strategy: what goes on screen, in what order, and what each piece costs in credits. No trial and error on your money.",
-          "includes": ["script", "generate", "edit", "captions"]
+          "title": "Make AI video that sells without burning credits.",
+          "outcome": "Plan the video before you pay to generate it.",
+          "text": "Most people write a prompt, wait, regenerate and pay every time. We teach you to decide the shots, the hook and the angle first, so you generate less and keep more of what you generate. The angles are niche ones, picked because they convert, not because they look impressive.",
+          "includes": ["shot planning", "token budget", "niche angles", "hooks"]
         },
         {
-          "kicker": "Apps",
-          "title": "An app that wraps your solution.",
-          "outcome": "Leads that turn into revenue, not into a contact list.",
-          "text": "We turn what you sell into a product a customer can use, understand and pay for. From the first sketch to deploy, with measurement wired in from day one.",
-          "includes": ["discovery", "design", "build", "analytics"]
+          "kicker": "Envelope",
+          "title": "Turn what you know into something people buy.",
+          "outcome": "Not a PDF. A product with a reason to cost money.",
+          "text": "A good idea sold as an e-book is worth very little. The same idea as a tool, a guided experience or an interactive piece can be worth a lot more. You learn how to pick the right format for your idea and build it all with AI.",
+          "includes": ["idea check", "format", "build", "price"]
+        },
+        {
+          "kicker": "Audience",
+          "title": "Reach the right people and bring them back.",
+          "outcome": "Income that repeats every month.",
+          "text": "Going viral is not luck, but it is not a promise either. You learn who to aim at, how to put your video and your product in front of them, and how to bring them back, so one good month feeds the next.",
+          "includes": ["who to target", "reach", "offer", "retention"]
         },
         {
           "kicker": "Automations",
-          "title": "Automations that give the hours back.",
-          "outcome": "The repetitive work leaves someone's day.",
-          "text": "We map what is still done by hand every week and automate what actually pays. The test never changes: how many hours does this save, and from when.",
-          "includes": ["audit", "integrations", "agents", "alerts"]
-        },
-        {
-          "kicker": "Marketing",
-          "title": "AI-led marketing, built to convert.",
-          "outcome": "Strategy tied to the funnel, not to impressions.",
-          "text": "Positioning, content and paid media pulling the same way. AI speeds up the production; the decision is still about what makes a person move.",
-          "includes": ["positioning", "content", "paid media", "measurement"]
+          "title": "Automate the boring parts, in plain words.",
+          "outcome": "A setup simple enough to explain to a child.",
+          "text": "A new AI tool shows up every day and there is no reason to follow them all. We show you a small set of automations that connect your video, your product and your audience, explained step by step, so you stop feeling behind.",
+          "includes": ["simple flows", "connections", "agents", "alerts"]
         }
       ],
       "invite": {
-        "title": "Got an idea and no idea how to move it?",
-        "text": "Tell us what is on your mind. We answer with a path: what is possible, where to start, and what it costs.",
-        "cta": "Talk to Moovworks"
+        "title": "Feeling late to AI?",
+        "text": "Most people are still guessing. Join the waitlist and we will send you a first lesson, then let you in when we open.",
+        "cta": "Join the waitlist"
       }
     },
     "process": {
-      "title": "From brief to delivery.",
-      "lead": "One path, one team, start to finish.",
-      "from": "Brief",
-      "to": "Delivered"
+      "title": "From lost to earning.",
+      "lead": "Learn it, build it, reach people, automate it.",
+      "from": "Lost",
+      "to": "Earning"
     },
     "principles": {
       "title": "Three things we do not do.",
       "lead": "The rest of the market does.",
       "items": [
         {
-          "title": "No demo",
-          "text": "Nothing that will not reach production. The prototype is the first step, not the deliverable."
+          "title": "No hype",
+          "text": "We will not promise easy money. You get things you can test and numbers you can check."
         },
         {
-          "title": "No vanity",
-          "text": "Only what can be measured. What does not move the result stays out of scope."
+          "title": "No loose prompts",
+          "text": "Prompting without a plan is the fastest way to lose credits. We plan first."
         },
         {
-          "title": "No half",
-          "text": "Few projects at once, and each one goes all the way."
+          "title": "No jargon",
+          "text": "If it needs a glossary, we rewrite it."
         }
       ]
     },
     "about": {
-      "headline": "Since 2011.",
-      "text": "We have watched AI fashions arrive and leave. What stayed is what works: take on few projects and see each one through. That is why we are still here, and why AI only goes in when it changes something."
+      "headline": "We teach. We do not take client work.",
+      "text": "Moovworks is not an agency and does not build products for other people. We build our own, learn what works, and teach it to you, tools included."
     },
     "contact": {
-      "title": "Let us start with the brief.",
-      "text": "No long form. One message is enough, and we answer with a path rather than a loose quote.",
-      "cta": "Talk to Moovworks"
+      "title": "Get in early.",
+      "text": "We are still building. Leave your email and we will send a first lesson now, then let you in when the platform opens.",
+      "cta": "Join the waitlist"
     },
     "footer": {
       "contact": "Contact",
