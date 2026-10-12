@@ -19,24 +19,24 @@
  * Units are em with the baseline at y = 0 and y up, matching three's own
  * convention, so the runtime only has to scale by the rendered font size.
  */
-import { mkdir, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { openSync } from 'fontkit';
-import { ShapePath, ShapeUtils } from 'three';
+import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { openSync } from "fontkit";
+import { ShapePath, ShapeUtils } from "three";
 
-const ROOT = resolve(import.meta.dirname, '..');
+const ROOT = resolve(import.meta.dirname, "..");
 
 const SOURCE = {
-  file: resolve(ROOT, '.cache/fonts/Archivo-var.ttf'),
-  url: 'https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/Archivo%5Bwdth%2Cwght%5D.ttf',
+  file: resolve(ROOT, ".cache/fonts/Archivo-var.ttf"),
+  url: "https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/Archivo%5Bwdth%2Cwght%5D.ttf",
 };
 
 /** Matches the hero's CSS: Archivo 800, wdth 85. */
 const VARIATION = { wght: 800, wdth: 85 };
 
 /** Identical in all three locales, so it is baked once. */
-const LINES = ['No more', 'AI bullshit'];
+const LINES = ["No more", "AI bullshit"];
 
 /** Points sampled per curved segment. The only real lever on output size. */
 const CURVE_SEGMENTS = 8;
@@ -51,10 +51,16 @@ const CURVE_SEGMENTS = 8;
 const QUANT = 4000;
 const QUANT_MAX = 32767 / QUANT;
 
-const TAGS = { moveTo: 'M', lineTo: 'L', quadraticCurveTo: 'Q', bezierCurveTo: 'C', closePath: 'Z' };
+const TAGS = {
+  moveTo: "M",
+  lineTo: "L",
+  quadraticCurveTo: "Q",
+  bezierCurveTo: "C",
+  closePath: "Z",
+};
 
-const JSON_OUTPUT = resolve(ROOT, 'src/assets/type/hero-mesh.json');
-const BIN_OUTPUT = resolve(ROOT, 'src/assets/type/hero-mesh.bin');
+const JSON_OUTPUT = resolve(ROOT, "src/assets/type/hero-mesh.json");
+const BIN_OUTPUT = resolve(ROOT, "src/assets/type/hero-mesh.bin");
 
 async function download() {
   if (existsSync(SOURCE.file)) return;
@@ -104,19 +110,19 @@ function toShapes(font, text) {
 
     for (const { command, args } of glyph.path.commands) {
       switch (command) {
-        case 'moveTo':
+        case "moveTo":
           closeContour();
           path.moveTo(emitX(args[0]), emitY(args[1]));
           [startX, startY] = [emitX(args[0]), emitY(args[1])];
           [lastX, lastY] = [startX, startY];
           break;
 
-        case 'lineTo':
+        case "lineTo":
           path.lineTo(emitX(args[0]), emitY(args[1]));
           [lastX, lastY] = [emitX(args[0]), emitY(args[1])];
           break;
 
-        case 'quadraticCurveTo':
+        case "quadraticCurveTo":
           path.quadraticCurveTo(
             emitX(args[0]),
             emitY(args[1]),
@@ -126,7 +132,7 @@ function toShapes(font, text) {
           [lastX, lastY] = [emitX(args[2]), emitY(args[3])];
           break;
 
-        case 'bezierCurveTo':
+        case "bezierCurveTo":
           path.bezierCurveTo(
             emitX(args[0]),
             emitY(args[1]),
@@ -138,7 +144,7 @@ function toShapes(font, text) {
           [lastX, lastY] = [emitX(args[4]), emitY(args[5])];
           break;
 
-        case 'closePath':
+        case "closePath":
           closeContour();
           [lastX, lastY] = [startX, startY];
           break;
@@ -213,7 +219,11 @@ function bakeLine(font, text) {
     // extruded walls and indexes the points directly; a per-shape offset would
     // silently stitch together vertices from different letters.
     rings.forEach((ring, ringIndex) => {
-      contours.push({ start: vertices, count: ring.length, hole: ringIndex > 0 });
+      contours.push({
+        start: vertices,
+        count: ring.length,
+        hole: ringIndex > 0,
+      });
       for (const point of ring) points.push(point.x, point.y);
       vertices += ring.length;
     });
@@ -223,7 +233,11 @@ function bakeLine(font, text) {
 
     const block = rings.flat();
     for (const triangle of triangles) {
-      indices.push(start + triangle[0], start + triangle[1], start + triangle[2]);
+      indices.push(
+        start + triangle[0],
+        start + triangle[1],
+        start + triangle[2],
+      );
       triangleArea += ringArea([
         block[triangle[0]],
         block[triangle[1]],
@@ -278,7 +292,8 @@ function pack(lines) {
     for (let i = 0; i < line.points.length; i += 2) {
       const x = Math.round(line.points[i] * QUANT);
       const y = Math.round(line.points[i + 1] * QUANT);
-      if (!Number.isFinite(x) || !Number.isFinite(y)) throw new Error('non-finite point');
+      if (!Number.isFinite(x) || !Number.isFinite(y))
+        throw new Error("non-finite point");
       pointBytes.writeInt16LE(x, pointOffset);
       pointBytes.writeInt16LE(y, pointOffset + 2);
       pointOffset += 4;
@@ -322,11 +337,11 @@ const { buffer, counts } = pack(baked);
 
 const metadata = {
   source: {
-    family: 'Archivo',
+    family: "Archivo",
     variation: VARIATION,
     curveSegments: CURVE_SEGMENTS,
-    units: 'em, baseline at y=0, y up',
-    note: 'Generated by scripts/bake-hero-mesh.mjs. Do not edit.',
+    units: "em, baseline at y=0, y up",
+    note: "Generated by scripts/bake-hero-mesh.mjs. Do not edit.",
   },
   quant: { scale: QUANT },
   lines: baked.map((line, index) => ({
@@ -348,7 +363,7 @@ console.log(
     `wrote ${BIN_OUTPUT} ${kb(buffer.length)}\n` +
     `  ${counts.reduce((n, c) => n + c.points, 0)} points, ` +
     `${counts.reduce((n, c) => n + c.indices / 3, 0)} triangles\n` +
-    `  contours per line: ${baked.map((l) => l.contours.length).join(', ')}\n` +
+    `  contours per line: ${baked.map((l) => l.contours.length).join(", ")}\n` +
     `  bounds: x ${bounds.minX.toFixed(3)}..${bounds.maxX.toFixed(3)}  ` +
     `y ${bounds.minY.toFixed(3)}..${bounds.maxY.toFixed(3)} em`,
 );

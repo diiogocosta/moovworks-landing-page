@@ -16,8 +16,8 @@
  *   - the real `<h1>` stays in the DOM and is only made transparent, never
  *     removed, so assistive tech and crawlers always get the text
  */
-import meshMeta from '../assets/type/hero-mesh.json';
-import meshUrl from '../assets/type/hero-mesh.bin?url';
+import meshMeta from "../assets/type/hero-mesh.json";
+import meshUrl from "../assets/type/hero-mesh.bin?url";
 
 /* ======================================================================
    The baked mesh
@@ -75,7 +75,8 @@ function buildLine(view: DataView, lineIndex: number): LineGeometry {
    * Reading the indices from `indexBase` alone silently reads the point data as
    * triangle indices, which fills the letterforms with garbage.
    */
-  const pointsSection = meta.lines.reduce((total, line) => total + line.points, 0) * POINT_STRIDE;
+  const pointsSection =
+    meta.lines.reduce((total, line) => total + line.points, 0) * POINT_STRIDE;
 
   let pointBase = 0;
   let indexBase = pointsSection;
@@ -85,9 +86,13 @@ function buildLine(view: DataView, lineIndex: number): LineGeometry {
   }
 
   const line = meta.lines[lineIndex];
-  const { points: pointCount, scale } = { points: line.points, scale: meta.quant.scale };
+  const { points: pointCount, scale } = {
+    points: line.points,
+    scale: meta.quant.scale,
+  };
 
-  const readX = (i: number) => view.getInt16(pointBase + i * POINT_STRIDE, true) / scale;
+  const readX = (i: number) =>
+    view.getInt16(pointBase + i * POINT_STRIDE, true) / scale;
   const readY = (i: number) =>
     view.getInt16(pointBase + i * POINT_STRIDE + 2, true) / scale;
 
@@ -98,11 +103,20 @@ function buildLine(view: DataView, lineIndex: number): LineGeometry {
   let edges = 0;
   for (const contour of line.contours) edges += contour.count;
 
-  const vertices = new Float32Array((pointCount * 2 + edges * 4) * FLOATS_PER_VERTEX);
+  const vertices = new Float32Array(
+    (pointCount * 2 + edges * 4) * FLOATS_PER_VERTEX,
+  );
   const indices = new Uint16Array(line.indices + edges * 6);
 
   let next = 0;
-  const push = (x: number, y: number, z: number, nx: number, ny: number, nz: number) => {
+  const push = (
+    x: number,
+    y: number,
+    z: number,
+    nx: number,
+    ny: number,
+    nz: number,
+  ) => {
     const at = next * FLOATS_PER_VERTEX;
     vertices[at] = x;
     vertices[at + 1] = y;
@@ -117,8 +131,10 @@ function buildLine(view: DataView, lineIndex: number): LineGeometry {
   /* --- caps ----------------------------------------------------------- */
 
   const backCap = pointCount; // index of the first back-cap vertex
-  for (let i = 0; i < pointCount; i += 1) push(readX(i), readY(i), front, 0, 0, 1);
-  for (let i = 0; i < pointCount; i += 1) push(readX(i), readY(i), back, 0, 0, -1);
+  for (let i = 0; i < pointCount; i += 1)
+    push(readX(i), readY(i), front, 0, 0, 1);
+  for (let i = 0; i < pointCount; i += 1)
+    push(readX(i), readY(i), back, 0, 0, -1);
 
   let w = 0;
   for (let i = 0; i < line.indices; i += 3) {
@@ -296,7 +312,11 @@ const INK_HEX = 0x14213d;
 /** sRGB hex to linear, because the lighting maths belongs in linear space. */
 function toLinear(hex: number): [number, number, number] {
   const channel = (value: number) => Math.pow(value / 255, 2.2);
-  return [channel((hex >> 16) & 0xff), channel((hex >> 8) & 0xff), channel(hex & 0xff)];
+  return [
+    channel((hex >> 16) & 0xff),
+    channel((hex >> 8) & 0xff),
+    channel(hex & 0xff),
+  ];
 }
 
 /* ======================================================================
@@ -316,75 +336,81 @@ const POINTER_SHIFT_PX = 9;
 const DAMPING = 0.075;
 
 const prefersReducedMotion = () =>
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-function createContext(canvas: HTMLCanvasElement): WebGLRenderingContext | null {
+function createContext(
+  canvas: HTMLCanvasElement,
+): WebGLRenderingContext | null {
   const options: WebGLContextAttributes = {
     alpha: true,
     antialias: true,
     depth: true,
     // Premultiplied output would dirty the ink where it meets the page.
     premultipliedAlpha: false,
-    powerPreference: 'high-performance',
+    powerPreference: "high-performance",
   };
-  return (canvas.getContext('webgl', options) ??
-    canvas.getContext('experimental-webgl', options)) as WebGLRenderingContext | null;
+  return (canvas.getContext("webgl", options) ??
+    canvas.getContext(
+      "experimental-webgl",
+      options,
+    )) as WebGLRenderingContext | null;
 }
 
 function compile(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
-  if (!shader) throw new Error('could not create shader');
+  if (!shader) throw new Error("could not create shader");
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    throw new Error(gl.getShaderInfoLog(shader) ?? 'shader compilation failed');
+    throw new Error(gl.getShaderInfoLog(shader) ?? "shader compilation failed");
   }
   return shader;
 }
 
 function createProgram(gl: WebGLRenderingContext) {
   const program = gl.createProgram();
-  if (!program) throw new Error('could not create program');
+  if (!program) throw new Error("could not create program");
 
   gl.attachShader(program, compile(gl, gl.VERTEX_SHADER, VERTEX_SHADER));
   gl.attachShader(program, compile(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER));
   gl.linkProgram(program);
 
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(program) ?? 'program link failed');
+    throw new Error(gl.getProgramInfoLog(program) ?? "program link failed");
   }
   return program;
 }
 
 const UNIFORM_NAMES = [
-  'uRotation',
-  'uOffset',
-  'uScale',
-  'uCameraZ',
-  'uFocal',
-  'uDepth',
-  'uInk',
-  'uLight',
-  'uKeyDir',
-  'uFillDir',
+  "uRotation",
+  "uOffset",
+  "uScale",
+  "uCameraZ",
+  "uFocal",
+  "uDepth",
+  "uInk",
+  "uLight",
+  "uKeyDir",
+  "uFillDir",
 ] as const;
 
 async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
-  const headline = hero.querySelector<HTMLElement>('.hero__headline');
+  const headline = hero.querySelector<HTMLElement>(".hero__headline");
   if (!headline) return;
 
   const gl = createContext(canvas);
   if (!gl) return;
 
   const response = await fetch(meshUrl);
-  if (!response.ok) throw new Error(`mesh fetch failed: HTTP ${response.status}`);
+  if (!response.ok)
+    throw new Error(`mesh fetch failed: HTTP ${response.status}`);
   const view = new DataView(await response.arrayBuffer());
 
   const program = createProgram(gl);
   gl.useProgram(program);
 
-  const positionAttribute = gl.getAttribLocation(program, 'aPosition');
-  const normalAttribute = gl.getAttribLocation(program, 'aNormal');
+  const positionAttribute = gl.getAttribLocation(program, "aPosition");
+  const normalAttribute = gl.getAttribLocation(program, "aNormal");
   const uniforms = Object.fromEntries(
     UNIFORM_NAMES.map((name) => [name, gl.getUniformLocation(program, name)]),
   ) as Record<(typeof UNIFORM_NAMES)[number], WebGLUniformLocation | null>;
@@ -454,7 +480,7 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
     const rect = canvas.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return false;
 
-    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    const mobile = window.matchMedia("(max-width: 767px)").matches;
     const dpr = Math.min(window.devicePixelRatio, mobile ? 1.75 : 2);
 
     viewport.width = rect.width;
@@ -483,7 +509,11 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
     // A camera distance that makes one world unit equal one pixel at z = 0.
     const cameraZ = viewport.height / 2 / Math.tan((FOV * Math.PI) / 360);
     gl.uniform1f(uniforms.uCameraZ, cameraZ);
-    gl.uniform2f(uniforms.uFocal, focal / (viewport.width / viewport.height), focal);
+    gl.uniform2f(
+      uniforms.uFocal,
+      focal / (viewport.width / viewport.height),
+      focal,
+    );
 
     /*
      * Perspective depth, expressed as zNdc = A - B / distance. The near and far
@@ -494,7 +524,11 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
      */
     const near = cameraZ * 0.5;
     const far = cameraZ * 2;
-    gl.uniform2f(uniforms.uDepth, (far + near) / (far - near), (2 * far * near) / (far - near));
+    gl.uniform2f(
+      uniforms.uDepth,
+      (far + near) / (far - near),
+      (2 * far * near) / (far - near),
+    );
 
     /*
      * The inked block. Line 0's baseline sits at y = 0 and the last line's at
@@ -530,8 +564,8 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
     pointer.y = 0;
   };
 
-  hero.addEventListener('pointermove', onPointerMove, { passive: true });
-  hero.addEventListener('pointerleave', onPointerLeave, { passive: true });
+  hero.addEventListener("pointermove", onPointerMove, { passive: true });
+  hero.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
   let drift = 0;
   const onScroll = () => {
@@ -539,7 +573,7 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
     drift = Math.min(Math.max(-rect.top / Math.max(rect.height, 1), 0), 1);
   };
   onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener("scroll", onScroll, { passive: true });
 
   /* --- loop ---------------------------------------------------------- */
 
@@ -551,7 +585,11 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
     current.x += (pointer.x - current.x) * DAMPING;
     current.y += (pointer.y - current.y) * DAMPING;
 
-    gl.uniform2f(uniforms.uRotation, current.x * MAX_POINTER_YAW, -current.y * MAX_POINTER_PITCH);
+    gl.uniform2f(
+      uniforms.uRotation,
+      current.x * MAX_POINTER_YAW,
+      -current.y * MAX_POINTER_PITCH,
+    );
 
     const sharedY = offset[1] - drift * 14;
     const sharedZ = offset[2] + drift * 90;
@@ -596,7 +634,7 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
         else stop();
       }
     },
-    { rootMargin: '10% 0px' },
+    { rootMargin: "10% 0px" },
   );
 
   const onSync = () => {
@@ -608,7 +646,7 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
       // Only now hand the visual over to the canvas: until a frame has landed the
       // DOM headline is what the visitor sees, and if anything above failed it
       // stays that way.
-      hero.classList.add('is-gl');
+      hero.classList.add("is-gl");
     }
   };
 
@@ -626,7 +664,7 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
 
   observer.observe(hero);
 
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener("visibilitychange", () => {
     if (document.hidden) {
       stop();
     } else {
@@ -670,8 +708,8 @@ async function init(canvas: HTMLCanvasElement, hero: HTMLElement) {
  * Entry point. Resolves quietly whenever the sculpture is not appropriate.
  */
 export async function initHero3D() {
-  const hero = document.querySelector<HTMLElement>('[data-hero]');
-  const canvas = hero?.querySelector<HTMLCanvasElement>('[data-hero-gl]');
+  const hero = document.querySelector<HTMLElement>("[data-hero]");
+  const canvas = hero?.querySelector<HTMLCanvasElement>("[data-hero-gl]");
   if (!hero || !canvas) return;
 
   if (prefersReducedMotion()) return;
@@ -680,7 +718,7 @@ export async function initHero3D() {
     await init(canvas, hero);
   } catch (error) {
     // Never let the enhancement break the page: the DOM hero is already there.
-    console.error('[hero-3d] disabled:', error);
-    hero.classList.remove('is-gl');
+    console.error("[hero-3d] disabled:", error);
+    hero.classList.remove("is-gl");
   }
 }

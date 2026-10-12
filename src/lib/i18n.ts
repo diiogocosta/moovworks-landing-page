@@ -2,10 +2,10 @@
  * The trilingual dictionary, plus the handful of strings the brief leaves out.
  * Nothing in a component may hard-code copy — it all comes from here.
  */
-import authoredContent from '../content/authored.json';
-import content from '../content/i18n.json';
-import uiStrings from '../content/ui.json';
-import type { Locale } from './site';
+import authoredContent from "../content/authored.json";
+import content from "../content/i18n.json";
+import uiStrings from "../content/ui.json";
+import type { Locale } from "./site";
 
 export interface Service {
   title: string;
@@ -42,7 +42,10 @@ export interface AuthoredDictionary {
 
 const dictionaries = content as Record<Locale, Dictionary>;
 const interfaceStrings = uiStrings as unknown as Record<Locale, UiDictionary>;
-const authored = authoredContent as unknown as Record<Locale, AuthoredDictionary>;
+const authored = authoredContent as unknown as Record<
+  Locale,
+  AuthoredDictionary
+>;
 
 /** The page copy for a locale. */
 export const t = (locale: Locale): Dictionary => dictionaries[locale];

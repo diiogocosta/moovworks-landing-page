@@ -1,4 +1,4 @@
-@import './tokens.css';
+@import "./tokens.css";
 
 /* =====================================================================
    Reset — small, deliberate. No framework, no normalise.
@@ -171,12 +171,14 @@ p {
   text-decoration-color: transparent;
   text-decoration-thickness: 0.14em;
   text-underline-offset: 0.22em;
-  transition: color var(--transition), text-decoration-color var(--transition);
+  transition:
+    color var(--transition),
+    text-decoration-color var(--transition);
 }
 
 .detail-link:hover,
 .detail-link:focus-visible,
-.detail-link[aria-current='page'] {
+.detail-link[aria-current="page"] {
   color: var(--tinta);
   text-decoration-color: var(--marcador);
 }
@@ -189,7 +191,7 @@ p {
 
 .on-ink .detail-link:hover,
 .on-ink .detail-link:focus-visible,
-.on-ink .detail-link[aria-current='page'] {
+.on-ink .detail-link[aria-current="page"] {
   color: var(--papel);
 }
 
@@ -214,7 +216,9 @@ p {
   border: 0;
   border-radius: var(--radius);
   cursor: pointer;
-  transition: background-color var(--transition), color var(--transition);
+  transition:
+    background-color var(--transition),
+    color var(--transition);
 }
 
 .btn:hover,

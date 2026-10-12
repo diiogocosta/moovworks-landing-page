@@ -42,7 +42,7 @@
    * them in a fallback so the site still reads correctly if that step is
    * skipped — e.g. when a subdomain only imports tokens.css.
    */
-  --font-display: var(--font-archivo, 'Arial Narrow', Arial, sans-serif);
+  --font-display: var(--font-archivo, "Arial Narrow", Arial, sans-serif);
   --font-text: var(--font-source-serif, Georgia, serif);
 
   /* ---- Fluid scale ---------------------------------------------------- */

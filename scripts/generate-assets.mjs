@@ -17,35 +17,35 @@
  * the variable TTFs from the google/fonts repository instead. They are cached
  * under .cache/ and never shipped.
  */
-import { existsSync } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { openSync } from 'fontkit';
-import sharp from 'sharp';
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { dirname, resolve } from "node:path";
+import { openSync } from "fontkit";
+import sharp from "sharp";
 
-const ROOT = resolve(import.meta.dirname, '..');
-const CACHE = resolve(ROOT, '.cache/fonts');
+const ROOT = resolve(import.meta.dirname, "..");
+const CACHE = resolve(ROOT, ".cache/fonts");
 
 const FONTS = {
   display: {
-    file: resolve(CACHE, 'Archivo-var.ttf'),
-    url: 'https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/Archivo%5Bwdth%2Cwght%5D.ttf',
+    file: resolve(CACHE, "Archivo-var.ttf"),
+    url: "https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/Archivo%5Bwdth%2Cwght%5D.ttf",
   },
 };
 
 /** Reads the palette from the design tokens rather than repeating it here. */
 async function readPalette() {
-  const css = await readFile(resolve(ROOT, 'src/styles/tokens.css'), 'utf8');
+  const css = await readFile(resolve(ROOT, "src/styles/tokens.css"), "utf8");
   const token = (name) => {
     const match = css.match(new RegExp(`--${name}:\\s*(#[0-9a-fA-F]{3,8})`));
     if (!match) throw new Error(`token --${name} not found in tokens.css`);
     return match[1].toUpperCase();
   };
   return {
-    concreto: token('concreto'),
-    papel: token('papel'),
-    tinta: token('tinta'),
-    aco: token('aco'),
+    concreto: token("concreto"),
+    papel: token("papel"),
+    tinta: token("tinta"),
+    aco: token("aco"),
   };
 }
 
@@ -72,7 +72,7 @@ function typeset(font, text, { size }) {
   const scale = size / font.unitsPerEm;
 
   let cursor = 0;
-  let d = '';
+  let d = "";
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -105,9 +105,12 @@ const path = (d, fill) => `<path d="${d}" fill="${fill}"/>`;
 
 async function buildFavicon(tokens) {
   // 800 at the default width: a condensed 'm' at 16px turns to mud.
-  const font = openSync(FONTS.display.file).getVariation({ wght: 800, wdth: 100 });
+  const font = openSync(FONTS.display.file).getVariation({
+    wght: 800,
+    wdth: 100,
+  });
 
-  const glyph = font.layout('m').glyphs[0];
+  const glyph = font.layout("m").glyphs[0];
   const box = glyph.path.bbox;
   const size = 32;
   const inset = 6;
@@ -119,22 +122,25 @@ async function buildFavicon(tokens) {
   const offsetX = (size - (box.maxX - box.minX) * scale) / 2 - box.minX * scale;
   const baseline = size / 2 + ((box.minY + box.maxY) * scale) / 2;
 
-  const d = glyph.path.scale(scale, -scale).translate(offsetX, baseline).toSVG();
+  const d = glyph.path
+    .scale(scale, -scale)
+    .translate(offsetX, baseline)
+    .toSVG();
 
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Moovworks">`,
     `<rect width="${size}" height="${size}" rx="2" fill="${tokens.tinta}"/>`,
     path(d, tokens.papel),
-    '</svg>',
-    '',
-  ].join('\n');
+    "</svg>",
+    "",
+  ].join("\n");
 
-  await writeFile(resolve(ROOT, 'public/favicon.svg'), svg);
-  console.log('wrote public/favicon.svg');
+  await writeFile(resolve(ROOT, "public/favicon.svg"), svg);
+  console.log("wrote public/favicon.svg");
 }
 
 const OG = { width: 1200, height: 630, margin: 72 };
-const OG_LINES = ['No more', 'AI bullshit'];
+const OG_LINES = ["No more", "AI bullshit"];
 const LEADING_RATIO = 0.92;
 
 /** Lays the lines out at `size` and reports the ink box of the block as a whole. */
@@ -155,8 +161,12 @@ function layoutLines(font, lines, size) {
 
   return {
     rendered,
-    inkWidth: Math.max(...boxes.map((b) => b.maxX)) - Math.min(...boxes.map((b) => b.minX)),
-    inkHeight: Math.max(...boxes.map((b) => b.maxY)) - Math.min(...boxes.map((b) => b.minY)),
+    inkWidth:
+      Math.max(...boxes.map((b) => b.maxX)) -
+      Math.min(...boxes.map((b) => b.minX)),
+    inkHeight:
+      Math.max(...boxes.map((b) => b.maxY)) -
+      Math.min(...boxes.map((b) => b.minY)),
   };
 }
 
@@ -180,12 +190,16 @@ async function buildOpenGraph(tokens) {
   const probe = layoutLines(headlineFont, OG_LINES, unit);
   const size =
     unit *
-    Math.min(available.width / probe.inkWidth, available.height / probe.inkHeight);
+    Math.min(
+      available.width / probe.inkWidth,
+      available.height / probe.inkHeight,
+    );
 
   const headline = layoutLines(headlineFont, OG_LINES, size);
 
   // Anchor the ink to the left margin and centre it in the band.
-  const shiftX = OG.margin - Math.min(...headline.rendered.map((r) => r.bbox.minX));
+  const shiftX =
+    OG.margin - Math.min(...headline.rendered.map((r) => r.bbox.minX));
   const shiftY =
     (band.top + band.bottom) / 2 -
     (Math.min(...headline.rendered.map((r) => r.baseline + r.bbox.minY)) +
@@ -197,8 +211,8 @@ async function buildOpenGraph(tokens) {
       `<g transform="translate(${shiftX} ${shiftY + baseline})">${path(d, tokens.tinta)}</g>`,
   );
 
-  const wordmark = typeset(wordmarkFont, 'moovworks', { size: 34 });
-  const since = typeset(detailFont, 'Since 2011.', { size: 26 });
+  const wordmark = typeset(wordmarkFont, "moovworks", { size: 34 });
+  const since = typeset(detailFont, "Since 2011.", { size: 26 });
 
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${OG.width}" height="${OG.height}" viewBox="0 0 ${OG.width} ${OG.height}">`,
@@ -206,18 +220,20 @@ async function buildOpenGraph(tokens) {
     `<g transform="translate(${OG.margin} ${OG.margin + 30})">${path(wordmark.d, tokens.tinta)}</g>`,
     ...headlineParts,
     `<g transform="translate(${OG.margin} ${OG.height - OG.margin})">${path(since.d, tokens.aco)}</g>`,
-    '</svg>',
-    '',
-  ].join('\n');
+    "</svg>",
+    "",
+  ].join("\n");
 
   await sharp(Buffer.from(svg))
     .png({ compressionLevel: 9 })
-    .toFile(resolve(ROOT, 'public/og.png'));
-  console.log(`wrote public/og.png (${OG.width}x${OG.height}, headline ${Math.round(size)}px)`);
+    .toFile(resolve(ROOT, "public/og.png"));
+  console.log(
+    `wrote public/og.png (${OG.width}x${OG.height}, headline ${Math.round(size)}px)`,
+  );
 }
 
 const tokens = await readPalette();
 await download(FONTS.display);
-await mkdir(resolve(ROOT, 'public'), { recursive: true });
+await mkdir(resolve(ROOT, "public"), { recursive: true });
 await buildFavicon(tokens);
 await buildOpenGraph(tokens);

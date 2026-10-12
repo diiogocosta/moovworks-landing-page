@@ -5,10 +5,10 @@
  * in `scripts/` can import it without a build step. This module narrows it for
  * the Astro components, where the locale unions actually matter.
  */
-import * as raw from '../../site.config.mjs';
+import * as raw from "../../site.config.mjs";
 
-export type Locale = 'pt-BR' | 'pt-PT' | 'en';
-export type LegalKind = 'privacy' | 'terms';
+export type Locale = "pt-BR" | "pt-PT" | "en";
+export type LegalKind = "privacy" | "terms";
 
 export const SITE = raw.SITE as {
   name: string;
@@ -23,9 +23,9 @@ export const OG_LOCALE = raw.OG_LOCALE as Record<Locale, string>;
 export const LEGAL_KINDS = raw.LEGAL_KINDS as readonly LegalKind[];
 export const LEGAL_PUBLISHED = raw.LEGAL_PUBLISHED as boolean;
 export const LANG_LABEL: Record<Locale, string> = {
-  'pt-BR': 'PT-BR',
-  'pt-PT': 'PT-PT',
-  en: 'EN',
+  "pt-BR": "PT-BR",
+  "pt-PT": "PT-PT",
+  en: "EN",
 };
 
 export const isLocale = (value: string): value is Locale =>

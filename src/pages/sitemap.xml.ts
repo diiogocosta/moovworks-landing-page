@@ -1,4 +1,4 @@
-import type { APIRoute } from 'astro';
+import type { APIRoute } from "astro";
 import {
   LEGAL_KINDS,
   LEGAL_PUBLISHED,
@@ -6,9 +6,9 @@ import {
   absolute,
   homePath,
   legalPath,
-} from '../lib/site';
-import { homeAlternates, legalAlternates } from '../lib/seo';
-import type { Alternate } from '../lib/seo';
+} from "../lib/site";
+import { homeAlternates, legalAlternates } from "../lib/seo";
+import type { Alternate } from "../lib/seo";
 
 interface Entry {
   loc: string;
@@ -24,7 +24,7 @@ interface Entry {
  * date, and asserting it would only teach crawlers to distrust the file.
  */
 const entries: Entry[] = [
-  { loc: absolute('/'), alternates: homeAlternates() },
+  { loc: absolute("/"), alternates: homeAlternates() },
   ...LOCALES.map((locale) => ({
     loc: absolute(homePath(locale)),
     alternates: homeAlternates(),
@@ -40,7 +40,10 @@ const entries: Entry[] = [
 ];
 
 const escape = (value: string) =>
-  value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 
 const renderEntry = ({ loc, alternates }: Entry) => {
   const links = alternates
@@ -48,7 +51,7 @@ const renderEntry = ({ loc, alternates }: Entry) => {
       (alternate) =>
         `    <xhtml:link rel="alternate" hreflang="${escape(alternate.hreflang)}" href="${escape(alternate.href)}"/>`,
     )
-    .join('\n');
+    .join("\n");
 
   return `  <url>\n    <loc>${escape(loc)}</loc>\n${links}\n  </url>`;
 };
@@ -58,11 +61,11 @@ export const GET: APIRoute = () => {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">',
     ...entries.map(renderEntry),
-    '</urlset>',
-    '',
-  ].join('\n');
+    "</urlset>",
+    "",
+  ].join("\n");
 
   return new Response(body, {
-    headers: { 'Content-Type': 'application/xml; charset=utf-8' },
+    headers: { "Content-Type": "application/xml; charset=utf-8" },
   });
 };

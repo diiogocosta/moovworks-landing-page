@@ -1,6 +1,12 @@
 # Internal brief — deliberately untracked. It informs the build, it is not an artifact of it.
 spec.md
 
+# Agent skills — installed locally, deliberately untracked. Third-party prompt files,
+# not part of the repo. Re-add with: npx skills add Leonxlnx/taste-skill
+.agents/
+.claude/skills/
+skills-lock.json
+
 # Dependencies
 node_modules/
 

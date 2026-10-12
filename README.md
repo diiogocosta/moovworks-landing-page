@@ -14,14 +14,14 @@ headline set as an extruded 3D sculpture in WebGL.
 
 ## Stack, and why
 
-| Choice | Reason |
-| --- | --- |
-| **Astro 7, `output: 'static'`** | Ships zero JavaScript to the client by default, and renders the three languages from one route file so they cannot drift apart. No UI framework, no Tailwind. |
-| **Hand-written CSS** | One `tokens.css` is the single source of truth for the palette, the families and the fluid scale. Subdomains are expected to import it unchanged. |
-| **Self-hosted fonts** | Two `woff2` files, latin subset, served from our own origin. Committed, so the build needs no network and no visitor request ever reaches Google. |
-| **A bespoke WebGL renderer for the hero** | three.js costs ~180 KB gzipped, because `WebGLRenderer` defeats tree-shaking. The scene needs one static extruded solid lit by two directional lights, so the geometry is baked at build time and shaded by ~4 KB of our own code. three is used *at build time only*. |
-| **No analytics, no cookie banner** | Nothing is tracked, so there is nothing to consent to. |
-| **Asset generation is offline** | `public/favicon.svg`, `public/og.png` and the hero mesh are committed outputs of scripts. The site build runs no browser and does no font parsing. |
+| Choice                                    | Reason                                                                                                                                                                                                                                                                 |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Astro 7, `output: 'static'`**           | Ships zero JavaScript to the client by default, and renders the three languages from one route file so they cannot drift apart. No UI framework, no Tailwind.                                                                                                          |
+| **Hand-written CSS**                      | One `tokens.css` is the single source of truth for the palette, the families and the fluid scale. Subdomains are expected to import it unchanged.                                                                                                                      |
+| **Self-hosted fonts**                     | Two `woff2` files, latin subset, served from our own origin. Committed, so the build needs no network and no visitor request ever reaches Google.                                                                                                                      |
+| **A bespoke WebGL renderer for the hero** | three.js costs ~180 KB gzipped, because `WebGLRenderer` defeats tree-shaking. The scene needs one static extruded solid lit by two directional lights, so the geometry is baked at build time and shaded by ~4 KB of our own code. three is used _at build time only_. |
+| **No analytics, no cookie banner**        | Nothing is tracked, so there is nothing to consent to.                                                                                                                                                                                                                 |
+| **Asset generation is offline**           | `public/favicon.svg`, `public/og.png` and the hero mesh are committed outputs of scripts. The site build runs no browser and does no font parsing.                                                                                                                     |
 
 ## Requirements
 
@@ -43,7 +43,7 @@ npm run assets        # regenerate favicon.svg + og.png     (needs network on fi
 ```
 
 `build` runs `scripts/verify-build.mjs` afterwards, because two things about this
-build fail *silently*. It is not optional — see "Guards" below.
+build fail _silently_. It is not optional — see "Guards" below.
 
 The four maintenance commands are not build steps. Their inputs are cached under
 `.cache/` and their outputs committed, so day-to-day work never needs any of them.
@@ -107,14 +107,14 @@ if the list changes length.
 ```
 
 **The WebGL version** replaces the headline with extruded type, and runs on top of the
-same buzzword sequence. It only mounts when WebGL exists *and* motion is wanted.
+same buzzword sequence. It only mounts when WebGL exists _and_ motion is wanted.
 
 ### The sculpture
 
 Everything expensive happens at build time, because the headline is a fixed string:
 
 1. `scripts/bake-hero-mesh.mjs` instances Archivo 800 at `wdth 85`, resolves each
-glyph's counters as holes, flattens the curves, and triangulates the caps.
+   glyph's counters as holes, flattens the curves, and triangulates the caps.
 2. It writes `src/assets/type/hero-mesh.bin` — Int16 quantised points, then Uint16
    triangle indices — and a small JSON of layout metrics and contour ranges.
 3. At runtime, `src/scripts/hero-3d.ts` expands that into front cap, back cap and
@@ -134,12 +134,12 @@ Three deliberate choices inside that:
 
 ### What makes it opt-in
 
-| Condition | Result |
-| --- | --- |
-| `prefers-reduced-motion: reduce` | Module returns immediately. No canvas, no fetch, no buzzwords. |
-| No JavaScript | The `.js` class is never set, so the buzzword field is `display: none`. |
-| No WebGL | `getContext` returns null and the module bails before fetching the mesh. |
-| Mesh fetch or shader fails | The error is caught, `is-gl` is removed, the real headline stays visible. |
+| Condition                        | Result                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------- |
+| `prefers-reduced-motion: reduce` | Module returns immediately. No canvas, no fetch, no buzzwords.            |
+| No JavaScript                    | The `.js` class is never set, so the buzzword field is `display: none`.   |
+| No WebGL                         | `getContext` returns null and the module bails before fetching the mesh.  |
+| Mesh fetch or shader fails       | The error is caught, `is-gl` is removed, the real headline stays visible. |
 
 In all four cases the visitor gets the plain HTML headline. The canvas is only revealed
 (by adding `is-gl` to the hero) **after a frame has actually rendered**.
@@ -153,7 +153,7 @@ legible to crawlers while the canvas shows it.
 Places where the brief allowed a judgement call, and what was chosen:
 
 - **The page was restructured towards how market-leading pages read, not how they look.**
-  Hotmart's home is legible because it is *chaptered*: a clear hero, a mid-page band, real
+  Hotmart's home is legible because it is _chaptered_: a clear hero, a mid-page band, real
   section headings, a proper close. What makes it feel rich is mostly proof — "+250 mil
   negócios", named creators, star ratings — and none of that can be copied here, because
   the brief forbids invented numbers and testimonials and a page arguing against hype
@@ -178,7 +178,7 @@ Places where the brief allowed a judgement call, and what was chosen:
   means the only thing the site ships is code we wrote. three is a `devDependency`, used
   by the baker for triangulation and by nothing else.
 - **The 3D is extruded type, not a gradient or a decorative scene.** The brief's design
-  argument is that the headline *is* the design, so the sculpture is the headline — same
+  argument is that the headline _is_ the design, so the sculpture is the headline — same
   words, same face, same condensed width, now lit from the left. A mesh gradient would
   have been the most generic possible answer to "make it stunning".
 - **The header carries a compact "Contact" link.** `header.contact` exists in the copy
@@ -230,7 +230,7 @@ to a solid bar. Both are **CSS scroll-driven animations** — `animation-timelin
 and `scroll(root)` — so there is no IntersectionObserver, no scroll listener, and no
 JavaScript involved at all.
 
-That choice is not about saving bytes. A scripted reveal has to hide its content *first*,
+That choice is not about saving bytes. A scripted reveal has to hide its content _first_,
 so a blocked bundle or a parse error leaves a blank page. Here, a browser without
 `animation-timeline` applies no animation and simply shows the content: the failure mode
 is "no animation", never "no page".
@@ -275,7 +275,7 @@ Measured against the built output, not assumed:
   opacity 0 at the top of the page, 0 while approaching, and 1 as it arrives.
 - **The header goes from transparent to `--concreto` with its shadow** once scrolled, and
   back to transparent at the top.
-- **No horizontal scroll and nothing overflowing**, verified at *true* CSS widths of 318,
+- **No horizontal scroll and nothing overflowing**, verified at _true_ CSS widths of 318,
   358, 414, 478, 600, 768, 900, 1024, 1100, 1280, 1440 and 1920 px. Five buzzwords below
   768 px, nine above; the principles go 1 → 3 columns at 900 px; the footer 1 → 2 → 3
   columns at 560 and 900 px.
@@ -298,12 +298,12 @@ Measured against the built output, not assumed:
 
 Two steps in this build fail silently, so both are asserted rather than trusted:
 
-| Guard | Catches | Where |
-| --- | --- | --- |
-| Coordinate-span and triangle-area checks | A bad font bake, which renders as plausible-looking slabs | `scripts/bake-hero-mesh.mjs` |
-| `npm run build` → `verify-build.mjs` | The folded `animation` shorthand, and any scroll-driven rule that has gone missing | `scripts/verify-build.mjs` |
+| Guard                                    | Catches                                                                            | Where                        |
+| ---------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------- |
+| Coordinate-span and triangle-area checks | A bad font bake, which renders as plausible-looking slabs                          | `scripts/bake-hero-mesh.mjs` |
+| `npm run build` → `verify-build.mjs`     | The folded `animation` shorthand, and any scroll-driven rule that has gone missing | `scripts/verify-build.mjs`   |
 
-Both exist because they were written *after* the bug bit, not before: the bake produced
+Both exist because they were written _after_ the bug bit, not before: the bake produced
 plausible numbers that drew as slabs, and the minifier dropped every scroll-driven rule in
 production while dev looked perfect.
 

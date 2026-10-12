@@ -1,5 +1,5 @@
-import type { APIRoute } from 'astro';
-import { absolute } from '../lib/site';
+import type { APIRoute } from "astro";
+import { absolute } from "../lib/site";
 
 /**
  * Generated rather than dropped in `public/` so the sitemap URL is derived from
@@ -7,14 +7,14 @@ import { absolute } from '../lib/site';
  */
 export const GET: APIRoute = () => {
   const body = [
-    'User-agent: *',
-    'Allow: /',
-    '',
-    `Sitemap: ${absolute('/sitemap.xml')}`,
-    '',
-  ].join('\n');
+    "User-agent: *",
+    "Allow: /",
+    "",
+    `Sitemap: ${absolute("/sitemap.xml")}`,
+    "",
+  ].join("\n");
 
   return new Response(body, {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    headers: { "Content-Type": "text/plain; charset=utf-8" },
   });
 };
