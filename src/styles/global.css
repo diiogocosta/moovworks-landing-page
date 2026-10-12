@@ -29,7 +29,8 @@ ol {
 
 img,
 svg,
-video {
+video,
+canvas {
   display: block;
   max-width: 100%;
 }
@@ -47,15 +48,25 @@ textarea {
   color: inherit;
 }
 
+/*
+ * One focus ring for the whole site, and it is the accent. 3px at a 3px offset
+ * reads clearly against near-black without changing the layout of the element it
+ * lands on. The ring is never removed, only recoloured, and the one place it
+ * cannot be green is on the green button itself.
+ */
 :where(a, button, [tabindex]):focus-visible {
-  outline: 3px solid var(--tinta);
+  outline: 3px solid var(--accent-soft);
   outline-offset: 3px;
+  border-radius: var(--radius-action);
 }
 
-/* Yellow does not contrast against --concreto, so it is only used as a focus
-   ring once it sits on the ink surface. */
-.on-ink :where(a, button, [tabindex]):focus-visible {
-  outline-color: var(--marcador);
+.btn:focus-visible {
+  outline-color: var(--ink-strong);
+}
+
+::selection {
+  background-color: var(--accent);
+  color: var(--on-accent);
 }
 
 /* =====================================================================
@@ -65,9 +76,11 @@ textarea {
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  background-color: var(--concreto);
+  background-color: var(--canvas);
   /* So a jump to #contact does not land under the sticky header. */
-  scroll-padding-block-start: 6rem;
+  scroll-padding-block-start: 5rem;
+  /* The page is dark, so the browser's own chrome should be too. */
+  color-scheme: dark;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -79,26 +92,35 @@ html {
 body {
   min-height: 100svh;
   padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
-  font-family: var(--font-text);
+  font-family: var(--font-sans);
   font-size: var(--step-body);
   font-weight: 400;
-  line-height: 1.6;
-  color: var(--tinta);
-  background-color: var(--concreto);
+  line-height: 1.65;
+  color: var(--body);
+  background-color: var(--canvas);
   font-synthesis-weight: none;
-  text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
+/*
+ * Display type is set at 400, not 700. Weight is not how this page makes a
+ * point: scale, space and colour are. The only letter-spacing rule is the one
+ * below, and it is negative, because Inter at display sizes opens up.
+ */
 h1,
 h2,
 h3 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-stretch: 85%;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.08;
   letter-spacing: -0.02em;
-  line-height: 1;
+  color: var(--ink-strong);
   text-wrap: balance;
+}
+
+h3 {
+  font-size: var(--step-cell);
+  letter-spacing: -0.01em;
 }
 
 p {
@@ -122,12 +144,11 @@ p {
   inset-inline-start: var(--gutter);
   z-index: 10;
   padding: 0.75rem 1.25rem;
-  font-family: var(--font-display);
   font-size: var(--step-detail);
   font-weight: 500;
-  color: var(--papel);
-  background-color: var(--tinta);
-  border-radius: var(--radius);
+  color: var(--on-accent);
+  background-color: var(--accent);
+  border-radius: var(--radius-action);
   transform: translateY(-130%);
   transition: transform var(--transition);
 }
@@ -136,103 +157,190 @@ p {
   transform: translateY(0.75rem);
 }
 
-/* The marker on an underline, and only on an underline. `--marcador` is never
-   used as a text colour: on --concreto it does not contrast. */
-.link {
-  text-decoration-line: underline;
-  text-decoration-color: var(--marcador);
-  text-decoration-thickness: 0.12em;
-  text-underline-offset: 0.18em;
-  transition: text-decoration-thickness var(--transition);
-}
-
-.link:hover,
-.link:focus-visible {
-  /* Thickening the stroke reads as pressing harder with the marker. */
-  text-decoration-thickness: 0.26em;
-}
-
 /*
- * The small link used in the header, the language switcher and the footer:
- * 14px Archivo, sentence case, and an underline that only shows the marker
- * when the link is hovered, focused, or current.
+ * Inline link. `--accent-deep` rather than `--accent`: the brighter green is
+ * 10:1 and this one is 7:1, which is the difference between a link that sits in
+ * a paragraph and a link that shouts across it.
  */
-.detail-link {
-  display: inline-flex;
-  align-items: center;
-  /* Touch target: two-letter codes are narrower than a finger. */
-  min-width: 44px;
-  min-height: 44px;
-  font-family: var(--font-display);
-  font-size: var(--step-detail);
-  font-weight: 500;
-  color: var(--aco);
+.link {
+  color: var(--accent-deep);
   text-decoration-line: underline;
-  text-decoration-color: transparent;
-  text-decoration-thickness: 0.14em;
-  text-underline-offset: 0.22em;
+  text-decoration-color: color-mix(in srgb, var(--accent-deep) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.24em;
   transition:
     color var(--transition),
     text-decoration-color var(--transition);
 }
 
+.link:hover,
+.link:focus-visible {
+  color: var(--accent-soft);
+  text-decoration-color: currentColor;
+}
+
+/* The small link used in the header, the language switcher and the footer. */
+.detail-link {
+  display: inline-flex;
+  align-items: center;
+  /* Touch target: a two-letter code is narrower than a finger. */
+  min-width: 44px;
+  min-height: 44px;
+  font-size: var(--step-detail);
+  font-weight: 500;
+  color: var(--mute);
+  transition: color var(--transition);
+}
+
 .detail-link:hover,
 .detail-link:focus-visible,
 .detail-link[aria-current="page"] {
-  color: var(--tinta);
-  text-decoration-color: var(--marcador);
+  color: var(--ink-strong);
 }
 
-/* On the ink surface the steel secondary colour is only 2.25:1, so detail links
-   switch to paper there. */
-.on-ink .detail-link {
-  color: var(--papel-suave);
-}
-
-.on-ink .detail-link:hover,
-.on-ink .detail-link:focus-visible,
-.on-ink .detail-link[aria-current="page"] {
-  color: var(--papel);
-}
-
-/* Hairlines need a lighter tone against ink than against concrete. */
-.on-ink .section__rule {
-  background-color: var(--marcador);
-}
-
+/* ---- Buttons --------------------------------------------------------
+ * Three of them, one border radius, one transition. The primary is a filled
+ * accent block with near-black type on it (10.2:1); the outline is the quiet
+ * companion; the ghost is a text action. Every label is short enough to sit on
+ * one line at desktop, which is a rule, not a hope.
+ */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   min-height: 44px;
-  padding: 1rem 1.75rem;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 500;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--papel);
-  background-color: var(--tinta);
-  border: 0;
-  border-radius: var(--radius);
+  padding: 0.75rem 1.375rem;
+  font-size: var(--step-detail);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  color: var(--on-accent);
+  background-color: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-action);
   cursor: pointer;
   transition:
     background-color var(--transition),
-    color var(--transition);
+    border-color var(--transition),
+    color var(--transition),
+    transform var(--transition);
 }
 
 .btn:hover,
 .btn:focus-visible {
-  color: var(--tinta);
-  background-color: var(--marcador);
+  background-color: var(--accent-soft);
+}
+
+/* Tactile, not decorative: the button acknowledges the press. */
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn--outline {
+  color: var(--ink);
+  background-color: transparent;
+  border-color: var(--line-strong);
+}
+
+.btn--outline:hover,
+.btn--outline:focus-visible {
+  color: var(--ink-strong);
+  background-color: transparent;
+  border-color: var(--accent-soft);
+}
+
+.btn--ghost {
+  padding-inline: 0;
+  color: var(--accent-soft);
+  background-color: transparent;
+}
+
+.btn--ghost:hover,
+.btn--ghost:focus-visible {
+  color: var(--accent);
+  background-color: transparent;
+}
+
+/* ---- Labels ---------------------------------------------------------
+ * `--tag` is the inline pill (the only place the pill radius is used).
+ * `--eyebrow` is the tracked mono label. The eyebrow is rationed: at most two
+ * on the whole page, because a label above every heading is the fastest way for
+ * a page like this to start looking generated.
+ */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--body);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ---- Panels and rules -----------------------------------------------
+ * `--panel` is the hairline card: a lighter fill and a 1px edge, no shadow.
+ * `--rule` is the accent's one structural job, the short line under a section
+ * head.
+ */
+.panel {
+  background-color: var(--canvas-soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-panel);
+}
+
+.rule {
+  width: 3.5rem;
+  height: 1px;
+  background-color: var(--accent);
+}
+
+/* ---- Dot grid -------------------------------------------------------
+ * The hero's texture, and the only ornament in the system. Fixed to the section
+ * it decorates, never to a scrolling container: a tiled background that repaints
+ * on every scroll frame is how a dark page ends up feeling cheap on a phone.
+ *
+ * Drawn in `currentColor` at low alpha and masked to fade before it reaches any
+ * edge, so it reads as depth rather than as a visible pattern.
+ */
+.dots {
+  position: relative;
+  isolation: isolate;
+}
+
+.dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--ink);
+  opacity: 0.13;
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: radial-gradient(120% 70% at 50% 0%, #000 5%, transparent 78%);
+  -webkit-mask-image: radial-gradient(
+    120% 70% at 50% 0%,
+    #000 5%,
+    transparent 78%
+  );
 }
 
 /* =====================================================================
    Sections
-   *
-   * Every chapter of the page shares a head: a heading, and a short marker
-   * rule under it. The rule is the only place the accent appears outside the
-   * hero, the button, focus and link underlines.
    * ===================================================================== */
 
 .section {
@@ -243,29 +351,13 @@ p {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: clamp(1rem, 2.5vw, 1.75rem);
-  margin-block-end: clamp(2.5rem, 7vw, 6rem);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin-block-end: clamp(2.5rem, 6vw, 5rem);
 }
 
 .section__title {
-  max-width: 22ch;
   font-size: var(--step-section);
-  font-weight: 700;
-  font-stretch: 85%;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-
-.section__rule {
-  width: clamp(2.5rem, 7vw, 5.5rem);
-  height: 3px;
-  background-color: var(--marcador);
-}
-
-/* The ink chapter: the principles and the founding date, continuous. */
-.on-ink {
-  color: var(--papel);
-  background-color: var(--tinta);
+  max-width: 24ch;
 }
 
 /* =====================================================================
@@ -273,10 +365,14 @@ p {
    *
    * Written with CSS scroll-driven animations rather than an
    * IntersectionObserver, for a reason that matters more than the bytes: a
-   * scripted reveal has to hide its content first, so any failure — a blocked
-   * bundle, a parse error — leaves a blank page. Here, a browser without
+   * scripted reveal has to hide its content first, so any failure (a blocked
+   * bundle, a parse error) leaves a blank page. Here, a browser without
    * `animation-timeline` simply never applies the animation and shows the
    * content. The failure mode is "no animation", never "no page".
+   *
+   * It is also used sparingly, on purpose. Three moments on the page move as you
+   * scroll, not every section: motion that happens everywhere is not emphasis,
+   * it is noise.
    * ===================================================================== */
 
 @keyframes reveal-in {
@@ -297,7 +393,7 @@ p {
        * Longhands, never the `animation` shorthand. Declaring
        * `animation: reveal-in linear both` alongside `animation-timeline`
        * makes the build fold the timeline into the shorthand, emitting
-       * `animation: linear both reveal-in view()` — a form Chromium rejects
+       * `animation: linear both reveal-in view()`: a form Chromium rejects
        * outright, which drops the declaration and kills every scroll-driven
        * rule with no error anywhere. Written this way, it survives.
        * `scripts/verify-build.mjs` guards it.
@@ -328,18 +424,11 @@ p {
     .reveal-group > .reveal:nth-child(4) {
       animation-range: entry 24% entry 79%;
     }
-  }
-}
 
-.visually-hidden:not(:focus):not(:active) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  clip-path: inset(50%);
+    .reveal-group > .reveal:nth-child(5) {
+      animation-range: entry 32% entry 87%;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

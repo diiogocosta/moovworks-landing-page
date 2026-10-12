@@ -1,11 +1,13 @@
 /**
- * The hero's buzzword field.
+ * The hero's word field: the phrases the headline is answering.
  *
- * Always English, in every locale — the mockery of AI marketing is the same
- * everywhere. Coordinates are percentages of the field box, so the field can be
- * repositioned without redoing them. Sizes are rem, and the mobile set is
- * hand-placed rather than scaled, because a narrow column needs a different
- * arrangement, not a smaller copy of the same one.
+ * Always English, in every locale. They are the vocabulary of AI marketing as it
+ * is actually written, so translating them would lose the point.
+ *
+ * Coordinates are percentages of the field box, so the field can be repositioned
+ * without redoing them. Sizes are rem, and the mobile set is hand-placed rather
+ * than scaled, because a narrow column needs a different arrangement, not a
+ * smaller copy of the same one.
  */
 export interface Buzzword {
   text: string;
@@ -38,7 +40,10 @@ export const BUZZWORDS: Buzzword[] = [
     size: 1.15,
   },
   {
-    text: "passive income with AI",
+    // Was "passive income with AI", which reads as a course being sold rather
+    // than as the thing this studio is hired to avoid. Same width, so the
+    // placement below still holds.
+    text: "scale while you sleep",
     x: 76,
     y: 26,
     size: 1.05,

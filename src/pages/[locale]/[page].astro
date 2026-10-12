@@ -2,15 +2,15 @@
 /**
  * The privacy and terms stubs.
  *
- * Deliberately outside the design scope: plain type on the concrete surface,
- * with a clear "in preparation" note rather than invented legal text. They are
- * `noindex` and kept out of the sitemap while that is true — flip
- * LEGAL_PUBLISHED in site.config.mjs in the same change that adds real copy.
+ * Deliberately outside the design scope: plain type on the canvas, with a clear
+ * "in preparation" note rather than invented legal text. They are `noindex` and
+ * kept out of the sitemap while that is true — flip LEGAL_PUBLISHED in
+ * site.config.mjs in the same change that adds real copy.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import SiteHeader from '../../components/SiteHeader.astro';
-import { t, ui } from '../../lib/i18n';
+import { t } from '../../lib/i18n';
 import { legalAlternates } from '../../lib/seo';
 import {
   LEGAL_KINDS,
@@ -39,15 +39,14 @@ interface Props {
 
 const { locale, kind } = Astro.props;
 const dict = t(locale);
-const strings = ui(locale);
 const label = kind === 'privacy' ? dict.footer.privacy : dict.footer.terms;
 ---
 
 <BaseLayout
   locale={locale}
   path={legalPath(locale, kind)}
-  title={`Moovworks — ${label}`}
-  description={strings.legalPlaceholder}
+  title={`Moovworks | ${label}`}
+  description={dict.ui.legalPlaceholder}
   alternates={legalAlternates(kind)}
   noindex={!LEGAL_PUBLISHED}
 >
@@ -56,8 +55,8 @@ const label = kind === 'privacy' ? dict.footer.privacy : dict.footer.terms;
   <main id="main" class="stub">
     <div class="shell stub__inner">
       <h1 class="stub__title">{label}</h1>
-      <p class="stub__note">{strings.legalPlaceholder}</p>
-      <p><a class="link" href={homePath(locale)}>{strings.backHome}</a></p>
+      <p class="stub__note">{dict.ui.legalPlaceholder}</p>
+      <p><a class="link" href={homePath(locale)}>{dict.ui.backHome}</a></p>
     </div>
   </main>
 
@@ -75,12 +74,10 @@ const label = kind === 'privacy' ? dict.footer.privacy : dict.footer.terms;
   }
 
   .stub__title {
-    font-size: var(--step-block);
-    font-weight: 700;
-    font-stretch: 85%;
+    font-size: var(--step-section);
   }
 
   .stub__note {
-    color: var(--aco);
+    color: var(--mute);
   }
 </style>

@@ -3,35 +3,47 @@
  *
  *   npm run assets
  *
- * Both are cut from the real Archivo outlines, so the favicon and the share
- * card are the same letterforms as the site rather than an approximation. The
- * palette is read out of tokens.css, so the assets cannot drift from the
- * design system.
+ * Both are cut from the real Inter outlines, so the favicon and the share card
+ * are the same letterforms as the site rather than an approximation. The palette
+ * is read out of tokens.css, so the assets cannot drift from the design system,
+ * and the headline comes from site.config.mjs, so the card cannot drift from the
+ * page it is advertising.
  *
- * Outputs are committed, which keeps the site build free of fonts, sharp and
- * the network. Re-run this only when the mark, the headline or the palette
- * changes.
+ * Outputs are committed, which keeps the site build free of fonts, sharp and the
+ * network. Re-run this only when the mark, the headline or the palette changes.
  *
- * Note on inputs: fontkit cannot instance a WOFF2 variation (the woff2 tables
- * are stored transformed and the derived font loses its cmap), so this pulls
- * the variable TTFs from the google/fonts repository instead. They are cached
- * under .cache/ and never shipped.
+ * Note on inputs: fontkit cannot instance a WOFF2 variation (the woff2 tables are
+ * stored transformed and the derived font loses its cmap), so this pulls the
+ * variable TTFs from the google/fonts repository instead. They are cached under
+ * .cache/ and never shipped.
  */
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { openSync } from "fontkit";
 import sharp from "sharp";
+import { HEADLINE, SITE } from "../site.config.mjs";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const CACHE = resolve(ROOT, ".cache/fonts");
 
 const FONTS = {
-  display: {
-    file: resolve(CACHE, "Archivo-var.ttf"),
-    url: "https://raw.githubusercontent.com/google/fonts/main/ofl/archivo/Archivo%5Bwdth%2Cwght%5D.ttf",
+  sans: {
+    file: resolve(CACHE, "Inter-var.ttf"),
+    url: "https://raw.githubusercontent.com/google/fonts/main/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf",
+  },
+  mono: {
+    file: resolve(CACHE, "JetBrainsMono-var.ttf"),
+    url: "https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf",
   },
 };
+
+/**
+ * Inter carries an optical size axis, so every instance below names both axes.
+ * fontkit rejects a variation that names an axis the file does not have, which is
+ * why these are explicit rather than a single weight.
+ */
+const SANS = (wght, opsz) => ({ wght, opsz });
 
 /** Reads the palette from the design tokens rather than repeating it here. */
 async function readPalette() {
@@ -42,10 +54,10 @@ async function readPalette() {
     return match[1].toUpperCase();
   };
   return {
-    concreto: token("concreto"),
-    papel: token("papel"),
-    tinta: token("tinta"),
-    aco: token("aco"),
+    canvas: token("canvas"),
+    ink: token("ink-strong"),
+    accent: token("accent"),
+    mute: token("mute"),
   };
 }
 
@@ -63,9 +75,9 @@ async function download({ file, url }) {
  * upright, and reports its advance width and ink bounding box.
  *
  * Kerning comes from the font's own GPOS lookups via `layout()`, which is the
- * whole reason to go through fontkit instead of placing glyphs by hand. The
- * bbox is what lets the layout be measured rather than guessed: `minY` is the
- * top of the ink, because the y flip makes up negative.
+ * whole reason to go through fontkit instead of placing glyphs by hand. The bbox
+ * is what lets the layout be measured rather than guessed: `minY` is the top of
+ * the ink, because the y flip makes up negative.
  */
 function typeset(font, text, { size }) {
   const run = font.layout(text);
@@ -103,12 +115,16 @@ function typeset(font, text, { size }) {
 
 const path = (d, fill) => `<path d="${d}" fill="${fill}"/>`;
 
+/**
+ * The mark: a lowercase 'm' knocked out of an accent tile.
+ *
+ * Inverted on purpose. The site is near-black with a green accent, so the
+ * obvious favicon is a green letter on a dark tile, which is the one version
+ * that disappears against a dark browser theme, and most are dark. A solid
+ * accent tile reads at 16px on every background.
+ */
 async function buildFavicon(tokens) {
-  // 800 at the default width: a condensed 'm' at 16px turns to mud.
-  const font = openSync(FONTS.display.file).getVariation({
-    wght: 800,
-    wdth: 100,
-  });
+  const font = openSync(FONTS.sans.file).getVariation(SANS(600, 14));
 
   const glyph = font.layout("m").glyphs[0];
   const box = glyph.path.bbox;
@@ -129,8 +145,8 @@ async function buildFavicon(tokens) {
 
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Moovworks">`,
-    `<rect width="${size}" height="${size}" rx="2" fill="${tokens.tinta}"/>`,
-    path(d, tokens.papel),
+    `<rect width="${size}" height="${size}" rx="6" fill="${tokens.accent}"/>`,
+    path(d, tokens.canvas),
     "</svg>",
     "",
   ].join("\n");
@@ -140,8 +156,9 @@ async function buildFavicon(tokens) {
 }
 
 const OG = { width: 1200, height: 630, margin: 72 };
-const OG_LINES = ["No more", "AI bullshit"];
-const LEADING_RATIO = 0.92;
+const LEADING_RATIO = 1.05;
+/** The single line at the bottom. Built from the configured date, not typed. */
+const SINCE = `Since ${SITE.founded}.`;
 
 /** Lays the lines out at `size` and reports the ink box of the block as a whole. */
 function layoutLines(font, lines, size) {
@@ -171,23 +188,22 @@ function layoutLines(font, lines, size) {
 }
 
 async function buildOpenGraph(tokens) {
-  const base = openSync(FONTS.display.file);
-  const headlineFont = base.getVariation({ wght: 800, wdth: 80 });
-  const wordmarkFont = base.getVariation({ wght: 700, wdth: 100 });
-  const detailFont = base.getVariation({ wght: 500, wdth: 90 });
+  const headlineFont = openSync(FONTS.sans.file).getVariation(SANS(500, 32));
+  const wordmarkFont = openSync(FONTS.sans.file).getVariation(SANS(600, 14));
+  const detailFont = openSync(FONTS.mono.file).getVariation({ wght: 400 });
 
-  // The band the headline has to occupy: clear of the wordmark above and the
-  // date below, rather than flush against them.
-  const band = { top: 158, bottom: 494 };
+  // The band the headline has to occupy: clear of the wordmark above and the date
+  // below, rather than flush against them.
+  const band = { top: 150, bottom: 470 };
   const available = {
     width: OG.width - OG.margin * 2,
     height: band.bottom - band.top,
   };
 
-  // Measure once at a unit size, then solve for the size that fills the band
-  // on whichever axis binds first. No hand-tuned magic number.
+  // Measure once at a unit size, then solve for the size that fills the band on
+  // whichever axis binds first. No hand-tuned magic number.
   const unit = 100;
-  const probe = layoutLines(headlineFont, OG_LINES, unit);
+  const probe = layoutLines(headlineFont, HEADLINE, unit);
   const size =
     unit *
     Math.min(
@@ -195,7 +211,7 @@ async function buildOpenGraph(tokens) {
       available.height / probe.inkHeight,
     );
 
-  const headline = layoutLines(headlineFont, OG_LINES, size);
+  const headline = layoutLines(headlineFont, HEADLINE, size);
 
   // Anchor the ink to the left margin and centre it in the band.
   const shiftX =
@@ -208,18 +224,21 @@ async function buildOpenGraph(tokens) {
 
   const headlineParts = headline.rendered.map(
     ({ d, baseline }) =>
-      `<g transform="translate(${shiftX} ${shiftY + baseline})">${path(d, tokens.tinta)}</g>`,
+      `<g transform="translate(${shiftX} ${shiftY + baseline})">${path(d, tokens.ink)}</g>`,
   );
 
-  const wordmark = typeset(wordmarkFont, "moovworks", { size: 34 });
-  const since = typeset(detailFont, "Since 2011.", { size: 26 });
+  const wordmark = typeset(wordmarkFont, "moovworks", { size: 30 });
+  const since = typeset(detailFont, SINCE, { size: 22 });
 
   const svg = [
     `<svg xmlns="http://www.w3.org/2000/svg" width="${OG.width}" height="${OG.height}" viewBox="0 0 ${OG.width} ${OG.height}">`,
-    `<rect width="${OG.width}" height="${OG.height}" fill="${tokens.concreto}"/>`,
-    `<g transform="translate(${OG.margin} ${OG.margin + 30})">${path(wordmark.d, tokens.tinta)}</g>`,
+    `<rect width="${OG.width}" height="${OG.height}" fill="${tokens.canvas}"/>`,
+    `<g transform="translate(${OG.margin} ${OG.margin})">${path(wordmark.d, tokens.ink)}</g>`,
     ...headlineParts,
-    `<g transform="translate(${OG.margin} ${OG.height - OG.margin})">${path(since.d, tokens.aco)}</g>`,
+    `<g transform="translate(${OG.margin} ${OG.height - OG.margin})">${path(since.d, tokens.mute)}</g>`,
+    // The one piece of the brand colour on the card, along the bottom edge where
+    // it cannot fight the type.
+    `<rect x="0" y="${OG.height - 2}" width="${OG.width}" height="2" fill="${tokens.accent}"/>`,
     "</svg>",
     "",
   ].join("\n");
@@ -233,7 +252,8 @@ async function buildOpenGraph(tokens) {
 }
 
 const tokens = await readPalette();
-await download(FONTS.display);
+await download(FONTS.sans);
+await download(FONTS.mono);
 await mkdir(resolve(ROOT, "public"), { recursive: true });
 await buildFavicon(tokens);
 await buildOpenGraph(tokens);

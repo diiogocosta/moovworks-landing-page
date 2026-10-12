@@ -2,7 +2,8 @@
  * Single source of truth for every value that appears in more than one place.
  *
  * Imported by `astro.config.mjs` (build-time) and by `src/**` (render-time), so the
- * contact address, the origin and the route slugs can never drift apart.
+ * contact address, the origin, the route slugs and the headline can never drift
+ * apart.
  */
 
 export const SITE = {
@@ -17,6 +18,19 @@ export const SITE = {
   /** Credibility date. Never rephrased as "N years" — that would age badly. */
   founded: "2011",
 };
+
+/**
+ * The hero headline, one line per entry. English in every locale: it is the
+ * brand's signature, not a sentence to be translated.
+ *
+ * It lives here rather than in the copy deck because two very different things
+ * are built from it, and they must never disagree: the `<h1>` in `Hero.astro`,
+ * and the headline burned into `public/og.png` by `scripts/generate-assets.mjs`.
+ * A copy change that touches one and not the other puts a headline on the page
+ * that no share card has ever shown. The locale-specific positioning line is in
+ * `src/content/copy.json` under `hero.sub`.
+ */
+export const HEADLINE = ["No more", "AI bullshit"];
 
 /** Ordered exactly as the header renders them. */
 export const LOCALES = ["pt-BR", "pt-PT", "en"];

@@ -18,9 +18,18 @@
  *
  * The fix is to write the animation as longhands. This checks that the fix is
  * still in place, and that the enhancement has not quietly disappeared.
+ *
+ * A note on which files are checked. Every page that imports the stylesheet gets
+ * it inlined, because `build.inlineStylesheets` is `always`. One page does not:
+ * the language signpost at `/`, which imports no stylesheet and is a redirect
+ * document. So a page is only held to the CSS assertions if it actually carries
+ * an inlined `<style>` block. An earlier version of this script tested whichever
+ * file the directory listing happened to return first, which on a filesystem with
+ * a different entry order meant testing the signpost and failing the build for a
+ * reason that did not exist. It now reads every page.
  */
 import { readdir, readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { relative, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const DIST = resolve(ROOT, "dist");
@@ -66,25 +75,51 @@ if (files.length === 0) {
   process.exit(1);
 }
 
+const pages = await Promise.all(
+  files.map(async (file) => ({ file, html: await readFile(file, "utf8") })),
+);
+
+/**
+ * Only pages the build actually inlined the stylesheet into. The signpost at `/`
+ * has none, so it is not evidence either way.
+ */
+const styled = pages.filter(({ html }) => html.includes("<style"));
+
 const problems = [];
 
-// The stylesheet is inlined, so any page carries the whole thing; checking them
-// all just means a page that somehow lost it is caught too.
-const first = await readFile(files[0], "utf8");
-const css = first;
-
-if (FOLDED_SHORTHAND.test(css)) {
+if (styled.length === 0) {
   problems.push(
-    "the build folded a timeline into the `animation` shorthand " +
-      `(${css.match(FOLDED_SHORTHAND)?.[0]}), which Chromium rejects. ` +
-      "Write the animation as longhands — see src/styles/global.css.",
+    "no built page carries an inlined stylesheet. Check that " +
+      "`build.inlineStylesheets` is still `always` in astro.config.mjs.",
   );
 }
 
-for (const { pattern, what } of REQUIRED) {
-  if (!pattern.test(css)) {
+// A folded shorthand is a defect wherever it appears, styled or not.
+for (const { file, html } of pages) {
+  const folded = html.match(FOLDED_SHORTHAND);
+  if (folded) {
     problems.push(
-      `${what} is missing from the built CSS (looked for ${pattern}).`,
+      `${relative(DIST, file)} folded a timeline into the \`animation\` shorthand ` +
+        `(${folded[0]}), which Chromium rejects. Write the animation as ` +
+        "longhands — see src/styles/global.css.",
+    );
+  }
+}
+
+/*
+ * And these must be present in every styled page, not just the first one. The
+ * stylesheet is inlined, so any page carries the whole thing: a page missing it
+ * has lost the stylesheet outright.
+ */
+for (const { pattern, what } of REQUIRED) {
+  const missing = styled
+    .filter(({ html }) => !pattern.test(html))
+    .map(({ file }) => relative(DIST, file));
+
+  if (missing.length > 0) {
+    problems.push(
+      `${what} is missing from ${missing.length} of ${styled.length} styled ` +
+        `page(s): ${missing.join(", ")}.`,
     );
   }
 }
@@ -97,5 +132,6 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `verify-build: ok — scroll-driven CSS intact across ${files.length} page(s).`,
+  `verify-build: ok — scroll-driven CSS intact across ${styled.length} ` +
+    `styled page(s) of ${pages.length}.`,
 );

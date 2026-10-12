@@ -5,76 +5,120 @@
  * import this file unchanged so they inherit the brand without re-deciding it.
  * Nothing here is component-specific: components read these values, they never
  * redeclare them.
+ *
+ * The system is one dark surface and one accent. There is deliberately no light
+ * mode and no second accent: the page reads as a single continuous material, and
+ * the green is the only thing on it that is allowed to be loud.
  */
 
 :root {
-  /* ---- Surfaces and ink ---------------------------------------------- */
-  --concreto: #e3e4df; /* main background */
-  --papel: #f1f1ed; /* text on dark, light-button hover */
-  --tinta: #14213d; /* primary text, dark section. Deep ink blue, not black */
-  --aco: #4f5968; /* secondary text (5.5:1 on --concreto) */
-  --nevoa: #c9cbc5; /* hairlines between list items */
-  --marcador: #f5d90a; /* the only accent: hero marker, button hover, focus, link underline */
-
-  /* ---- Surface depth ---------------------------------------------------
-   * Two extra tones, used to raise a panel off its background without reaching
-   * for a blurred grey shadow, which is the single clearest tell of a generated
-   * page. On the light surface a panel is *lighter* than the page; on the ink
-   * surface it is a lifted navy. Both read as a change of material.
+  /* ---- Surface --------------------------------------------------------
+   * Three steps of near-black, not two: `--canvas` is the page, `--canvas-soft`
+   * lifts an inset well (the deliverable block, the pipeline's nodes), and
+   * `--canvas-raised` lifts a panel that has to sit above the page. Raising a
+   * surface by a few percent of luminance is how this system shows depth.
+   * There are no drop shadows anywhere in the identity: a shadow on near-black
+   * is invisible, so elevation is a border and a lighter fill or nothing.
    */
-  --papel-alto: #ecedea; /* raised panel on --concreto */
-  --tinta-alta: #1c2b4d; /* raised panel on --tinta */
-  --tinta-borda: #2e3e63; /* hairline on --tinta */
-  /* Secondary text on the ink surface. `--aco` is only 2.25:1 there, so the
-     dark chapters use a dimmed paper instead — 7.6:1. */
-  --papel-suave: rgb(241 241 237 / 0.72);
+  --canvas: #101010;
+  --canvas-soft: #171717;
+  --canvas-raised: #1c1c1c;
 
-  /* ---- Elevation -------------------------------------------------------
-   * One shadow, tinted with the ink rather than grey, and shallow. Used only
-   * where something genuinely floats above the page: the sticky header and the
-   * contact call to action.
+  /* ---- Edges ----------------------------------------------------------
+   * One hairline colour for every border, divider and grid line. `--line` is
+   * the default; `--line-strong` only where an edge must survive sitting next
+   * to the accent. Both are cool neutrals: a warm grey next to #00d992 reads
+   * muddy, and the accent is the one colour the neutrals have to agree with.
    */
-  --sombra: 0 1px 2px rgb(20 33 61 / 5%), 0 10px 30px -18px rgb(20 33 61 / 22%);
+  --line: #2b2b2b;
+  --line-strong: #3d3d3d;
+
+  /* ---- Text -----------------------------------------------------------
+   * Contrast against `--canvas`, all measured, not estimated:
+   *   --ink-strong  #ffffff  19.4:1
+   *   --ink         #f2f2f2  16.3:1
+   *   --body        #bdbdbd   9.6:1
+   *   --mute        #8b949e   5.9:1  (lowest it gets; still AA at any size)
+   * Nothing below `--mute` is ever used for text.
+   */
+  --ink: #f2f2f2;
+  --ink-strong: #ffffff;
+  --body: #bdbdbd;
+  --mute: #8b949e;
+
+  /* ---- Accent ---------------------------------------------------------
+   * 10.2:1 against the canvas, and 10.2:1 the other way for `--on-accent`, so
+   * both the green text on dark and the dark text on a green button clear AAA
+   * by a wide margin.
+   *
+   * The accent is reserved. It is a button fill, a focus ring, an inline link,
+   * the one arrow in the pipeline, and the one rule under a section head. It is
+   * never body text, never a background for a whole band, and never used twice
+   * in the same viewport competing for the same job.
+   */
+  --accent: #00d992;
+  --accent-soft: #2fd6a1;
+  --accent-deep: #10b981;
+  --on-accent: #101010;
 
   /* ---- Type families --------------------------------------------------
-   * `--font-archivo` and `--font-source-serif` are injected by Astro's Fonts
-   * API (self-hosted woff2 + capsize-adjusted fallback). The tokens below wrap
-   * them in a fallback so the site still reads correctly if that step is
-   * skipped — e.g. when a subdomain only imports tokens.css.
+   * `--font-inter` and `--font-jetbrains-mono` are injected by Astro's Fonts
+   * API (self-hosted woff2 + a capsize-matched fallback). The tokens below wrap
+   * them so the site still reads correctly if that step is skipped, e.g. when a
+   * subdomain only imports tokens.css.
+   *
+   * One sans for every role, including display. There is no second display
+   * face: the hierarchy comes from size, weight and space, which is what keeps
+   * a single-family page from looking like a default template.
    */
-  --font-display: var(--font-archivo, "Arial Narrow", Arial, sans-serif);
-  --font-text: var(--font-source-serif, Georgia, serif);
+  --font-sans: var(--font-inter, "Inter", system-ui, -apple-system, sans-serif);
+  --font-mono: var(
+    --font-jetbrains-mono,
+    ui-monospace,
+    "SFMono-Regular",
+    Menlo,
+    monospace
+  );
 
-  /* ---- Fluid scale ---------------------------------------------------- */
-  --step-hero: clamp(3.5rem, 2rem + 9vw, 11rem);
-  --step-block: clamp(2rem, 1.4rem + 3vw, 4.25rem);
-  --step-numeral: clamp(4rem, 2rem + 14vw, 16rem);
-  --step-body: clamp(1.0625rem, 0.98rem + 0.4vw, 1.25rem);
+  /* ---- Fluid scale ----------------------------------------------------
+   * Six steps, each a `clamp` so the page never needs a breakpoint for type.
+   * The display cap of 72px is deliberate: this is a page that speaks quietly
+   * and lets the space do the work, and Inter set calm at 400 needs to stay
+   * under the size where it starts to shout.
+   *
+   * The 400 weight is load-bearing. Do not bolden the display: hierarchy here
+   * comes from scale and colour, not from weight.
+   */
+  --step-display: clamp(2.75rem, 1.8rem + 4.6vw, 4.5rem);
+  --step-section: clamp(2rem, 1.4rem + 2.8vw, 3.5rem);
+  --step-cell: clamp(1.375rem, 1.1rem + 1.1vw, 1.75rem);
+  /* Larger than the display step, and capped by what actually has to fit inside
+     it: this one carries the founding date, which is eleven characters in every
+     locale. Both ends are chosen so that string stays on one line from 320px to
+     1440px, which is why the cap is 8rem and not the 10rem it could be. */
+  --step-numeral: clamp(2.5rem, 1rem + 7.5vw, 8rem);
+  --step-body: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
   --step-detail: 0.875rem;
-  /* Row titles in a list, one rung below a block title. */
-  --step-row: clamp(1.75rem, 1.15rem + 1.6vw, 2.75rem);
-  /* Section headings, one rung above a row title. */
-  --step-section: clamp(2.25rem, 1.5rem + 3.4vw, 5rem);
-  /* The three principles sit in narrow columns, so their titles are a size
-     between a row title and a block title. */
-  --step-principle: clamp(1.75rem, 1.2rem + 2vw, 3rem);
-  /* The address is set as a title, but sized so it never has to break mid-word
-     on a 320px screen. */
-  --step-email: clamp(1.4rem, 0.9rem + 3vw, 4rem);
 
   /* ---- Space ---------------------------------------------------------- */
   --gutter: clamp(1.25rem, 4vw, 4rem);
-  --section-gap: clamp(6rem, 14vw, 14rem);
-  --max-width: 1440px;
-  --measure: 62ch;
-  --panel-pad: clamp(1.5rem, 3.5vw, 2.75rem);
+  /* Generous, but not to the point where the page reads as unfinished. At the
+     top of the range two adjacent sections left 320px of nothing between them,
+     which on a 900px-tall screen is a third of the viewport of empty. */
+  --section-gap: clamp(4rem, 7vw, 7rem);
+  --max-width: 1400px;
+  --measure: 60ch;
+  --panel-pad: clamp(1.5rem, 3vw, 2.5rem);
 
-  /* ---- Detail --------------------------------------------------------- */
-  --radius: 2px; /* the only border-radius in the site */
-  --hairline: 1px solid var(--nevoa);
-  --transition: 150ms linear;
-  --transition-slow: 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* ---- Detail ---------------------------------------------------------
+   * Three radii, one rule each: 6px for anything interactive, 8px for a panel
+   * or a well, and the pill only for an inline tag. Nothing else is rounded.
+   */
+  --radius-action: 6px;
+  --radius-panel: 8px;
+  --radius-pill: 9999px;
+  --transition: 160ms linear;
 
   /* ---- Layout primitives ---------------------------------------------- */
-  --header-block: clamp(0.75rem, 2vw, 1.25rem);
+  --header-block: clamp(0.7rem, 1.6vw, 1rem);
 }

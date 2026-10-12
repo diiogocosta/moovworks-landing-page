@@ -1,0 +1,138 @@
+---
+import { t } from '../lib/i18n';
+import type { Locale } from '../lib/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const dict = t(locale);
+---
+
+{/*
+  What the work actually looks like end to end: brief in, five lines running, one
+  delivered thing out. It sits directly under the hero because the hero states
+  the claim and this is the receipt.
+
+  It is the agency's answer to the code block a developer tool would put here. It
+  is deliberately built from real content rather than drawn: the endpoints are two
+  labels, the middle is the same five services the next section details, and a
+  hairline does the work an arrow would. Nothing here is a mockup of a product
+  that does not exist.
+*/}
+<section class="pipeline">
+  <div class="shell">
+    <h2 class="pipeline__title">{dict.pipeline.title}</h2>
+
+    <div class="pipeline__flow">
+      <p class="pipeline__node">{dict.pipeline.from}</p>
+      <span class="pipeline__link" aria-hidden="true"></span>
+      <ul class="pipeline__lines">
+        {
+          dict.services.items.map((service) => (
+            <li class="pipeline__line">{service.title}</li>
+          ))
+        }
+      </ul>
+      <span class="pipeline__link" aria-hidden="true"></span>
+      <p class="pipeline__node pipeline__node--end">{dict.pipeline.to}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pipeline {
+    padding-block: clamp(3.5rem, 7vw, 6rem);
+    /* A hairline marks the fold between the hero and the body of the page. */
+    border-block-start: 1px solid var(--line);
+  }
+
+  .pipeline__title {
+    font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.125rem);
+    letter-spacing: -0.015em;
+    margin-block-end: clamp(2rem, 4vw, 3rem);
+  }
+
+  /*
+   * A flex row rather than a grid with drawn connectors: the two accent
+   * hairlines are items that grow to fill whatever space is left, so the flow
+   * stays correct at any width without measuring anything.
+   */
+  .pipeline__flow {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+
+  .pipeline__node,
+  .pipeline__line {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+
+  /* The two ends of the flow are states, so they get a box. The middle is a
+     list, so it does not: the difference is the whole diagram. */
+  .pipeline__node {
+    padding: 0.5rem 0.75rem;
+    color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-action);
+  }
+
+  .pipeline__node--end {
+    color: var(--on-accent);
+    background-color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .pipeline__lines {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+  }
+
+  .pipeline__line {
+    color: var(--mute);
+  }
+
+  /* The connector. The accent's job here is structural: it says which way the
+     work moves, which is the one thing the section has to communicate. */
+  .pipeline__link {
+    flex: 1 1 2rem;
+    min-width: 1rem;
+    align-self: center;
+    border-block-start: 1px solid var(--accent);
+  }
+
+  /*
+   * Narrow: the flow becomes a vertical stack, because a five-item row at 320px
+   * is either unreadable or a horizontal scrollbar. The connectors turn with it
+   * so the direction still reads.
+   */
+  @media (max-width: 767px) {
+    .pipeline__flow {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .pipeline__lines {
+      flex-direction: column;
+      gap: 0.4rem;
+      padding-block: 0.75rem;
+    }
+
+    .pipeline__link {
+      flex: 0 0 auto;
+      width: 0;
+      height: 1.5rem;
+      align-self: flex-start;
+      margin-inline-start: 0.85rem;
+      border-block-start: 0;
+      border-inline-start: 1px solid var(--accent);
+    }
+  }
+</style>

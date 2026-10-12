@@ -28,9 +28,9 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
 
 <style>
   /*
-   * Sticky, and transparent where it overlaps the hero so the sculpture reads
-   * edge to edge. It only becomes a solid bar once the page has scrolled past
-   * the headline, which is when it stops being part of the hero and starts
+   * Sticky, and transparent where it overlaps the hero so the dot grid runs edge
+   * to edge behind it. It becomes a solid bar once the page has scrolled past the
+   * headline, which is the moment it stops being part of the hero and starts
    * being chrome.
    *
    * Driven by a scroll timeline rather than a scroll listener: no script, no
@@ -42,8 +42,8 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
     position: sticky;
     inset-block-start: 0;
     z-index: 60;
-    background-color: var(--concreto);
-    border-block-end: 1px solid var(--nevoia);
+    background-color: var(--canvas);
+    border-block-end: 1px solid var(--line);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -66,15 +66,14 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
 
   @keyframes header-solid {
     to {
-      background-color: var(--concreto);
-      border-block-end-color: var(--nevoia);
-      box-shadow: var(--sombra);
+      background-color: var(--canvas);
+      border-block-end-color: var(--line);
     }
   }
 
   .site-header__inner {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem 1.5rem;
@@ -86,22 +85,17 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
     align-items: center;
     /* Touch target, not decoration: the wordmark is the way home. */
     min-height: 44px;
-    font-family: var(--font-display);
-    /* Archivo set wide and lowercase: the wordmark is a name, not a label. */
-    font-size: 1.25rem;
-    font-weight: 700;
-    font-stretch: 100%;
-    letter-spacing: -0.03em;
-    color: var(--tinta);
-    text-decoration-line: underline;
-    text-decoration-color: transparent;
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.24em;
-    transition: text-decoration-color var(--transition);
+    font-family: var(--font-sans);
+    /* Lowercase and lightly tracked in: the wordmark is a name, not a label. */
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--ink-strong);
+    transition: color var(--transition);
   }
 
   .wordmark:hover {
-    text-decoration-color: var(--marcador);
+    color: var(--accent-soft);
   }
 
   .site-header__end {
@@ -109,6 +103,22 @@ const contactHref = home ? '#contact' : `${homePath(locale)}#contact`;
     align-items: center;
     /* The links bring their own 44px boxes, so this gap is part of the target. */
     gap: clamp(0.5rem, 1.5vw, 1.25rem);
-    margin-inline-end: -0.4rem;
+  }
+
+  /*
+   * The contact link is a plain label here, not a filled button. The one filled
+   * accent button on the page belongs to the hero: two green blocks in the first
+   * viewport would spend the accent twice on the same job.
+   *
+   * On a narrow phone the three language codes and the contact label together
+   * are wider than the viewport, so the label is the one that goes. It is safe
+   * to drop because the hero opens with the same label wired to the same anchor,
+   * one scroll position below, and the language switcher is not reproducible
+   * anywhere else on the page.
+   */
+  @media (max-width: 480px) {
+    .site-header__end .detail-link {
+      display: none;
+    }
   }
 </style>

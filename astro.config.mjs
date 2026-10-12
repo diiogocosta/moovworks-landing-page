@@ -11,6 +11,7 @@ export default defineConfig({
   compressHTML: true,
 
   // One request instead of two: the stylesheet is small enough to inline.
+  // `verify-build.mjs` asserts the result, so do not switch this to "auto".
   build: {
     inlineStylesheets: "always",
     assets: "_assets",
@@ -23,11 +24,11 @@ export default defineConfig({
    * Two families, two woff2 files, latin subset, served from our own origin.
    *
    * Both are local rather than `fontProviders.google()` on purpose. Google's
-   * provider requests only the `wght` axis, which would leave Archivo at
-   * width 100 and cost the headlines the condensed cut the design depends on;
-   * asking Google directly for `wdth` returns a 90 KB file that Astro then
-   * cannot request. So `npm run fonts` pulls the correct slices once and they
-   * are committed — which also makes the build work offline.
+   * provider would work here, but it pins the axis set, and Inter's optical size
+   * axis is worth having: the display sizes on this page want the text cut and
+   * the body wants the default, and the browser picks that automatically when
+   * `opsz` is in the file. So `npm run fonts` pulls the correct slices once and
+   * they are committed, which also makes the build work offline.
    *
    * Astro still writes the `@font-face` rules, keeps `font-display: swap` and
    * generates a capsize-matched fallback so the swap does not shift layout.
@@ -35,35 +36,38 @@ export default defineConfig({
   fonts: [
     {
       provider: fontProviders.local(),
-      name: "Archivo",
-      cssVariable: "--font-archivo",
-      fallbacks: ["Arial Narrow", "Arial", "sans-serif"],
+      name: "Inter",
+      cssVariable: "--font-inter",
+      fallbacks: ["system-ui", "Segoe UI", "Roboto", "sans-serif"],
       display: "swap",
       options: {
         variants: [
           {
-            src: ["./src/assets/fonts/archivo-latin.woff2"],
+            src: ["./src/assets/fonts/inter-latin.woff2"],
             weight: "100 900",
             style: "normal",
-            // Makes `font-stretch: 85%` on a headline instance the `wdth` axis
-            // instead of snapping to a single width.
-            stretch: "75% 100%",
             unicodeRange: LATIN_UNICODE_RANGES,
           },
         ],
       },
     },
     {
+      /**
+       * The mono is not decoration. It carries the figures, the pipeline's step
+       * labels and the one eyebrow per band, which is the whole of the page's
+       * technical texture. Weight stops at 500: a mono at 700 next to Inter 400
+       * reads as a different brand.
+       */
       provider: fontProviders.local(),
-      name: "Source Serif 4",
-      cssVariable: "--font-source-serif",
-      fallbacks: ["Georgia", "serif"],
+      name: "JetBrains Mono",
+      cssVariable: "--font-jetbrains-mono",
+      fallbacks: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       display: "swap",
       options: {
         variants: [
           {
-            src: ["./src/assets/fonts/source-serif-4-latin.woff2"],
-            weight: "400",
+            src: ["./src/assets/fonts/jetbrains-mono-latin.woff2"],
+            weight: "400 500",
             style: "normal",
             unicodeRange: LATIN_UNICODE_RANGES,
           },

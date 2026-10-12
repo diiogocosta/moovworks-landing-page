@@ -1,215 +1,152 @@
 # moovworks
 
-The moovworks.com institutional site: one page, three languages, static, with the
-headline set as an extruded 3D sculpture in WebGL.
+The Moovworks institutional site: one page, three languages (pt-BR, pt-PT, en),
+static output, no runtime JavaScript beyond two inline scripts. An applied AI
+studio selling five lines of work: video, marketing, ads, apps and projects.
 
-> **`spec.md` is intentionally untracked.** It is the brief this was built from, not an
-> artefact of it. It is listed in `.gitignore`.
->
-> **The brief was revised for the 3D hero.** The original forbade 3D libraries, parallax
-> and any budget over 150 KB. Sections 2, 4.5, 10, 11 and 13 now permit one WebGL layer,
-> pointer parallax and scroll drift, and a 200 KB budget — while still banning the
-> generated look (mesh gradients, spinning logos, decorative glow). That revision is local
-> only, because the file is untracked.
+The page is a dark near-black surface with a single electric-green accent, one
+typeface, a hairline grid, and one hero image that is a diagram rather than a
+photograph.
 
 ## Stack, and why
 
-| Choice                                    | Reason                                                                                                                                                                                                                                                                 |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Astro 7, `output: 'static'`**           | Ships zero JavaScript to the client by default, and renders the three languages from one route file so they cannot drift apart. No UI framework, no Tailwind.                                                                                                          |
-| **Hand-written CSS**                      | One `tokens.css` is the single source of truth for the palette, the families and the fluid scale. Subdomains are expected to import it unchanged.                                                                                                                      |
-| **Self-hosted fonts**                     | Two `woff2` files, latin subset, served from our own origin. Committed, so the build needs no network and no visitor request ever reaches Google.                                                                                                                      |
-| **A bespoke WebGL renderer for the hero** | three.js costs ~180 KB gzipped, because `WebGLRenderer` defeats tree-shaking. The scene needs one static extruded solid lit by two directional lights, so the geometry is baked at build time and shaded by ~4 KB of our own code. three is used _at build time only_. |
-| **No analytics, no cookie banner**        | Nothing is tracked, so there is nothing to consent to.                                                                                                                                                                                                                 |
-| **Asset generation is offline**           | `public/favicon.svg`, `public/og.png` and the hero mesh are committed outputs of scripts. The site build runs no browser and does no font parsing.                                                                                                                     |
+| Choice | Reason |
+| --- | --- |
+| **Astro 7, `output: 'static'`** | Ships zero JavaScript to the client, and renders the three languages from one route set so they cannot drift apart. No UI framework, no Tailwind. |
+| **Hand-written CSS** | One `tokens.css` is the single source of truth for the surface, the accent, the families and the fluid scale. Subdomains are expected to import it unchanged. |
+| **Self-hosted fonts** | Two `woff2` files, latin subset, served from our own origin. Committed, so the build needs no network and no visitor request ever reaches Google. |
+| **No WebGL, no 3D** | The hero used to be a hand-written WebGL renderer drawing the headline as extruded type. It was retired in the rebrand: it cost ~900 lines, needed WebGL, and the flow diagram says more about an agency than a sculpture does. See "Decisions worth knowing". |
+| **No analytics, no cookie banner** | Nothing is tracked, so there is nothing to consent to. |
+| **Asset generation is offline** | `public/favicon.svg` and `public/og.png` are committed outputs of `npm run assets`. The site build runs no browser and does no font parsing. |
+
+The whole thing is about 140 KB for a first visit including both fonts, and the
+stylesheet is inlined into the document so the first paint needs no second
+request.
 
 ## Requirements
 
-Node **20.3+** (the scripts use `import.meta.dirname`; the project is developed on 22).
+Node **22.12 or newer**. Astro 7 declares that floor itself; the previous
+`>=20.3.0` here was simply wrong and a host reading `engines` would have picked a
+Node that cannot run the build.
 
 ## Commands
 
 ```bash
-npm install
-npm run dev       # local server
-npm run build     # astro build, then verify-build  (static output in dist/)
-npm run preview   # serve dist/ exactly as a host would
-npm run check     # type check (astro check)
+npm run dev           # dev server
+npm run build         # type check, then build, then verify the CSS survived
+npm run preview       # serve dist/
+npm run check         # astro check on its own
 
-npm run fonts         # re-fetch the two woff2 subsets      (needs network)
-npm run mesh          # re-bake the hero type geometry       (needs network on first run)
-npm run mesh:preview  # render the baked mesh to a PNG      (no browser)
-npm run assets        # regenerate favicon.svg + og.png     (needs network on first run)
+npm run fonts         # refresh the two self-hosted woff2 files   (needs network)
+npm run assets        # regenerate favicon.svg + og.png           (needs network)
 ```
 
-`build` runs `scripts/verify-build.mjs` afterwards, because two things about this
-build fail _silently_. It is not optional — see "Guards" below.
+`build` runs the type check and then `scripts/verify-build.mjs`, because two
+things about this build fail *silently*. Neither step is optional. See "Guards".
 
-The four maintenance commands are not build steps. Their inputs are cached under
-`.cache/` and their outputs committed, so day-to-day work never needs any of them.
-
-`mesh:preview` is the important one after touching the bake: it draws the geometry and
-its triangulation straight to an image, so a mistake in the baker can be told apart from
-a mistake in the renderer in about two seconds.
+`fonts` and `assets` are not build steps. Their inputs are cached under `.cache/`
+and their outputs committed, so day-to-day work never needs either.
 
 ## Layout
 
 ```
-site.config.mjs          domain, contact address, founding year, route slugs, unicode range
-astro.config.mjs         Astro config, including the font pipeline
-src/content/i18n.json    the copy deck, exactly as the brief specifies it
-src/content/authored.json section headings and the principles band (written for this build)
-src/content/ui.json      strings the brief does not cover (skip link, legal placeholders)
-src/content/buzzwords.ts the hero's buzzword field: text, anchors, sizes, timings
-src/lib/site.ts          typed facade over site.config.mjs
-src/lib/i18n.ts          dictionaries
-src/lib/seo.ts           hreflang groups and the JSON-LD Organization node
-src/styles/tokens.css    the design system. Subdomains import this file
-src/components/          one file per block of the page
-src/layouts/BaseLayout.astro  head, metadata, and the only inline scripts
-src/scripts/hero-3d.ts   the WebGL sculpture
-src/assets/type/         the baked hero mesh (generated — do not edit)
-src/pages/index.astro    the Accept-Language signpost at /
-src/pages/[locale]/      /pt-br/, /pt-pt/, /en/ and the legal stubs
-scripts/                 font fetching, mesh baking, asset generation, build verification
+site.config.mjs          origin, contact, locale list, routes, and the headline
+src/styles/tokens.css    the identity: surface, accent, type, space, radii
+src/styles/global.css    reset, base, primitives, the reveal
+src/content/copy.json    every string on the page, in all three locales
+src/content/buzzwords.ts the hero's word field
+src/components/          one file per band of the page
+src/pages/               the three home pages, the legal stubs, the signpost
+scripts/                 font fetch, asset generation, build verification
 ```
+
+`src/content/copy.json` is a single file on purpose. It used to be three, split
+so that one of them stayed byte-identical to a design brief that no longer
+describes this site, and the split cost two extra casts and two extra accessors
+for no benefit.
 
 ### Adding a fourth language
 
-1. Add the tag to `LOCALES` in `site.config.mjs`, plus its `HOME_SLUG`, `LEGAL_SLUG`
-   and `OG_LOCALE` entries.
-2. Add a key to `src/content/i18n.json` and `src/content/ui.json`.
+1. Add the tag to `LOCALES` and a slug to `HOME_SLUG` in `site.config.mjs`.
+2. Add the locale's block to `src/content/copy.json`, and to `LEGAL_SLUG` and
+   `OG_LOCALE` in the config.
 
-Nothing else: the route, the language switcher, the `hreflang` links and the sitemap
-all derive from those two places.
+The build then fails until the copy file is complete, which is the point.
 
 ### Adding a products section
 
-When subdomains go live, insert the section between `<Services />` and `<About />` in
-`src/components/HomePage.astro`. The comment marking the spot is already there. Nothing
-else on the page depends on that ordering.
+`src/components/HomePage.astro` marks the spot, between Services and Principles.
+If the section holds a list, give it its own grid template rather than reusing
+the services rhythm: five unequal cells is a shape for five things.
+
+## The identity
+
+One dark surface, one accent, and a rule that keeps it from drifting.
+
+- **`#101010` is the only surface.** There is no light mode and no section
+  inverts. `--canvas-soft` and `--canvas-raised` are steps of the same darkness,
+  used to lift an inset well or a panel. There are no drop shadows anywhere: a
+  shadow on near-black is invisible, so elevation is a border and a lighter fill,
+  or nothing.
+- **`#00d992` is the only accent, and it is reserved.** It is a button fill, a
+  focus ring, an inline link, the short rule under a section head, the connector
+  in the flow diagram, and the hero's marker stroke. It is never body text and
+  never a background for a whole band. Both directions clear AAA: the accent on
+  the canvas is 10.2:1, and near-black on the accent is 10.2:1.
+- **One typeface.** Inter for every role, display included, plus JetBrains Mono
+  for figures and small labels. Display is set at weight 500, not 700: hierarchy
+  here comes from scale and colour, not from weight. Inter's optical size axis is
+  in the file, so the browser picks the text cut at body sizes and the display cut
+  at heading sizes.
+- **Three radii.** 6px for anything interactive, 8px for a panel, and the pill
+  only for an inline tag.
+- **The eyebrow is rationed.** One tracked mono label on the whole page, above the
+  services grid. A tracked label above every heading is the fastest way for a page
+  like this to start looking generated.
+
+Every colour, radius and type step lives in `tokens.css` and nowhere else. Two
+exceptions are worth knowing: `theme-color` in `BaseLayout.astro` repeats
+`--canvas` as a literal because CSS cannot feed a meta tag, and `INK` in
+`scripts/generate-assets.mjs` reads the tokens by name out of that file.
 
 ## How the hero works
 
-Two versions of the same idea, and the page picks one.
+The hero is a headline, a subtitle, one call to action, and a field of dim
+buzzwords that get struck through with green marker strokes.
 
-**The CSS version** is the baseline. The buzzword field is markup plus CSS only — no
-library, and no JavaScript runs the sequence. Each word carries its own `--d` delay,
-generated from `STROKE_CASCADE_*` in `src/content/buzzwords.ts` so the cascade stays even
-if the list changes length.
+The words are the joke of the headline made visible: "supercharge", "10x your
+workflow", "AI-powered everything" arrive, the marker crosses them out, the field
+clears, and the headline is what is left standing. They are always English in
+every locale, because they are the vocabulary of AI marketing as it is written
+rather than a sentence to be translated.
 
-```
-0.00s   headline in ink; buzzwords in steel
-0.55s   marker strokes begin, 85ms apart, 320ms each
-1.60s   last stroke landed
-1.60s   the whole field fades out, 600ms
-2.20s   hero is clean
-```
-
-**The WebGL version** replaces the headline with extruded type, and runs on top of the
-same buzzword sequence. It only mounts when WebGL exists _and_ motion is wanted.
-
-### The sculpture
-
-Everything expensive happens at build time, because the headline is a fixed string:
-
-1. `scripts/bake-hero-mesh.mjs` instances Archivo 800 at `wdth 85`, resolves each
-   glyph's counters as holes, flattens the curves, and triangulates the caps.
-2. It writes `src/assets/type/hero-mesh.bin` — Int16 quantised points, then Uint16
-   triangle indices — and a small JSON of layout metrics and contour ranges.
-3. At runtime, `src/scripts/hero-3d.ts` expands that into front cap, back cap and
-   extruded side walls, uploads three buffers, and draws them with a Lambert shader.
-
-Three deliberate choices inside that:
-
-- **No matrix library.** The scene only rotates about two axes and the camera only sits
-  on the z axis, so the vertex shader composes the transform by hand. The depth mapping
-  is written out explicitly too, because using the raw eye depth would make `z / w`
-  constant and flatten the depth buffer.
-- **The camera is placed so one world unit is one pixel at z = 0.** The sculpture is then
-  positioned from the headline's measured box, so it lands where the text was at any
-  breakpoint with no hard-coded offsets.
-- **Lighting happens in linear space and is encoded back to sRGB**, so a face lit to 1.0
-  renders as exactly `--tinta` rather than a near-miss.
-
-### What makes it opt-in
-
-| Condition                        | Result                                                                    |
-| -------------------------------- | ------------------------------------------------------------------------- |
-| `prefers-reduced-motion: reduce` | Module returns immediately. No canvas, no fetch, no buzzwords.            |
-| No JavaScript                    | The `.js` class is never set, so the buzzword field is `display: none`.   |
-| No WebGL                         | `getContext` returns null and the module bails before fetching the mesh.  |
-| Mesh fetch or shader fails       | The error is caught, `is-gl` is removed, the real headline stays visible. |
-
-In all four cases the visitor gets the plain HTML headline. The canvas is only revealed
-(by adding `is-gl` to the hero) **after a frame has actually rendered**.
-
-The DOM `<h1>` is never removed, only made transparent with `opacity: 0` — unlike
-`display: none` or `visibility: hidden`, that keeps it in the accessibility tree and
-legible to crawlers while the canvas shows it.
+The field is `aria-hidden` and cannot receive events. With no JavaScript it is
+never rendered, and under `prefers-reduced-motion: reduce` it is removed
+entirely, so the hero opens clean in both cases. The timings are derived from the
+word list length in `src/content/buzzwords.ts`, so the cascade stays even if the
+list changes.
 
 ## Decisions worth knowing
 
-Places where the brief allowed a judgement call, and what was chosen:
-
-- **The page was restructured towards how market-leading pages read, not how they look.**
-  Hotmart's home is legible because it is _chaptered_: a clear hero, a mid-page band, real
-  section headings, a proper close. What makes it feel rich is mostly proof — "+250 mil
-  negócios", named creators, star ratings — and none of that can be copied here, because
-  the brief forbids invented numbers and testimonials and a page arguing against hype
-  cannot open with fabricated proof. So what was taken is the structure: section heads, a
-  sticky header, scroll reveals, depth, and a real footer.
-- **Section headings were added, and a "three things we don't do" band.** Both are copy
-  written for this build, which is why they live in `src/content/authored.json` rather than
-  in `i18n.json`. Every line of the band restates a promise already in the deck — no demo
-  that never ships, nothing unmeasured, few projects seen through — so it states a position
-  rather than making a new claim. It is the one section with no numbers and no names.
-- **Services is one raised panel of three rows, not three cards.** Same depth, but the
-  reading order stays vertical and it avoids the grid of identical rounded boxes the brief
-  calls out as a generated-page tell.
-- **The marker now also draws under section titles and along a service row's divider.**
-  The brief restricted it to the hero, the button, focus and link underlines; extending it
-  to a hairline rule is what ties the page's chapters back to the hero's gesture. It is
-  still never used as a text colour, because it does not contrast on `--concreto`.
-- **The hero is rendered by our own ~4 KB WebGL layer, not by a 3D library.** three.js
-  bundles to ~180 KB gzipped for any scene that touches `WebGLRenderer`, which is more
-  than the entire rest of the page. Baking the geometry at build time and shading it with
-  one small Lambert program gets the same picture for about a tenth of the weight, and it
-  means the only thing the site ships is code we wrote. three is a `devDependency`, used
-  by the baker for triangulation and by nothing else.
-- **The 3D is extruded type, not a gradient or a decorative scene.** The brief's design
-  argument is that the headline _is_ the design, so the sculpture is the headline — same
-  words, same face, same condensed width, now lit from the left. A mesh gradient would
-  have been the most generic possible answer to "make it stunning".
-- **The header carries a compact "Contact" link.** `header.contact` exists in the copy
-  deck, and the job of the page is to get someone in touch, so the string is used rather
-  than left dangling. The wireframe sketched only the wordmark and the language switcher;
-  this adds one link and no menu.
-- **Archivo is self-hosted from Google's CSS API, not through Astro's Google provider.**
-  The provider requests only the `wght` axis, which would leave the headlines at width
-  100 and cost them the condensed cut the design is built on. `scripts/fetch-fonts.mjs`
-  asks for `wdth` explicitly. It also verifies upstream's unicode ranges against
-  `LATIN_UNICODE_RANGE`, and complains if they ever drift.
-- **The serif is a single static weight, not a variable file.** The body is only ever
-  weight 400; the variable file is 51 KB against 20 KB for the instance that is actually
-  used. Same rendering, and it is what keeps the page inside the 150 KB budget.
-- **Two extra steps were added to the scale**: `--step-row` for list-row titles and
-  `--step-email` for the address, which is set at title size but sized so it never has to
-  break mid-word on a 320px screen.
-- **`/` resolves the language in the browser.** A static host cannot read
-  `Accept-Language`. The signpost prefers an explicit earlier choice (`localStorage`),
-  then `navigator.languages`, then pt-BR, and carries a `meta refresh` inside `noscript`
-  for the no-JavaScript case. It is `noindex`.
-- **The legal stubs are `noindex` and absent from the sitemap** while they say
-  "em preparação". Set `LEGAL_PUBLISHED = true` in `site.config.mjs` in the same change
+- **The headline lives in `site.config.mjs`, not in the copy deck.** It is English
+  in all three locales, and two different things are built from it: the `<h1>`
+  in `Hero.astro` and the headline burned into `public/og.png`. Declaring it once
+  is what stops the share card from advertising a headline the page does not have.
+- **`/` is a signpost, not a page.** A static host cannot read `Accept-Language`,
+  so `/` resolves the locale in the browser: a previous explicit choice from
+  `localStorage`, then `navigator.languages`, then pt-BR. It carries a `meta
+  refresh` inside `noscript` and is `noindex`.
+- **The legal stubs are `noindex` and absent from the sitemap** while they say "in
+  preparation". Flip `LEGAL_PUBLISHED` in `site.config.mjs` in the same change
   that adds the real copy.
-- **`--aco` is not used inside the ink band.** It is 2.25:1 on `--tinta`. That section
-  uses `--papel`, as the brief's own table says it should.
-- **The marker never becomes a text colour.** It appears only as the hero's marker
-  strokes, the button's hover fill, the focus ring on the ink band, and link underlines —
-  never as type on `--concreto`, where it does not contrast.
-- **There are two inline scripts in total**: one adds the `.js` class and remembers an
-  explicit language choice; the other is the signpost at `/`.
+- **The founding date is never rephrased as "N years".** It is "Since 2011" in
+  English and "Desde 2011" in Portuguese, in `copy.json`, and `founded` in the
+  config feeds the same fact into the JSON-LD and the OG card.
+- **Two inline scripts, total:** one adds the `.js` class and remembers an
+  explicit language choice, and the other is the signpost at `/`.
+- **The five service cells are unequal on purpose:** 5/7, then 7/5, then the
+  umbrella service across the full width as a filled panel. An even row of five,
+  or of any number, is the layout this page exists to avoid.
 
 ## Deploying
 
@@ -217,104 +154,90 @@ Static output. Any of Cloudflare Pages, Vercel or Netlify, with:
 
 - build command `npm run build`
 - output directory `dist`
-- Node 20.3+ (no adapter needed)
+- Node 22.12 or newer, no adapter
 
-Set the real origin in `site.config.mjs` before the first deploy — canonical URLs,
-`hreflang`, Open Graph and `sitemap.xml` are all derived from it. The contact address is
-a placeholder in the same file and is used by every `mailto:` and by the JSON-LD.
+Set the real origin in `site.config.mjs` before the first deploy: canonical URLs,
+`hreflang`, Open Graph and `sitemap.xml` are all derived from it. The contact
+address is a placeholder in the same file and is used by every `mailto:` and by
+the JSON-LD.
 
 ## How the page reveals
 
-Sections fade and rise as they enter the viewport, and the header turns from transparent
-to a solid bar. Both are **CSS scroll-driven animations** — `animation-timeline: view()`
-and `scroll(root)` — so there is no IntersectionObserver, no scroll listener, and no
-JavaScript involved at all.
+Three moments move as you scroll, not every section. The header turns from
+transparent to a solid bar, and the services and principles bands rise as they
+enter the viewport. All of it is **CSS scroll-driven animation**
+(`animation-timeline: view()` and `scroll(root)`), so there is no
+IntersectionObserver, no scroll listener, and no JavaScript involved at all.
 
-That choice is not about saving bytes. A scripted reveal has to hide its content _first_,
-so a blocked bundle or a parse error leaves a blank page. Here, a browser without
-`animation-timeline` applies no animation and simply shows the content: the failure mode
-is "no animation", never "no page".
+That choice is not about saving bytes. A scripted reveal has to hide its content
+*first*, so a blocked bundle or a parse error leaves a blank page. Here, a browser
+without `animation-timeline` applies no animation and simply shows the content:
+the failure mode is "no animation", never "no page".
 
-Stagger inside a group is written as `nth-child` rules rather than `calc()` over a custom
-property, because `animation-range` does not accept `calc()` reliably and a dropped
-declaration would disable the stagger silently.
+Motion is used in three places on purpose. Motion that happens everywhere is not
+emphasis, it is noise.
 
 ### The catch
 
-**Do not write the `animation` shorthand and `animation-timeline` in the same rule.**
-Astro's style compiler folds them together, emitting
+Every animation has to be written as **longhands**, never the `animation`
+shorthand:
 
 ```css
-animation: linear both reveal-in view();
+/* Wrong. The build folds the timeline into the shorthand. */
+animation: reveal-in linear both;
+animation-timeline: view();
+
+/* Right. */
+animation-name: reveal-in;
+animation-timing-function: linear;
+animation-fill-mode: both;
+animation-timeline: view();
 ```
 
-which Chromium rejects — `CSS.supports('animation', '… view()')` is `false` — so the whole
-declaration is dropped and every scroll-driven rule dies. It is invisible in `astro dev`,
-which does not transform the CSS, and it takes the sticky header down with it.
-
-Writing the animation as longhands avoids it, and `scripts/verify-build.mjs` fails the
-build if the folded form ever reappears or the enhancements vanish.
+Astro's style compiler folds `animation-timeline` into the `animation` shorthand
+when both are declared in the same rule, emitting
+`animation: linear both reveal-in view()`. Chromium rejects that form outright, so
+the declaration is dropped and every scroll-driven rule dies with no error
+anywhere. `astro dev` does not transform the CSS this way, so it looks fine
+locally and breaks in production.
 
 ## What was verified
 
-Measured against the built output, not assumed:
+- `npm run build` clean: type check, build, and the surviving-CSS guard.
+- The page renders at 390, 820 and 1440 with no horizontal scrolling.
+- Every visible string re-read in all three locales: no em-dashes, no invented
+  numbers, no client names, one contact label reused everywhere it means the same
+  thing.
+- One accent colour, used identically in every section, and exactly one eyebrow
+  on the page.
 
-- **Home page view is ~131 KB gzipped** — 5.4 KB HTML with the stylesheet inlined, 108 KB
-  of fonts, 14 KB of baked mesh, 4 KB of renderer code. Under the original 150 KB budget,
-  and well under the revised 200 KB one. `og.png` is a further 33 KB but is crawler-only;
-  it is never fetched on a page view.
-- **The 3D never blocks the first paint.** No 3D library ships to the client at all, and
-  the mesh is fetched only after the DOM headline has been painted, so the LCP element is
-  text rather than a canvas.
-- **The sculpture lands on the text it replaces**: measured ink bounds 231–996 × 212–499
-  against an expected 235–1001 × 210–498. The remaining few pixels are real perspective —
-  the near face of a 17px extrusion projects slightly wider than the far one.
-- **Pointer parallax and damping work**: yaw reaches ±0.0526 of a ±0.055 limit, pitch
-  ±0.025 of ±0.028, and both settle back to zero on pointer-leave.
-- **The reveals actually animate**, rather than merely sitting visible: a section measures
-  opacity 0 at the top of the page, 0 while approaching, and 1 as it arrives.
-- **The header goes from transparent to `--concreto` with its shadow** once scrolled, and
-  back to transparent at the top.
-- **No horizontal scroll and nothing overflowing**, verified at _true_ CSS widths of 318,
-  358, 414, 478, 600, 768, 900, 1024, 1100, 1280, 1440 and 1920 px. Five buzzwords below
-  768 px, nine above; the principles go 1 → 3 columns at 900 px; the footer 1 → 2 → 3
-  columns at 560 and 900 px.
-- **Contrast passes on all 50 text nodes** (AA, compositing translucent colours over their
-  real backgrounds), and **no target is below 44×44 px**.
-- **Focus rings**: 3px `--tinta` on the concrete surface, `--marcador` inside the ink band.
-- **Reduced motion** shows every section immediately and leaves the header solid, with no
-  animations attached at all.
-- **No JavaScript** still reveals sections on scroll, because the animation is pure CSS.
-- **The language signpost** resolves correctly for a stored choice, `pt-PT`, `pt`, `en-GB`,
-  `pt-BR`, and an unsupported language (falls back to pt-BR).
-- **`astro check` is clean**: 27 files, 0 errors, 0 warnings.
+Two things were found by looking rather than by building, which is the argument
+for looking:
 
-> A note on the environment: the integrated browser applies a zoom factor, so
-> `setViewportSize(320)` was really laying out at ~381px. The width sweep above converges
-> on the requested CSS width before measuring, which is why those numbers are trustworthy
-> and the first pass at this was not.
+- A screenshot at a 390px window is not a 390px page. Headless Chrome clamps the
+  layout viewport to about 504px whatever `--window-size` says, so the "mobile"
+  shot was a 504px layout cropped to 390 and looked like a horizontal-overflow
+  bug. `.cache/shot-cdp.mjs` drives Chrome over CDP instead, which also lets it
+  emulate `prefers-reduced-motion` so revealed sections are not captured blank.
+- The services grid collapsed to overlapping text on a phone. The twelve-column
+  template was declared in the base rule and the spans in a min-width query, so
+  below the collapse point each cell sat in a single 30px column. A multi-column
+  layout needs its single-column fallback declared in the same component, not
+  assumed.
 
-### Guards
+## Guards
 
-Two steps in this build fail silently, so both are asserted rather than trusted:
+`scripts/verify-build.mjs` runs after every build and asserts that the
+scroll-driven CSS survived the transform above: no folded shorthands, and the
+two timelines plus their keyframes present in every page that carries an inlined
+stylesheet. The stylesheet is inlined because `build.inlineStylesheets` is
+`always`, and this guard depends on that, so do not switch it to `auto`.
 
-| Guard                                    | Catches                                                                            | Where                        |
-| ---------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------- |
-| Coordinate-span and triangle-area checks | A bad font bake, which renders as plausible-looking slabs                          | `scripts/bake-hero-mesh.mjs` |
-| `npm run build` → `verify-build.mjs`     | The folded `animation` shorthand, and any scroll-driven rule that has gone missing | `scripts/verify-build.mjs`   |
+It reads **every** page rather than the first one the directory listing returns.
+It used to test `files[0]`, which on a filesystem with a different entry order
+meant testing the stylesheet-free signpost at `/` and failing the build for a
+reason that did not exist.
 
-Both exist because they were written _after_ the bug bit, not before: the bake produced
-plausible numbers that drew as slabs, and the minifier dropped every scroll-driven rule in
-production while dev looked perfect.
-
-### Guards that keep the bake honest
-
-`scripts/bake-hero-mesh.mjs` refuses to write output it cannot vouch for:
-
-- the outlines' coordinate span is checked against the `Int16` quantisation range
-- every shape's triangle area is checked against its outline area, counters included, and
-  the run fails if they disagree by more than 0.1%
-
-Both exist because this step is easy to get subtly wrong. Writing float offsets into a
-vertex-indexed array produced perfectly plausible numbers and rendered as slabs, and these
-two checks catch exactly that class of mistake.
+`npm run build` also runs `astro check` first. The copy deck is asserted rather
+than cast through `unknown`, so a key that exists in one locale and not the others
+is a type error, and a missing translation cannot ship as an empty string.

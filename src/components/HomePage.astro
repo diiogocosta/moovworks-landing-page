@@ -2,6 +2,7 @@
 import About from './About.astro';
 import Contact from './Contact.astro';
 import Hero from './Hero.astro';
+import Pipeline from './Pipeline.astro';
 import Principles from './Principles.astro';
 import Services from './Services.astro';
 import SiteFooter from './SiteFooter.astro';
@@ -22,6 +23,13 @@ const { locale } = Astro.props;
 
   <main id="main">
     <Hero locale={locale} />
+    {/*
+      The flow sits before the detail on purpose: the overview first, then the
+      five services explained one at a time. It is also the only place the
+      services appear as a single row, which is what keeps the grid below from
+      reading as a second copy of the same list.
+    */}
+    <Pipeline locale={locale} />
     <Services locale={locale} />
     {/* Future products slot in here, between Services and Principles. */}
     <Principles locale={locale} />

@@ -3,10 +3,10 @@
  *
  *   npm run fonts
  *
- * The site never talks to Google at runtime — these woff2 files are committed
- * and served from our own origin. We deliberately do not use Astro's Google
- * provider here: it requests only the `wght` axis, and the display face needs
- * `wdth` too (see ARCHIVO_QUERY below).
+ * The site never talks to Google at runtime: these woff2 files are committed and
+ * served from our own origin. We deliberately do not use Astro's Google provider
+ * here, because it pins the axis set and Inter's optical size axis is worth
+ * keeping (see SERIF-style note in astro.config.mjs).
  *
  * The script only downloads; it does not rewrite the config. If the upstream
  * unicode-range ever drifts from LATIN_UNICODE_RANGE in site.config.mjs it says
@@ -19,18 +19,23 @@ import { LATIN_UNICODE_RANGE } from "../site.config.mjs";
 const UA =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
-/** `wdth` before `wght` — the CSS2 API requires alphabetical axis order. */
-const ARCHIVO_QUERY = "family=Archivo:wdth,wght@75..100,400..900";
 /**
- * Pinned to the single weight the site actually renders. Google serves the
- * variable file (51 KB) for a range and a static instance (20 KB) for one
- * weight; the body is only ever weight 400, so the range would be dead bytes.
+ * `opsz` before `wght` — the CSS2 API requires alphabetical axis order, and the
+ * two axes must be requested together to get the variable file. Inter's optical
+ * size axis runs 14 to 32: the browser then picks the text cut at body sizes and
+ * the display cut at heading sizes from the same file, which is the main reason
+ * this is Inter and not something with a single axis.
  */
-const SERIF_QUERY = "family=Source+Serif+4:wght@400";
+const INTER_QUERY = "family=Inter:opsz,wght@14..32,100..900";
+/**
+ * The mono is only ever set at 400 and 500, so the range stops there rather than
+ * shipping the full 100-800 axis as dead bytes.
+ */
+const MONO_QUERY = "family=JetBrains+Mono:wght@400..500";
 
 const TARGETS = [
-  { file: "src/assets/fonts/archivo-latin.woff2", query: ARCHIVO_QUERY },
-  { file: "src/assets/fonts/source-serif-4-latin.woff2", query: SERIF_QUERY },
+  { file: "src/assets/fonts/inter-latin.woff2", query: INTER_QUERY },
+  { file: "src/assets/fonts/jetbrains-mono-latin.woff2", query: MONO_QUERY },
 ];
 
 /** Google emits one @font-face per subset; we take the one covering Basic Latin. */

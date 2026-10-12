@@ -24,7 +24,7 @@ const redirect = `
   try {
     target = localStorage.getItem('moovworks:lang');
   } catch (error) {
-    /* storage blocked — fall through to the language preferences */
+    /* storage blocked: fall through to the language preferences */
   }
   if (target && !Object.prototype.hasOwnProperty.call(routes, target)) target = null;
 

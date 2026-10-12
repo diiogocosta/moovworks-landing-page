@@ -1,7 +1,7 @@
 ---
 import { Font } from 'astro:assets';
 import '../styles/global.css';
-import { t, ui } from '../lib/i18n';
+import { t } from '../lib/i18n';
 import { absolute, SITE } from '../lib/site';
 import type { Locale } from '../lib/site';
 import { homeAlternates, openGraphLocales, organizationJsonLd } from '../lib/seo';
@@ -43,10 +43,12 @@ const jsonLd = organizationJsonLd(locale, description);
     {noindex && <meta name="robots" content="noindex, follow" />}
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#e3e4df" />
+    {/* Must stay in step with `--canvas` in tokens.css: this is the colour the
+        browser paints its own chrome, and nothing in the build compares them. */}
+    <meta name="theme-color" content="#101010" />
 
-    <Font cssVariable="--font-archivo" preload />
-    <Font cssVariable="--font-source-serif" />
+    <Font cssVariable="--font-inter" preload />
+    <Font cssVariable="--font-jetbrains-mono" />
 
     {
       links.map((link) => (
@@ -78,9 +80,9 @@ const jsonLd = organizationJsonLd(locale, description);
 
     <script is:inline>
       (function () {
-        // The hero sequence is pure CSS, so it needs no loading logic. This
-        // flag only decides whether the buzzword markup is drawn at all: with
-        // no scripting the field is never rendered and the hero opens clean.
+        // The hero's word field is pure CSS, so it needs no loading logic. This
+        // flag only decides whether it is drawn at all: with no scripting the
+        // field is never rendered and the hero opens clean.
         document.documentElement.classList.add('js');
 
         document.addEventListener('click', function (event) {
@@ -91,7 +93,7 @@ const jsonLd = organizationJsonLd(locale, description);
           try {
             localStorage.setItem('moovworks:lang', link.getAttribute('data-lang'));
           } catch (error) {
-            /* storage blocked — the choice is simply not remembered */
+            /* storage blocked: the choice is simply not remembered */
           }
         });
       })();
@@ -99,7 +101,7 @@ const jsonLd = organizationJsonLd(locale, description);
   </head>
 
   <body>
-    <a class="skip-link" href="#main">{ui(locale).skip}</a>
+    <a class="skip-link" href="#main">{t(locale).ui.skip}</a>
     <slot />
   </body>
 </html>

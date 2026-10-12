@@ -9,6 +9,7 @@ import {
 } from '../content/buzzwords';
 import type { Buzzword } from '../content/buzzwords';
 import { t } from '../lib/i18n';
+import { HEADLINE } from '../lib/site';
 import type { Locale } from '../lib/site';
 
 interface Props {
@@ -48,18 +49,17 @@ const timings = [
 ].join(';');
 ---
 
-<section class="hero" aria-labelledby="hero-headline" style={timings} data-hero>
-  {/*
-    The sculpture's canvas. Decorative and inert: the real headline is the <h1>
-    below, and this is only ever revealed after it has drawn a frame.
-  */}
-  <canvas class="hero__gl" data-hero-gl aria-hidden="true"></canvas>
-
+<section class="hero dots" aria-labelledby="hero-headline" style={timings}>
   <div class="shell hero__inner">
     {/*
-      Decorative and timed: hidden from assistive tech, unable to receive
-      events, and removed entirely when there is no JS or motion is not wanted.
-      Absolutely positioned so it can never cause layout shift.
+      The word field, timed and decorative: hidden from assistive tech, unable to
+      receive events, and removed entirely when there is no JS or motion is not
+      wanted. It is the joke of the headline made visible, which is why it stays
+      after the 3D was retired: the words arrive, the marker crosses them out, the
+      field clears. The headline is what is left standing.
+
+      It occupies its own band, so it never overlaps the type and never causes
+      layout shift.
     */}
     <div class="hero__field" aria-hidden="true">
       {
@@ -74,10 +74,8 @@ const timings = [
       }
     </div>
 
-    <h1 class="hero__headline" id="hero-headline">
-      <span class="hero__line">No more</span>
-      {' '}
-      <span class="hero__line">AI&nbsp;bullshit</span>
+    <h1 class="hero__display" id="hero-headline">
+      {HEADLINE.map((line) => <span class="hero__line">{line}</span>)}
     </h1>
 
     <div class="hero__foot">
@@ -87,69 +85,27 @@ const timings = [
   </div>
 </section>
 
-<script>
-  import { initHero3D } from '../scripts/hero-3d';
-
-  // Fired and forgotten: the page is complete whether or not this resolves, and
-  // the module itself bows out without WebGL or when motion is not wanted.
-  void initHero3D();
-</script>
-
 <style>
   .hero {
-    /* The word field lives in the space above the headline. The clip keeps a
-       wide buzzword from ever producing a horizontal scrollbar. */
-    position: relative;
+    /* The field's words are absolutely positioned and may be wider than the
+       viewport on purpose; the clip keeps that from becoming a scrollbar. */
     overflow: clip;
   }
 
-  /* ---- The sculpture canvas -------------------------------------------
-   * Sits under the hero's content so the buzzwords read as the foreground, and
-   * is not interactive: the links below it stay clickable.
-   */
-  .hero__gl {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 700ms linear;
-  }
-
-  /*
-   * Set by the script only once it has drawn a frame. Until then the headline is
-   * ordinary text. `opacity: 0` rather than `visibility: hidden` or
-   * `display: none`, deliberately: the heading must stay in the accessibility
-   * tree and stay legible to crawlers even while the canvas is showing it.
-   */
-  .hero.is-gl .hero__gl {
-    opacity: 1;
-  }
-
-  .hero.is-gl .hero__headline {
-    opacity: 0;
-  }
-
   .hero__inner {
-    position: relative;
-    /* Above the canvas, so the struck-out buzzwords stay in front of the type. */
-    z-index: 1;
-    /* Must stay comfortably taller than the field box: the words hang below it.
-       The two clamps are picked so the gap never closes between 320px and 2560px. */
-    padding-block-start: clamp(8rem, 14vw, 12rem);
+    /* Short by design. The space above the headline is occupied by the word
+       field, not by padding: an empty hero that floats its own headline down the
+       viewport is a layout bug wearing a spacer's clothes. */
+    padding-block-start: clamp(2rem, 4vw, 3.5rem);
     padding-block-end: var(--section-gap);
   }
 
-  /* ---- Buzzword field ------------------------------------------------- */
+  /* ---- Word field ------------------------------------------------------ */
 
   .hero__field {
-    position: absolute;
-    /* `--gutter` because .shell's padding box includes its own gutters. */
-    inset-inline: var(--gutter);
-    inset-block-start: clamp(0.5rem, 2vw, 2rem);
-    height: clamp(5.5rem, 10vw, 9rem);
+    position: relative;
+    height: clamp(5rem, 9vw, 6.5rem);
+    margin-block-end: clamp(1.5rem, 3vw, 2.5rem);
     pointer-events: none;
     animation: field-clear var(--clear-duration) ease-in var(--clear-delay) forwards;
   }
@@ -158,13 +114,12 @@ const timings = [
     position: absolute;
     left: var(--x);
     top: var(--y);
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-size: var(--s);
-    font-weight: 500;
-    font-stretch: 90%;
+    font-weight: 400;
     line-height: 1;
     white-space: nowrap;
-    color: var(--aco);
+    color: var(--mute);
     /* Establishes the stacking context the marker tucks behind. */
     isolation: isolate;
   }
@@ -175,19 +130,21 @@ const timings = [
   }
 
   /* The marker stroke. Drawn, not faded: scaleX from the left edge, with the
-     slight rotation of a hand pulling a chisel tip across paper. */
+     slight rotation of a hand pulling a chisel tip across paper. It is the one
+     place the accent is used as a mark rather than as an edge. */
   .buzz::before {
     content: '';
     position: absolute;
     z-index: 0;
-    inset-inline: -0.4em;
+    inset-inline: -0.35em;
     inset-block-start: 50%;
-    height: 0.9em;
-    margin-block-start: -0.45em;
-    background-color: var(--marcador);
+    height: 0.85em;
+    margin-block-start: -0.425em;
+    background-color: var(--accent);
     transform: rotate(-1.5deg) scaleX(0);
     transform-origin: 0% 50%;
-    animation: marker-stroke var(--stroke-duration) cubic-bezier(0.2, 0.7, 0.2, 1) var(--d) both;
+    animation: marker-stroke var(--stroke-duration) cubic-bezier(0.2, 0.7, 0.2, 1)
+      var(--d) both;
   }
 
   @keyframes marker-stroke {
@@ -206,22 +163,25 @@ const timings = [
     }
   }
 
-  /* ---- Headline ------------------------------------------------------- */
-
-  .hero__headline {
-    font-size: var(--step-hero);
-    /* Always Archivo 800, always condensed, always ink. The headline is the
-       one thing on the page that is never animated, tinted or emphasised. */
-    font-weight: 800;
-    font-stretch: 85%;
-    line-height: 0.92;
+  /* ---- Headline -------------------------------------------------------
+   * 500, not 400. The reference sets display at regular weight, and this is one
+   * documented step above it: at 72px, Inter 400 makes the sharpest line on the
+   * page feel like a caption. 500 is still nowhere near the heavy display weight
+   * the brand rules out, and it is the only place on the page above 600.
+   */
+  .hero__display {
+    font-size: var(--step-display);
+    font-weight: 500;
+    line-height: 1.05;
     letter-spacing: -0.03em;
-    text-wrap: balance;
-    color: var(--tinta);
+    color: var(--ink-strong);
   }
 
   .hero__line {
     display: block;
+    /* The two lines are fixed strings, so they are never allowed to break
+       mid-phrase. */
+    white-space: nowrap;
   }
 
   /* ---- Subtitle and call to action ------------------------------------ */
@@ -232,16 +192,17 @@ const timings = [
     column-gap: clamp(1rem, 2vw, 2rem);
     row-gap: clamp(1.5rem, 4vw, 2rem);
     align-items: end;
-    margin-block-start: clamp(2rem, 5vw, 4rem);
+    margin-block-start: clamp(2rem, 4vw, 3rem);
   }
 
   .hero__sub {
-    grid-column: 1 / span 5;
-    color: var(--tinta);
+    grid-column: 1 / span 6;
+    font-size: var(--step-body);
+    color: var(--body);
   }
 
   .hero__cta {
-    grid-column: 8 / -1;
+    grid-column: 9 / -1;
     justify-self: end;
   }
 
@@ -260,8 +221,8 @@ const timings = [
   /* ---- Narrow --------------------------------------------------------- */
 
   @media (max-width: 767px) {
-    /* Only the five words with a compact placement are drawn; the rest are
-       the long ones, which would not fit a single column. */
+    /* Only the words with a compact placement are drawn; the rest are the long
+       ones, which would not fit a single column. */
     .buzz:not(.buzz--compact) {
       display: none;
     }
@@ -270,13 +231,6 @@ const timings = [
       left: var(--cx);
       top: var(--cy);
       font-size: var(--cs);
-    }
-
-    /* The words are large relative to a phone, so the field gets more height
-       here than the clamp alone would give it. Stays clear of the headline,
-       which begins after --padding above. */
-    .hero__field {
-      height: 6.5rem;
     }
 
     .hero__foot {

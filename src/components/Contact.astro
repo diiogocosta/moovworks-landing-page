@@ -14,15 +14,20 @@ const mailto = `mailto:${SITE.email}`;
 
 <section class="contact section" id="contact">
   <div class="shell">
-    <header class="section__head reveal">
-      <h2 class="section__title">{dict.contact.headline}</h2>
-      <span class="section__rule" aria-hidden="true"></span>
+    {/* No reveal here. This is the page's closing action, and the one thing on
+        it that should be present the moment it is on screen rather than arriving
+        after it. It is also what keeps the motion to three sections. */}
+    <header class="section__head">
+      <h2 class="section__title">{dict.contact.title}</h2>
+      <span class="rule" aria-hidden="true"></span>
     </header>
 
-    <div class="contact__inner reveal">
-      {/* The address carries a title's weight, with the marker on its underline. */}
+    <div class="contact__inner">
+      {/* The address carries a title's weight, so the shortest path to the studio
+          is legible from across the room. The link text is the address itself,
+          which is also what a person copies. */}
       <a class="contact__email" href={mailto}>{SITE.email}</a>
-      <a class="btn contact__cta" href={mailto}>{dict.contact.button}</a>
+      <a class="btn contact__cta" href={mailto}>{dict.contact.cta}</a>
     </div>
   </div>
 </section>
@@ -32,35 +37,29 @@ const mailto = `mailto:${SITE.email}`;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(1.75rem, 4vw, 2.75rem);
+    gap: clamp(1.5rem, 4vw, 2.25rem);
   }
 
   .contact__email {
     max-width: 100%;
-    font-family: var(--font-display);
-    font-size: var(--step-email);
-    font-weight: 700;
-    font-stretch: 85%;
-    line-height: 1.05;
-    letter-spacing: -0.02em;
+    font-size: var(--step-section);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    color: var(--ink-strong);
     text-decoration-line: underline;
-    text-decoration-color: var(--marcador);
-    text-decoration-thickness: 0.09em;
-    text-underline-offset: 0.12em;
-    overflow-wrap: break-word;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 3px;
+    text-underline-offset: 0.1em;
+    /* One long unbroken token has to be allowed to wrap, or a 320px screen gets
+       a horizontal scrollbar from the address alone. */
+    overflow-wrap: anywhere;
     transition: text-decoration-thickness var(--transition);
   }
 
-  .contact__email:hover {
-    text-decoration-thickness: 0.16em;
-  }
-
-  /* The one shadow in the page's content: the closing action sits above the
-     surface rather than in it. */
-  .contact__cta {
-    padding: 1.15rem 2.25rem;
-    font-size: 1.0625rem;
-    box-shadow: var(--sombra);
+  .contact__email:hover,
+  .contact__email:focus-visible {
+    text-decoration-thickness: 6px;
   }
 
   @media (max-width: 767px) {

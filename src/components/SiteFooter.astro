@@ -1,6 +1,6 @@
 ---
 import { LANG_LABEL, LOCALES, SITE, homePath, legalPath } from '../lib/site';
-import { t, ui } from '../lib/i18n';
+import { t } from '../lib/i18n';
 import type { Locale } from '../lib/site';
 
 interface Props {
@@ -9,32 +9,29 @@ interface Props {
 
 const { locale } = Astro.props;
 const dict = t(locale);
-const strings = ui(locale);
 const mailto = `mailto:${SITE.email}`;
 // Generated at build time, never written by hand — it must not go stale.
 const year = new Date().getFullYear();
 ---
 
 {/*
-  The ink close. The page has argued its case; the footer restates the brand at
-  full size and gives the three things a footer is actually for: how to reach
-  them, in which language, and the legal links.
+  The close. Three things a footer is actually for: how to reach them, in which
+  language, and the legal links. No tagline here, because the sentence that would
+  go in it is already the hero's, and the same line twice on one page reads as
+  filler rather than emphasis.
 */}
-<footer class="site-footer on-ink">
+<footer class="site-footer">
   <div class="shell">
     <div class="site-footer__top">
-      <div class="site-footer__brand">
-        <p class="site-footer__wordmark">moovworks</p>
-        <p class="site-footer__tagline">{dict.hero.sub}</p>
-      </div>
+      <p class="site-footer__wordmark">moovworks</p>
 
       <div class="site-footer__col">
-        <p class="site-footer__label">{dict.header.contact}</p>
+        <p class="site-footer__label">{dict.footer.contact}</p>
         <a class="site-footer__email" href={mailto}>{SITE.email}</a>
       </div>
 
       <div class="site-footer__col">
-        <p class="site-footer__label">{strings.languageNav}</p>
+        <p class="site-footer__label">{dict.ui.languageNav}</p>
         <ul class="site-footer__langs">
           {
             LOCALES.map((code) => (
@@ -68,42 +65,31 @@ const year = new Date().getFullYear();
         </li>
       </ul>
 
-      <a class="detail-link site-footer__top-link" href="#main">{strings.toTop}</a>
+      <a class="detail-link site-footer__top-link" href="#main">{dict.ui.toTop}</a>
     </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    padding-block: clamp(3.5rem, 9vw, 7rem) clamp(1.5rem, 3vw, 2.5rem);
+    padding-block: clamp(3.5rem, 8vw, 6rem) clamp(1.5rem, 3vw, 2.5rem);
+    border-block-start: 1px solid var(--line);
   }
 
   .site-footer__top {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
     gap: clamp(2rem, 5vw, 4rem);
-    padding-block-end: clamp(3rem, 7vw, 5rem);
-  }
-
-  .site-footer__brand {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    padding-block-end: clamp(2.5rem, 6vw, 4.5rem);
   }
 
   /* The wordmark at the size it has earned by the end of the page. */
   .site-footer__wordmark {
-    font-family: var(--font-display);
-    font-size: clamp(2rem, 1.2rem + 3vw, 3.75rem);
-    font-weight: 800;
-    font-stretch: 85%;
+    font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+    font-weight: 500;
     line-height: 1;
-    letter-spacing: -0.035em;
-  }
-
-  .site-footer__tagline {
-    max-width: 30ch;
-    color: var(--papel-suave);
+    letter-spacing: -0.04em;
+    color: var(--ink-strong);
   }
 
   .site-footer__col {
@@ -113,28 +99,33 @@ const year = new Date().getFullYear();
   }
 
   .site-footer__label {
-    font-family: var(--font-display);
-    font-size: var(--step-detail);
-    font-weight: 500;
-    color: var(--papel-suave);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--mute);
   }
 
   .site-footer__email {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    font-family: var(--font-display);
     font-size: 1.0625rem;
     font-weight: 500;
+    color: var(--ink);
     text-decoration-line: underline;
-    text-decoration-color: var(--marcador);
-    text-decoration-thickness: 0.1em;
-    text-underline-offset: 0.18em;
-    transition: text-decoration-thickness var(--transition);
+    text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.22em;
+    transition:
+      color var(--transition),
+      text-decoration-color var(--transition);
   }
 
-  .site-footer__email:hover {
-    text-decoration-thickness: 0.2em;
+  .site-footer__email:hover,
+  .site-footer__email:focus-visible {
+    color: var(--ink-strong);
+    text-decoration-color: var(--accent);
   }
 
   .site-footer__langs,
@@ -142,7 +133,6 @@ const year = new Date().getFullYear();
     display: flex;
     flex-wrap: wrap;
     gap: 0 0.25rem;
-    margin-inline-start: -0.4rem;
   }
 
   .site-footer__base {
@@ -152,16 +142,13 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: 0.5rem clamp(1rem, 3vw, 2.5rem);
     padding-block-start: clamp(1.25rem, 3vw, 2rem);
-    /* A lighter hairline than on concrete: `--nevoa` disappears against ink. */
-    border-block-start: 1px solid var(--tinta-borda);
+    border-block-start: 1px solid var(--line);
   }
 
   .site-footer__copy {
-    font-family: var(--font-display);
-    /* Sentence case throughout: no tracked ALL CAPS labels. */
-    font-size: var(--step-detail);
-    font-weight: 500;
-    color: var(--papel-suave);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--mute);
   }
 
   .site-footer__top-link {
@@ -173,7 +160,7 @@ const year = new Date().getFullYear();
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     }
 
-    .site-footer__brand {
+    .site-footer__wordmark {
       grid-column: 1 / -1;
     }
   }

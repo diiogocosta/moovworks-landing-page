@@ -558,3 +558,23 @@ Code-editor mockups render as image-like cards with copy-to-clipboard affordance
 - Don't drop a soft drop-shadow on cards. The brand uses hairlines + occasional glow, never material shadows.
 - Don't render the hero headline in heavy weight (700+). The brand's display is intentionally calm at weight 400.
 - Don't replace Inter or SF Mono with a different family — both faces are part of the brand's voice and pairing.
+
+---
+
+## Where Moovworks diverges from this analysis
+
+This document describes VoltAgent, a developer tool. Moovworks is an agency selling
+applied AI to people who buy outcomes, not frameworks. The system above is the
+starting material; these are the places the site deliberately leaves it, and why.
+Anything not listed here is followed as written.
+
+| Divergence | Why |
+| --- | --- |
+| **One eyebrow on the whole page**, not one per section | A tracked label above every heading is the most templated rhythm the reference has. Capping it is what stops the page reading as a reskin. The mono still carries texture, through the flow diagram, the tags, the footer labels and the language codes. |
+| **No logo wall and no marquee** | There are no clients to show. The reference's loudest device is its three logo marquees; inventing brands to fill that space would be the one thing this brand cannot do. |
+| **No code blocks** | The agency equivalent of a code sample is a deliverables list. The flow diagram plays the role the architecture diagram plays on the reference site. |
+| **Hero display at weight 500**, not 400 | The one documented deviation from "the display is intentionally calm at 400". At 72px, Inter 400 makes the sharpest line on the page read as a caption. 500 is still far from the heavy display weight the brand rules out, and it is the only place on the page above 600. |
+| **The accent has a fixed reservation list** | The reference spends green on every CTA, every status pill and a logo glyph. Here it is a button fill, a focus ring, an inline link, one rule per section head, the flow connector, and the hero's marker stroke. Nothing else, anywhere. |
+| **No live or status dots** | A coloured dot that conveys no state is decoration, and this page has no live state to convey. |
+| **Five unequal service cells**, 5/7 then 7/5 then full width | An even grid of equal cells is the layout the page exists to avoid. The widths carry meaning: the last cell is a different kind of engagement, so it gets the full width and a fill. |
+| **The dot grid is hero-only** | The reference tiles it behind the page. Here it is one band, because a tiled background on a scrolling dark page is how a design starts to feel cheap and how a phone starts dropping frames. |

@@ -1,7 +1,7 @@
 ---
 import { LANG_LABEL, LOCALES, homePath } from '../lib/site';
 import type { Locale } from '../lib/site';
-import { ui } from '../lib/i18n';
+import { t } from '../lib/i18n';
 
 interface Props {
   locale: Locale;
@@ -10,11 +10,11 @@ interface Props {
 const { locale } = Astro.props;
 ---
 
-<nav class="lang" aria-label={ui(locale).languageNav}>
+<nav class="lang" aria-label={t(locale).ui.languageNav}>
   <ul class="lang__list">
     {
       LOCALES.map((code) => (
-        <li>
+        <li class="lang__item">
           <a
             class="detail-link"
             href={homePath(code)}
@@ -35,5 +35,32 @@ const { locale } = Astro.props;
   .lang__list {
     display: flex;
     align-items: center;
+  }
+
+  /*
+   * Hairline separators rather than dots or slashes: it is the same edge
+   * treatment every other boundary on the page uses, and a middle dot between
+   * codes is a decoration that carries no information.
+   */
+  .lang__item + .lang__item {
+    border-inline-start: 1px solid var(--line);
+  }
+
+  .lang__list .detail-link {
+    /* The codes are a label, not prose, so they take the mono face. */
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    padding-inline: 0.5rem;
+    justify-content: center;
+  }
+
+  /* The language you are already reading: ink, with the accent as the marker. */
+  .lang__list .detail-link[aria-current="page"] {
+    color: var(--ink-strong);
+    text-decoration-line: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.4em;
   }
 </style>
